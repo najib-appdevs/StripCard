@@ -8,12 +8,10 @@ import UserMenu from "./UserMenu";
 
 export default function Navbar({ onMenuClick }) {
   return (
-    <nav className="bg-white px-4 sm:px-6 py-4">
+    <nav className=" px-4 sm:px-6 py-4">
       <div className="flex items-center justify-between">
-        
         {/* Left Side - Menu Button (Mobile) + Welcome Message */}
         <div className="flex items-center gap-4">
-          
           {/* Hamburger Menu for Mobile */}
           <button
             onClick={onMenuClick}
@@ -43,7 +41,6 @@ export default function Navbar({ onMenuClick }) {
           <NotificationBell />
           <UserMenu />
         </div>
-
       </div>
     </nav>
   );

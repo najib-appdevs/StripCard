@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
@@ -49,6 +50,34 @@ export default function Sidebar({ isOpen, onClose }) {
 
   return (
     <>
+      {/* Add custom styles for gradient */}
+      <style jsx>{`
+        .gradient-text {
+          background: linear-gradient(
+            76.84deg,
+            #0ebe98 -2.66%,
+            #50c631 105.87%
+          );
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .gradient-icon :global(svg) {
+          stroke: url(#gradient);
+        }
+      `}</style>
+
+      {/* SVG gradient definition */}
+      <svg width="0" height="0" style={{ position: "absolute" }}>
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="-2.66%" stopColor="#0EBE98" />
+            <stop offset="105.87%" stopColor="#50C631" />
+          </linearGradient>
+        </defs>
+      </svg>
+
       {/* Overlay for mobile */}
       {isOpen && (
         <div
@@ -59,17 +88,18 @@ export default function Sidebar({ isOpen, onClose }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64  overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        } bg-white`}
       >
         {/* Logo */}
         <div className="p-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">A</span>
-            </div>
-            <span className="text-xl font-bold text-black">AppDevs</span>
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo.png"
+              alt="AppDevs Logo"
+              className="w-40 h-10 rounded-lg object-contain"
+            />
           </div>
 
           {/* Close button for mobile */}
@@ -83,24 +113,34 @@ export default function Sidebar({ isOpen, onClose }) {
         </div>
 
         {/* Navigation */}
-        <nav className="p-4">
+        <nav className="p-4 ">
           {/* Main Menu */}
           <div className="space-y-1 mb-6">
             {menuItems.map((item) => {
               const Icon = item.icon;
+              const active = isActive(item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={onClose}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                    isActive(item.href)
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-black hover:bg-gray-100"
+                    active ? "" : "text-black hover:bg-gray-100"
                   }`}
                 >
-                  <Icon size={20} />
-                  <span className="text-sm font-medium">{item.label}</span>
+                  <span className={active ? "gradient-icon" : ""}>
+                    <Icon
+                      size={20}
+                      style={active ? { stroke: "url(#gradient)" } : {}}
+                    />
+                  </span>
+                  <span
+                    className={`text-sm font-medium ${
+                      active ? "gradient-text" : ""
+                    }`}
+                  >
+                    {item.label}
+                  </span>
                 </Link>
               );
             })}
@@ -114,19 +154,29 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className="space-y-1">
               {transactionItems.map((item) => {
                 const Icon = item.icon;
+                const active = isActive(item.href);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={onClose}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                      isActive(item.href)
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-black hover:bg-gray-100"
+                      active ? "bg-blue-50" : "text-black hover:bg-gray-100"
                     }`}
                   >
-                    <Icon size={20} />
-                    <span className="text-sm font-medium">{item.label}</span>
+                    <span className={active ? "gradient-icon" : ""}>
+                      <Icon
+                        size={20}
+                        style={active ? { stroke: "url(#gradient)" } : {}}
+                      />
+                    </span>
+                    <span
+                      className={`text-sm font-medium ${
+                        active ? "gradient-text" : ""
+                      }`}
+                    >
+                      {item.label}
+                    </span>
                   </Link>
                 );
               })}
@@ -141,19 +191,29 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className="space-y-1">
               {walletItems.map((item) => {
                 const Icon = item.icon;
+                const active = isActive(item.href);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={onClose}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                      isActive(item.href)
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-black hover:bg-gray-100"
+                      active ? "bg-blue-50" : "text-black hover:bg-gray-100"
                     }`}
                   >
-                    <Icon size={20} />
-                    <span className="text-sm font-medium">{item.label}</span>
+                    <span className={active ? "gradient-icon" : ""}>
+                      <Icon
+                        size={20}
+                        style={active ? { stroke: "url(#gradient)" } : {}}
+                      />
+                    </span>
+                    <span
+                      className={`text-sm font-medium ${
+                        active ? "gradient-text" : ""
+                      }`}
+                    >
+                      {item.label}
+                    </span>
                   </Link>
                 );
               })}
@@ -168,19 +228,29 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className="space-y-1">
               {cardItems.map((item) => {
                 const Icon = item.icon;
+                const active = isActive(item.href);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     onClick={onClose}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                      isActive(item.href)
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-black hover:bg-gray-100"
+                      active ? "bg-blue-50" : "text-black hover:bg-gray-100"
                     }`}
                   >
-                    <Icon size={20} />
-                    <span className="text-sm font-medium">{item.label}</span>
+                    <span className={active ? "gradient-icon" : ""}>
+                      <Icon
+                        size={20}
+                        style={active ? { stroke: "url(#gradient)" } : {}}
+                      />
+                    </span>
+                    <span
+                      className={`text-sm font-medium ${
+                        active ? "gradient-text" : ""
+                      }`}
+                    >
+                      {item.label}
+                    </span>
                   </Link>
                 );
               })}

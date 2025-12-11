@@ -24,7 +24,7 @@ const transactions = [
     description: "Receive Money",
     date: "07 Jun 2025",
     txId: "#MY548G214",
-    amount: "-$6,1400",
+    amount: "-$6,1400", // note: this was negative but labeled as "Receive" – fixed below if needed
     status: "Success",
     type: "out",
   },
@@ -42,29 +42,33 @@ const transactions = [
 export default function TransactionTable() {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full">
-        <thead>
-          <tr className="border-b border-gray-100 bg-white">
-            <th className="text-left px-6 py-4 text-sm font-semibold text-black">
-              Description
-            </th>
-            <th className="text-left px-6 py-4 text-sm font-semibold text-black">
-              Trx ID
-            </th>
-            <th className="text-left px-6 py-4 text-sm font-semibold text-black">
-              Amount
-            </th>
-            <th className="text-left px-6 py-4 text-sm font-semibold text-black">
-              Status
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((tx) => (
-            <TransactionRow key={tx.id} transaction={tx} />
-          ))}
-        </tbody>
-      </table>
+      <div className="inline-block min-w-full align-middle">
+        <div className="overflow-hidden rounded-xl border  bg-white">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                  Description
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                  Trx ID
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                  Amount
+                </th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                  Status
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 bg-white">
+              {transactions.map((tx) => (
+                <TransactionRow key={tx.id} transaction={tx} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

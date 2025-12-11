@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ChevronDown,
   CreditCard,
   DollarSign,
   LogOut,
@@ -27,23 +26,13 @@ export default function UserMenu() {
           TW
         </div>
 
-        {/* Name + Email (hidden on mobile) */}
-        {/* <div className="hidden sm:block text-left">
-          <p className="text-sm font-medium text-gray-900">
-            Tomas William
-          </p>
-          <p className="text-xs text-gray-500">
-            william@gmail.com
-          </p>
-        </div> */}
-
         {/* Desktop chevron */}
-        <ChevronDown
+        {/* <ChevronDown
           size={16}
           className={`hidden sm:block text-gray-600 transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
-        />
+        /> */}
 
         {/* Mobile 3 dots */}
         <MoreVertical size={20} className="sm:hidden text-gray-600" />
@@ -104,12 +93,27 @@ export default function UserMenu() {
 
 // Reusable menu item
 function MenuItem({ icon, label, className = "" }) {
+  const isDanger = className.includes("text-red-600");
+
   return (
     <button
       className={`w-full flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100 transition-colors ${className}`}
     >
-      <span className="text-gray-600">{icon}</span>
-      <span className="font-medium text-gray-800">{label}</span>
+      {/* Icon */}
+      <span className={isDanger ? "text-red-600" : "text-gray-600"}>
+        {icon}
+      </span>
+
+      {/* Label */}
+      <span
+        className={
+          isDanger
+            ? "text-red-600 font-semibold"
+            : "text-gray-800 font-semibold"
+        }
+      >
+        {label}
+      </span>
     </button>
   );
 }

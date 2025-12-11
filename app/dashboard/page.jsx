@@ -1,5 +1,5 @@
-import RightSideContent from "./components/RightSideContent";
-import WalletContentArea from "./components/wallet/WalletContentArea";
+import RightSideContent from "../components/RightSideContent";
+import WalletContentArea from "../components/wallet/WalletContentArea";
 
 export default function Home() {
   return (
