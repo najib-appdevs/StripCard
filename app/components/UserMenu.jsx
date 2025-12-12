@@ -22,7 +22,7 @@ export default function UserMenu() {
         className="flex items-center gap-3 rounded-lg hover:bg-gray-100 px-3 py-2 transition-colors"
       >
         {/* Avatar */}
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+        <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
           TW
         </div>
 

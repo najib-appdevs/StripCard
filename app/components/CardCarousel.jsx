@@ -30,7 +30,7 @@ export default function CardCarousel() {
     },
   ];
 
-  // Auto-rotate every 3sec
+  // Auto-rotate every 4 sec
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveCard((prev) => (prev + 1) % cards.length);
@@ -62,6 +62,7 @@ export default function CardCarousel() {
       <div className="relative flex justify-center items-center mb-10 min-h-[260px]">
         {cards.map((card, i) => {
           const pos = getCardPosition(i);
+
           return (
             <div
               key={card.id}
@@ -71,37 +72,51 @@ export default function CardCarousel() {
               `}
             >
               <div
-                className={`bg-gradient-to-br ${card.gradient} text-white p-6 rounded-2xl shadow-xl w-72 sm:w-80`}
+                className={`bg-gradient-to-br ${card.gradient} text-white p-5 rounded-2xl shadow-xl w-72 sm:w-80`}
               >
-                <div className="flex justify-between mb-6">
-                  <h3 className="text-lg font-bold tracking-wide">
-                    {card.name}
-                  </h3>
-                  <div className="flex gap-2 items-center">
+                {/* Top Row */}
+                <div className="flex justify-between mb-4">
+                  <h3 className="text-lg tracking-wide">{card.name}</h3>
+
+                  {/* <div className="flex gap-2 items-center">
                     {card.showPlaceholder && (
                       <div className="w-7 h-7 bg-gray-200 border-2 border-dashed rounded" />
                     )}
-                    <span className="text-2xl font-bold">VISA</span>
-                  </div>
+                  </div> */}
                 </div>
 
-                <div className="flex items-center gap-3 mb-6">
-                  <div
-                    className={`${
-                      card.showPlaceholder
-                        ? "bg-gray-200 border-2 border-dashed"
-                        : "bg-gray-300/40"
-                    } w-10 h-7 rounded`}
+                {/* Chip + signal waves */}
+                <div className="flex items-center gap-3 mb-4">
+                  <img
+                    src="/Chip.png"
+                    alt="chip"
+                    className="w-10 h-7 object-contain"
+                  />
+
+                  <img
+                    src="/waves.png"
+                    alt="nfc"
+                    className="w-6 h-6 object-contain opacity-80"
                   />
                 </div>
 
-                <div className="text-xl tracking-widest font-mono mb-4">
+                {/* Card Number */}
+                <div className="text-xl tracking-widest font-mono mb-3">
                   {card.number}
                 </div>
 
-                <div>
-                  <p className="text-gray-300 text-xs">Valid Thru</p>
-                  <p className="font-semibold">{card.validThru}</p>
+                {/* Valid thru + Visa logo */}
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-gray-300 text-xs">Valid Thru</p>
+                    <p>{card.validThru}</p>
+                  </div>
+
+                  <img
+                    src="/Visa-Logo.png"
+                    alt="visa"
+                    className="w-12 object-contain"
+                  />
                 </div>
               </div>
             </div>
@@ -109,6 +124,7 @@ export default function CardCarousel() {
         })}
       </div>
 
+      {/* Dots Navigation */}
       <div className="flex justify-center gap-3 mb-6">
         {cards.map((c, idx) => (
           <button
