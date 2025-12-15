@@ -1,10 +1,9 @@
 "use client";
-
 import { Menu } from "lucide-react";
 import DarkModeToggle from "./DarkModeToggle";
-import Globe from "./Globe";
-import NotificationBell from "./NotificationBell";
 import UserMenu from "./UserMenu";
+import GlobeIcon from "./icons/Globe";
+import NotificationBell from "./icons/NotificationBell";
 
 export default function Navbar({ onMenuClick }) {
   return (
@@ -36,7 +35,7 @@ export default function Navbar({ onMenuClick }) {
         <div className="flex items-center gap-2 sm:gap-3">
           <DarkModeToggle />
           <div className="hidden sm:block">
-            <Globe />
+            <GlobeIcon />
           </div>
           <NotificationBell />
           <UserMenu />

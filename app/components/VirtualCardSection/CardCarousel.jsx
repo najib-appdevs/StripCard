@@ -59,7 +59,7 @@ export default function CardCarousel() {
 
   return (
     <>
-      <div className="relative flex justify-center items-center mb-10 min-h-[260px]">
+      <div className="relative flex justify-center items-center mb-4 min-h-[200px]">
         {cards.map((card, i) => {
           const pos = getCardPosition(i);
 
@@ -77,12 +77,6 @@ export default function CardCarousel() {
                 {/* Top Row */}
                 <div className="flex justify-between mb-4">
                   <h3 className="text-lg tracking-wide">{card.name}</h3>
-
-                  {/* <div className="flex gap-2 items-center">
-                    {card.showPlaceholder && (
-                      <div className="w-7 h-7 bg-gray-200 border-2 border-dashed rounded" />
-                    )}
-                  </div> */}
                 </div>
 
                 {/* Chip + signal waves */}
@@ -125,7 +119,7 @@ export default function CardCarousel() {
       </div>
 
       {/* Dots Navigation */}
-      <div className="flex justify-center gap-3 mb-6">
+      <div className="flex justify-center gap-3 mb-2">
         {cards.map((c, idx) => (
           <button
             key={idx}

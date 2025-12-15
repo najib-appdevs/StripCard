@@ -1,5 +1,15 @@
 export default function TransactionRow({ transaction }) {
-  const { description, date, txId, amount, status, type } = transaction;
+  const {
+    txId,
+    fees,
+    cardAmount,
+    cardMasked,
+    currentBalance,
+    dateTime,
+    virtualCard,
+    status,
+    type,
+  } = transaction;
 
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors bg-white">
@@ -34,23 +44,42 @@ export default function TransactionRow({ transaction }) {
             )}
           </div>
           <div>
-            <p className="font-medium text-black">{description}</p>
-            <p className="text-sm text-gray-600">{date}</p>
+            <p className="font-medium text-black">{txId}</p>
           </div>
         </div>
       </td>
-      <td className="px-6 py-5 text-black">{txId}</td>
+      <td className="px-6 py-5 text-black">{fees}</td>
       <td className="px-6 py-5">
         <span
           className={`font-semibold ${
             type === "in" ? "text-green-500" : "text-red-500"
           }`}
         >
-          {amount}
+          {cardAmount}
+        </span>
+      </td>
+      <td className="px-6 py-5 text-black font-mono">{cardMasked}</td>
+      <td className="px-6 py-5">
+        <span className="font-semibold text-black">{currentBalance}</span>
+      </td>
+      <td className="px-6 py-5">
+        <p className="text-sm text-gray-600">{dateTime}</p>
+      </td>
+      <td className="px-6 py-5">
+        <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+          {virtualCard}
         </span>
       </td>
       <td className="px-6 py-5">
-        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+        <span
+          className={`px-3 py-1 rounded-full text-sm font-medium ${
+            status === "Success"
+              ? "bg-green-100 text-green-700"
+              : status === "Pending"
+              ? "bg-yellow-100 text-yellow-700"
+              : "bg-red-100 text-red-700"
+          }`}
+        >
           {status}
         </span>
       </td>

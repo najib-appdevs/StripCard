@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import DashboardLayoutClient from "./components/DashboardLayoutClient.js";
+import DashboardLayoutClient from "./DashboardLayoutClient";
 import "./globals.css";
 
 const geistSans = Geist({

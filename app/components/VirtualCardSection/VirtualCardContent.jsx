@@ -1,20 +1,19 @@
 import CardCarousel from "./CardCarousel";
-import PromoCarousel from "./PromoCarousel";
 
 export default function RightSideContent() {
   return (
     <div className="p-4 sm:p-6  h-full flex flex-col">
       {/* Promotional Card Carousel */}
-      <PromoCarousel />
+      {/* <PromoCarousel /> */}
 
       {/* Card + Balance Wrapper */}
       <div className="bg-white rounded-2xl shadow-lg p-4 sm:p-6 mt-6">
         {/* Header */}
-        <div className="flex justify-between items-center mb-6 sm:mb-8">
+        {/* <div className="flex justify-between items-center mb-6 sm:mb-8">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
             My Virtual Card
           </h2>
-        </div>
+        </div> */}
 
         {/* Card Carousel */}
         <CardCarousel />
@@ -29,7 +28,13 @@ export default function RightSideContent() {
               </p>
             </div>
 
-            <button className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-full shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+            <button
+              className="flex w-full sm:w-auto items-center justify-center gap-2 px-6 py-3 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-transform duration-200 hover:-translate-y-1"
+              style={{
+                background:
+                  "linear-gradient(76.84deg, #0EBE98 -2.66%, #50C631 105.87%)",
+              }}
+            >
               Card Top Up
             </button>
           </div>
