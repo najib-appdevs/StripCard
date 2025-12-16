@@ -90,7 +90,7 @@ export default function WalletBalanceSection() {
   const [showBalance, setShowBalance] = useState(true);
 
   return (
-    <div className="">
+    <>
       {/* Header + Buttons */}
       <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between mb-6">
         {/* Balance Section */}
@@ -179,6 +179,6 @@ export default function WalletBalanceSection() {
           );
         })}
       </div>
-    </div>
+    </>
   );
 }

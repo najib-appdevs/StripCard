@@ -21,11 +21,11 @@ export default function Navbar({ onMenuClick }) {
           </button>
 
           {/* Welcome Message */}
-          <div>
-            <h1 className="text-base sm:text-lg font-semibold text-black">
+          <div className="pl-6">
+            <h1 className="text-base sm:text-lg font-semibold text-black ">
               Welcome Back
             </h1>
-            <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
+            <p className="text-xs sm:text-sm text-gray-600 mt-0.5 ">
               Tomas William
             </p>
           </div>

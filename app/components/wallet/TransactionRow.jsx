@@ -13,8 +13,8 @@ export default function TransactionRow({ transaction }) {
 
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors bg-white">
-      <td className="px-6 py-5">
-        <div className="flex items-center gap-3">
+      <td className="px-6 py-4">
+        <div className="flex items-center gap-2">
           <div
             className={`w-10 h-10 rounded-lg flex items-center justify-center ${
               type === "in" ? "bg-green-50" : "bg-red-50"
@@ -48,8 +48,8 @@ export default function TransactionRow({ transaction }) {
           </div>
         </div>
       </td>
-      <td className="px-6 py-5 text-black">{fees}</td>
-      <td className="px-6 py-5">
+      <td className="px-6 py-4 text-black">{fees}</td>
+      <td className="px-6 py-4">
         <span
           className={`font-semibold ${
             type === "in" ? "text-green-500" : "text-red-500"
@@ -58,19 +58,19 @@ export default function TransactionRow({ transaction }) {
           {cardAmount}
         </span>
       </td>
-      <td className="px-6 py-5 text-black font-mono">{cardMasked}</td>
-      <td className="px-6 py-5">
+      <td className="px-6 py-4 text-black font-mono">{cardMasked}</td>
+      <td className="px-6 py-4">
         <span className="font-semibold text-black">{currentBalance}</span>
       </td>
-      <td className="px-6 py-5">
+      <td className="px-6 py-4">
         <p className="text-sm text-gray-600">{dateTime}</p>
       </td>
-      <td className="px-6 py-5">
+      <td className="px-6 py-4">
         <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
           {virtualCard}
         </span>
       </td>
-      <td className="px-6 py-5">
+      <td className="px-6 py-4">
         <span
           className={`px-3 py-1 rounded-full text-sm font-medium ${
             status === "Success"

@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 
 export default function CardCarousel() {
@@ -59,7 +58,7 @@ export default function CardCarousel() {
 
   return (
     <>
-      <div className="relative flex justify-center items-center mb-4 min-h-[200px]">
+      <div className="relative flex justify-center items-center mb-3 min-h-[200px]">
         {cards.map((card, i) => {
           const pos = getCardPosition(i);
 
@@ -72,15 +71,15 @@ export default function CardCarousel() {
               `}
             >
               <div
-                className={`bg-gradient-to-br ${card.gradient} text-white p-5 rounded-2xl shadow-xl w-72 sm:w-80`}
+                className={`bg-gradient-to-br ${card.gradient} text-white p-4 rounded-2xl shadow-xl w-72 sm:w-80`}
               >
                 {/* Top Row */}
-                <div className="flex justify-between mb-4">
+                <div className="flex justify-between mb-3">
                   <h3 className="text-lg tracking-wide">{card.name}</h3>
                 </div>
 
                 {/* Chip + signal waves */}
-                <div className="flex items-center gap-3 mb-4">
+                <div className="flex items-center gap-2 mb-3">
                   <img
                     src="/Chip.png"
                     alt="chip"
@@ -95,7 +94,7 @@ export default function CardCarousel() {
                 </div>
 
                 {/* Card Number */}
-                <div className="text-xl tracking-widest font-mono mb-3">
+                <div className="text-xl tracking-widest font-mono mb-2">
                   {card.number}
                 </div>
 
@@ -119,7 +118,7 @@ export default function CardCarousel() {
       </div>
 
       {/* Dots Navigation */}
-      <div className="flex justify-center gap-3 mb-2">
+      <div className="flex justify-center gap-2 mb-2">
         {cards.map((c, idx) => (
           <button
             key={idx}

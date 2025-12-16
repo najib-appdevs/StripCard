@@ -59,28 +59,28 @@ export default function TransactionTable() {
           <table className="min-w-full divide-y divide-gray-100">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                   Transaction ID
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                   Fees & Charges
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                   Card Amount
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                   Card Masked
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                   Current Balance
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                   Time & Date
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                   Virtual Card
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
                   Status
                 </th>
               </tr>
