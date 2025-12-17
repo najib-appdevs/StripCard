@@ -1,8 +1,8 @@
-const AddMoneyPreview = () => {
+const WithdrawMoneyPreview = () => {
   const data = [
     { label: "Enter Amount", value: "0.0000 USD" },
     { label: "Exchange Rate", value: "1 USD = 1.0000 USD" },
-    { label: "Fees & Charges", value: "2.0000 USD" },
+    { label: "Fees & Charges", value: "1.0000 USD" },
     { label: "Conversion Amount", value: "0.0000 USD" },
   ];
 
@@ -12,7 +12,7 @@ const AddMoneyPreview = () => {
         {/* Header */}
         <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
           <h2 className="text-base text-center font-semibold text-white">
-            Add Money Preview
+            Withdraw Money Preview
           </h2>
         </div>
 
@@ -52,7 +52,7 @@ const AddMoneyPreview = () => {
             <span className="text-base font-medium text-white">
               Total Payable Amount
             </span>
-            <span className="text-base font-bold text-white">2.0000 USD</span>
+            <span className="text-base font-bold text-white">1.0000 USD</span>
           </div>
         </div>
       </div>
@@ -60,4 +60,4 @@ const AddMoneyPreview = () => {
   );
 };
 
-export default AddMoneyPreview;
+export default WithdrawMoneyPreview;

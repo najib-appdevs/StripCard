@@ -2,36 +2,39 @@
 
 import { useState } from "react";
 
-const AddMoneyLog = () => {
+const TransferMoneyLog = () => {
   const [search, setSearch] = useState("");
 
   const logs = [
     {
-      gateway: "Stripe USD",
-      status: "Success",
       trxId: "TRX123456789",
-      exchangeRate: "1 USD = 1.0000 USD",
+      recipient: "@testusr2",
+      email: "user2@appdevs.net",
       fees: "2.0000 USD",
+      recipientReceived: "98.0000 USD",
       currentBalance: "857.0000 USD",
       date: "2024-01-10 14:23",
+      status: "Success",
     },
     {
-      gateway: "Paypal USD",
-      status: "Success",
       trxId: "TRX987654321",
-      exchangeRate: "1 USD = 1.0000 USD",
+      recipient: "@johndoe",
+      email: "john@appdevs.net",
       fees: "1.5000 USD",
+      recipientReceived: "148.5000 USD",
       currentBalance: "657.0000 USD",
       date: "2024-01-08 09:15",
+      status: "Success",
     },
     {
-      gateway: "AdPay (Manual)",
-      status: "Pending",
       trxId: "TRX456789123",
-      exchangeRate: "1 USD = 1.0000 USD",
+      recipient: "@janedoe",
+      email: "jane@appdevs.net",
       fees: "0.5000 USD",
+      recipientReceived: "49.5000 USD",
       currentBalance: "500.0000 USD",
       date: "2024-01-05 18:40",
+      status: "Pending",
     },
   ];
 
@@ -40,14 +43,16 @@ const AddMoneyLog = () => {
       <div className=" rounded-2xl border border-gray-200 bg-white shadow-sm">
         {/* Header */}
         <div className="rounded-t-2xl bg-gray-900 px-6 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <h2 className="text-base font-semibold text-white">Add Money Log</h2>
+          <h2 className="text-base font-semibold text-white">
+            Transfer Money Log
+          </h2>
 
           <div className="flex items-center gap-3">
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Ex: TRX ID, Add Money"
+              placeholder="Ex: TRX ID, Amount"
               className="w-44 rounded-lg bg-gray-800 px-3 py-1.5 text-sm text-white
                          placeholder-gray-400 border border-gray-700
                          focus:outline-none focus:ring-2 focus:ring-emerald-400"
@@ -62,13 +67,13 @@ const AddMoneyLog = () => {
         <div className="overflow-x-auto">
           {/* Table Header */}
           <div className="hidden md:grid min-w-[900px] grid-cols-7 gap-4 px-6 py-3 bg-gray-50 text-sm font-semibold text-gray-600 ">
-            <span>Add Balance via</span>
-            <span>Status</span>
             <span>Transaction ID</span>
-            <span>Exchange Rate</span>
+            <span>Transfer Money to</span>
             <span>Fees & Charges</span>
+            <span>Recipient Received</span>
             <span>Current Balance</span>
             <span>Time & Date</span>
+            <span>Status</span>
           </div>
 
           {/* Rows */}
@@ -78,12 +83,19 @@ const AddMoneyLog = () => {
                 key={index}
                 className="grid grid-cols-1 md:grid-cols-7 gap-3 px-6 py-4 text-sm"
               >
+                <span className="text-gray-600">{log.trxId}</span>
+
                 <span className="font-medium text-gray-900">
-                  Add Balance via {log.gateway}
+                  Transfer Money to {log.recipient} ({log.email})
                 </span>
 
+                <span className="text-gray-600">{log.fees}</span>
+                <span className="text-gray-600">{log.recipientReceived}</span>
+                <span className="text-gray-600">{log.currentBalance}</span>
+                <span className="text-gray-600">{log.date}</span>
+
                 <span
-                  className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-medium
+                  className={`inline-flex w-fit rounded-full px-3 py-3 text-xs font-medium
                     ${
                       log.status === "Success"
                         ? "bg-green-100 text-green-700"
@@ -94,12 +106,6 @@ const AddMoneyLog = () => {
                 >
                   {log.status}
                 </span>
-
-                <span className="text-gray-600">{log.trxId}</span>
-                <span className="text-gray-600">{log.exchangeRate}</span>
-                <span className="text-gray-600">{log.fees}</span>
-                <span className="text-gray-600">{log.currentBalance}</span>
-                <span className="text-gray-600">{log.date}</span>
               </div>
             ))}
           </div>
@@ -116,4 +122,4 @@ const AddMoneyLog = () => {
   );
 };
 
-export default AddMoneyLog;
+export default TransferMoneyLog;

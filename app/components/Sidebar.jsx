@@ -2,16 +2,16 @@
 "use client";
 
 import {
-  LayoutDashboard,
-  PlusCircle,
-  Send,
   ArrowDownCircle,
-  User,
-  Gift,
   FileText,
-  ShieldCheck,
+  Gift,
+  LayoutDashboard,
   Lock,
   LogOut,
+  PlusCircle,
+  Send,
+  ShieldCheck,
+  User,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -20,24 +20,34 @@ import { usePathname } from "next/navigation";
 const navigationGroups = [
   {
     title: "Main",
-    items: [
-      { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
-    ]
+    items: [{ icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" }],
   },
   {
     title: "Money Management",
     items: [
       { icon: PlusCircle, label: "Add Money", href: "/dashboard/add-money" },
-      { icon: Send, label: "Transfer Money", href: "/dashboard/transfer" },
-      { icon: ArrowDownCircle, label: "Withdraw Money", href: "/dashboard/withdraw" },
-    ]
+      {
+        icon: Send,
+        label: "Transfer Money",
+        href: "/dashboard/transfer-money",
+      },
+      {
+        icon: ArrowDownCircle,
+        label: "Withdraw Money",
+        href: "/dashboard/withdraw-money",
+      },
+    ],
   },
   {
     title: "Services",
     items: [
       { icon: Gift, label: "Gift Card", href: "/dashboard/gift-card" },
-      { icon: FileText, label: "Transactions", href: "/dashboard/transactions" },
-    ]
+      {
+        icon: FileText,
+        label: "Transactions",
+        href: "/dashboard/transactions",
+      },
+    ],
   },
   {
     title: "Account",
@@ -46,8 +56,8 @@ const navigationGroups = [
       { icon: ShieldCheck, label: "KYC Verification", href: "/dashboard/kyc" },
       { icon: Lock, label: "2FA Security", href: "/dashboard/2fa" },
       { icon: LogOut, label: "Logout", href: "/logout" },
-    ]
-  }
+    ],
+  },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -122,7 +132,10 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Navigation */}
         <nav className="p-4">
           {navigationGroups.map((group, groupIndex) => (
-            <div key={group.title} className={groupIndex < navigationGroups.length - 1 ? "mb-6" : ""}>
+            <div
+              key={group.title}
+              className={groupIndex < navigationGroups.length - 1 ? "mb-6" : ""}
+            >
               {group.title !== "Main" && (
                 <h3 className="px-3 mb-2 text-xs font-semibold text-gray-500 uppercase">
                   {group.title}
