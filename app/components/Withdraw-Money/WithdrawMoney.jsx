@@ -70,7 +70,7 @@ export default function WithdrawMoney() {
             <span className="font-medium text-gray-800">855.9000 USD</span>
           </p>
           <p className="flex justify-between text-gray-600">
-            <span>Transfer Charge</span>
+            <span>Charge</span>
             <span className="font-medium text-gray-800">
               1.0000 USD + 1.0000%
             </span>

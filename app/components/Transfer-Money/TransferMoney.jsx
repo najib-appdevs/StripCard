@@ -69,7 +69,7 @@ export default function TransferMoney() {
             <span className="font-medium text-gray-800">857.0000 USD</span>
           </p>
           <p className="flex justify-between text-gray-600">
-            <span>Transfer Charge</span>
+            <span>Transfer Fee</span>
             <span className="font-medium text-gray-800">
               1.5000 USD + 0.5000%
             </span>

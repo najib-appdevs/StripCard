@@ -1,75 +1,120 @@
 "use client";
+
+import { Listbox } from "@headlessui/react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 export default function AddMoneyForm() {
-  const [gateway, setGateway] = useState("");
+  const gateways = [
+    { id: "paypal-usd", name: "Paypal USD" },
+    { id: "paypal-aud", name: "Paypal AUD" },
+    { id: "stripe-usd", name: "Stripe USD" },
+    { id: "stripe-aud", name: "Stripe AUD" },
+    { id: "adpay-usd", name: "AdPay (Manual) USD" },
+  ];
+
+  const [gateway, setGateway] = useState(null);
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("USD");
 
   return (
-    <div className="">
+    <div>
       <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
-        {/* Header - identical to preview */}
+        {/* Header */}
         <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
           <h2 className="text-base text-center font-semibold text-white">
             Add Money
           </h2>
         </div>
 
-        {/* Body - now matches preview exactly in height and layout */}
-        <div className="p-6 space-y-7  flex flex-col">
+        {/* Body */}
+        <div className="flex flex-col space-y-7 p-6">
           {/* Payment Gateway */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 ">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Payment Gateway <span className="text-red-500">*</span>
             </label>
-            <select
-              value={gateway}
-              onChange={(e) => setGateway(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2.5
-                         text-sm text-gray-900
-                         focus:border-emerald-500 focus:bg-white
-                         focus:outline-none focus:ring-2 focus:ring-emerald-200"
-            >
-              <option value="">Select Gateway</option>
-              <option value="paypal-usd">Paypal USD</option>
-              <option value="paypal-aud">Paypal AUD</option>
-              <option value="stripe-usd">Stripe USD</option>
-              <option value="stripe-aud">Stripe AUD</option>
-              <option value="adpay-usd">AdPay (Manual) USD</option>
-            </select>
+
+            <Listbox value={gateway} onChange={setGateway}>
+              {({ open }) => (
+                <div className="relative">
+                  <Listbox.Button
+                    className="relative w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2.5
+                               text-left text-sm text-gray-900
+                               hover:bg-white
+                               focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                  >
+                    <span className="block truncate">
+                      {gateway ? gateway.name : "Select Gateway"}
+                    </span>
+
+                    {/* Arrow */}
+                    <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <ChevronDown
+                        className={`h-5 w-5 text-gray-400 transition-transform ${
+                          open ? "rotate-180" : ""
+                        }`}
+                      />
+                    </span>
+                  </Listbox.Button>
+
+                  <Listbox.Options
+                    className="absolute z-10 mt-2 w-full rounded-xl border border-gray-200
+                               bg-white shadow-lg"
+                  >
+                    {gateways.map((item) => (
+                      <Listbox.Option
+                        key={item.id}
+                        value={item}
+                        className={({ active, selected }) =>
+                          `cursor-pointer px-4 py-2.5 text-sm ${
+                            active
+                              ? "bg-emerald-50 text-emerald-600"
+                              : selected
+                              ? "bg-gray-100 font-medium text-gray-900"
+                              : "text-gray-700"
+                          }`
+                        }
+                      >
+                        {item.name}
+                      </Listbox.Option>
+                    ))}
+                  </Listbox.Options>
+                </div>
+              )}
+            </Listbox>
           </div>
 
           {/* Amount */}
           <div>
-            <label className="block text-sm font-medium text-gray-600 ">
+            <label className="mb-2 block text-sm font-medium text-gray-600">
               Enter Amount <span className="text-red-500">*</span>
             </label>
+
             <div
               className="flex overflow-hidden rounded-xl border border-gray-300 bg-gray-50
-                            focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-200"
+                         focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-200"
             >
               <input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0.00"
-                className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900
-                           focus:outline-none"
+                className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 focus:outline-none"
               />
+
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="border-l border-gray-300 bg-white px-3 text-sm text-gray-900
-                           focus:outline-none"
+                className="border-l border-gray-300 bg-white px-3 text-sm text-gray-900 focus:outline-none"
               >
                 <option value="USD">USD</option>
               </select>
             </div>
           </div>
 
-          {/* Info Box - styled to match preview rows */}
-          <div className="rounded-xl bg-gray-50 px-4 py-3 text-sm space-y-2">
+          {/* Info Box */}
+          <div className="space-y-2 rounded-xl bg-gray-50 px-4 py-3 text-sm">
             <p className="flex justify-between text-gray-600">
               <span>Available Balance</span>
               <span className="font-medium text-gray-800">857.0000 USD</span>
@@ -82,13 +127,13 @@ export default function AddMoneyForm() {
             </p>
           </div>
 
-          {/* Spacer to push button down */}
+          {/* Spacer */}
           <div className="flex-1" />
 
-          {/* Divider to match preview */}
-          <div className="border-t border-dashed pt-4" />
+          {/* Divider */}
+          <div className="border-t border-dashed border-gray-200" />
 
-          {/* Submit Button - now full width, larger padding to match "Total Payable" */}
+          {/* Button */}
           <button
             className="w-full rounded-xl px-4 py-4 text-base font-bold text-white transition
                        bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)]
