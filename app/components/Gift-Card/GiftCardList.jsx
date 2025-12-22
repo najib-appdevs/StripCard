@@ -1,10 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const GiftCardList = () => {
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const countries = [
     { value: "all", label: "All Countries" },
@@ -21,6 +23,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=400&h=300&fit=crop",
       country: "us",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 2,
@@ -28,6 +32,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400&h=300&fit=crop",
       country: "us",
+      minAmount: 25,
+      maxAmount: 100,
     },
     {
       id: 3,
@@ -35,6 +41,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1633167606207-d840b5070fc2?w=400&h=300&fit=crop",
       country: "uk",
+      minAmount: 20,
+      maxAmount: 150,
     },
     {
       id: 4,
@@ -42,6 +50,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop",
       country: "us",
+      minAmount: 25,
+      maxAmount: 200,
     },
     {
       id: 5,
@@ -49,6 +59,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=400&h=300&fit=crop",
       country: "ca",
+      minAmount: 25,
+      maxAmount: 100,
     },
     {
       id: 6,
@@ -56,6 +68,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=400&h=300&fit=crop",
       country: "uk",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 7,
@@ -63,6 +77,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=300&fit=crop",
       country: "us",
+      minAmount: 25,
+      maxAmount: 100,
     },
     {
       id: 8,
@@ -70,6 +86,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=400&h=300&fit=crop",
       country: "us",
+      minAmount: 25,
+      maxAmount: 100,
     },
     {
       id: 9,
@@ -77,6 +95,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=300&fit=crop",
       country: "au",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 10,
@@ -84,6 +104,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=300&fit=crop",
       country: "us",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 11,
@@ -91,6 +113,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&h=300&fit=crop",
       country: "uk",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 12,
@@ -98,6 +122,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop",
       country: "us",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 13,
@@ -105,6 +131,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop",
       country: "us",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 14,
@@ -112,6 +140,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
       country: "ca",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 15,
@@ -119,6 +149,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop",
       country: "us",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 16,
@@ -126,6 +158,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop",
       country: "uk",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 17,
@@ -133,6 +167,8 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=300&fit=crop",
       country: "us",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
     {
       id: 18,
@@ -140,20 +176,32 @@ const GiftCardList = () => {
       image:
         "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=400&h=300&fit=crop",
       country: "au",
+      minAmount: 25,
+      maxAmount: 89.08,
     },
   ];
+
+  // Filtered Cards by Country Name
+  const filteredCards =
+    selectedCountry === "all"
+      ? giftCards
+      : giftCards.filter((card) => card.country === selectedCountry);
 
   const selectedLabel =
     countries.find((c) => c.value === selectedCountry)?.label ||
     "All Countries";
 
+  // Navigate To Specific Card
+  const handleCardClick = (card) => {
+    router.push(`/dashboard/gift-card/${card.id}`);
+  };
+
   return (
     <>
-      {/* Header */}
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Gift Cards</h1>
+      {/* Header with Filter */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Gift Cards</h1>
 
-      {/* Filter and Pagination Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-8">
         {/* Custom Dropdown with Search Icon */}
         <div className="relative">
           <button
@@ -222,34 +270,14 @@ const GiftCardList = () => {
             </>
           )}
         </div>
-
-        {/* Pagination */}
-        <div className="flex items-center gap-2">
-          <button className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-            Previous
-          </button>
-          <div className="flex items-center gap-1">
-            <button className="w-9 h-9 rounded-lg bg-emerald-500 text-white text-sm font-medium">
-              1
-            </button>
-            <button className="w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50">
-              2
-            </button>
-            <button className="w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50">
-              3
-            </button>
-          </div>
-          <button className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50">
-            Next
-          </button>
-        </div>
       </div>
 
       {/* Gift Cards Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {giftCards.map((card) => (
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+        {filteredCards.map((card) => (
           <div
             key={card.id}
+            onClick={() => handleCardClick(card)}
             className="group cursor-pointer rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:border-emerald-400"
           >
             {/* Card Image */}
@@ -269,6 +297,27 @@ const GiftCardList = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Pagination - Centered */}
+      <div className="flex items-center justify-center gap-2">
+        <button className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+          Previous
+        </button>
+        <div className="flex items-center gap-1">
+          <button className="w-9 h-9 rounded-lg bg-emerald-500 text-white text-sm font-medium">
+            1
+          </button>
+          <button className="w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50">
+            2
+          </button>
+          <button className="w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50">
+            3
+          </button>
+        </div>
+        <button className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50">
+          Next
+        </button>
       </div>
     </>
   );

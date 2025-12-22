@@ -9,29 +9,29 @@ const AddMoneyLog = () => {
     {
       gateway: "Stripe USD",
       status: "Success",
-      trxId: "TRX123456789",
+      trxId: "AM17433454",
       exchangeRate: "1 USD = 1.0000 USD",
       fees: "2.0000 USD",
       currentBalance: "857.0000 USD",
-      date: "2024-01-10 14:23",
+      date: "17-12-25 11:21:43 AM",
     },
     {
       gateway: "Paypal USD",
       status: "Success",
-      trxId: "TRX987654321",
+      trxId: "AM17433454",
       exchangeRate: "1 USD = 1.0000 USD",
       fees: "1.5000 USD",
       currentBalance: "657.0000 USD",
-      date: "2024-01-08 09:15",
+      date: "17-12-25 11:21:43 AM",
     },
     {
-      gateway: "AdPay (Manual)",
+      gateway: "AdPay (Manual) USD",
       status: "Pending",
-      trxId: "TRX456789123",
+      trxId: "AM17433454",
       exchangeRate: "1 USD = 1.0000 USD",
       fees: "0.5000 USD",
       currentBalance: "500.0000 USD",
-      date: "2024-01-05 18:40",
+      date: "17-12-25 11:21:43 AM",
     },
   ];
 
@@ -52,7 +52,7 @@ const AddMoneyLog = () => {
                          placeholder-gray-400 border border-gray-700
                          focus:outline-none focus:ring-2 focus:ring-emerald-400"
             />
-            <button className="text-sm font-medium text-emerald-400 hover:text-emerald-300">
+            <button className="cursor-pointer text-sm font-medium text-emerald-400 hover:text-emerald-300">
               View More
             </button>
           </div>
@@ -82,17 +82,28 @@ const AddMoneyLog = () => {
                   Add Balance via {log.gateway}
                 </span>
 
-                <span
-                  className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-medium
-                    ${
+                <span className="inline-flex items-center gap-2 text-xs font-medium">
+                  <span
+                    className={`h-2 w-2 rounded-full
+      ${
+        log.status === "Success"
+          ? "bg-green-500"
+          : log.status === "Pending"
+          ? "bg-yellow-500"
+          : "bg-red-500"
+      }`}
+                  />
+                  <span
+                    className={
                       log.status === "Success"
-                        ? "bg-green-100 text-green-700"
+                        ? "text-green-600"
                         : log.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-red-100 text-red-700"
-                    }`}
-                >
-                  {log.status}
+                        ? "text-yellow-600"
+                        : "text-red-600"
+                    }
+                  >
+                    {log.status}
+                  </span>
                 </span>
 
                 <span className="text-gray-600">{log.trxId}</span>
@@ -107,7 +118,7 @@ const AddMoneyLog = () => {
 
         {/* Mobile View More */}
         <div className="md:hidden px-6 py-4">
-          <button className="w-full rounded-xl border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <button className="cursor-pointer w-full rounded-xl border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
             View More
           </button>
         </div>

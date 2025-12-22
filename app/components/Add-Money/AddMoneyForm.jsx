@@ -13,6 +13,8 @@ export default function AddMoneyForm() {
     { id: "adpay-usd", name: "AdPay (Manual) USD" },
   ];
 
+  const currencies = [{ code: "USD", name: "USD" }];
+
   const [gateway, setGateway] = useState(null);
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("USD");
@@ -42,7 +44,7 @@ export default function AddMoneyForm() {
                     className="relative w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2.5
                                text-left text-sm text-gray-900
                                hover:bg-white
-                               focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                               focus:border-emerald-500 focus:outline-none  focus:ring-emerald-200"
                   >
                     <span className="block truncate">
                       {gateway ? gateway.name : "Select Gateway"}
@@ -91,25 +93,55 @@ export default function AddMoneyForm() {
               Enter Amount <span className="text-red-500">*</span>
             </label>
 
-            <div
-              className="flex overflow-hidden rounded-xl border border-gray-300 bg-gray-50
-                         focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-200"
-            >
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
-                className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 focus:outline-none"
-              />
+            <div className="relative rounded-xl border border-gray-300 bg-gray-50 focus-within:border-emerald-500  focus-within:ring-emerald-200">
+              {/* This inner div allows overflow-visible for the dropdown */}
+              <div className="flex overflow-visible">
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 focus:outline-none no-spinner"
+                />
 
-              <select
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-                className="border-l border-gray-300 bg-white px-3 text-sm text-gray-900 focus:outline-none"
-              >
-                <option value="USD">USD</option>
-              </select>
+                {/* Currency Dropdown */}
+                <Listbox value={currency} onChange={setCurrency}>
+                  {({ open }) => (
+                    <div className="relative min-w-24">
+                      <Listbox.Button className="flex h-full w-full items-center justify-center px-4 py-2.5 text-sm text-gray-900  focus:outline-none">
+                        <span className="mr-2 font-medium">
+                          {currency?.code || "USD"}
+                        </span>
+                        <ChevronDown
+                          className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
+                            open ? "rotate-180" : ""
+                          }`}
+                        />
+                      </Listbox.Button>
+
+                      <Listbox.Options className="absolute right-0 top-full z-30 mt-1 w-32 rounded-xl border border-gray-200 bg-white py-1 shadow-lg  ">
+                        {currencies.map((curr) => (
+                          <Listbox.Option
+                            key={curr.code}
+                            value={curr}
+                            className={({ active }) =>
+                              `relative cursor-pointer select-none px-4 py-2 text-sm ${
+                                active
+                                  ? "bg-emerald-50 text-emerald-700"
+                                  : "text-gray-900"
+                              }`
+                            }
+                          >
+                            <span className="block font-medium">
+                              {curr.name}
+                            </span>
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </div>
+                  )}
+                </Listbox>
+              </div>
             </div>
           </div>
 
@@ -135,7 +167,7 @@ export default function AddMoneyForm() {
 
           {/* Button */}
           <button
-            className="w-full rounded-xl px-4 py-4 text-base font-bold text-white transition
+            className="cursor-pointer w-full rounded-xl px-4 py-4 text-base font-bold text-white transition
                        bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)]
                        hover:opacity-90
                        focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2"

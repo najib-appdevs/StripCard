@@ -55,7 +55,7 @@ const navigationGroups = [
       { icon: User, label: "My Profile", href: "/dashboard/profile" },
       { icon: ShieldCheck, label: "KYC Verification", href: "/dashboard/kyc" },
       { icon: Lock, label: "2FA Security", href: "/dashboard/2fa" },
-      { icon: LogOut, label: "Logout", href: "/logout" },
+      // { icon: LogOut, label: "Logout", href: "/logout" },
     ],
   },
 ];
