@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 function ChangePasswordCard() {
   const [passwordData, setPasswordData] = useState({
@@ -31,17 +32,17 @@ function ChangePasswordCard() {
 
   const handlePasswordChangeSubmit = () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert("New password and confirm password do not match!");
+      toast.error("New password and confirm password do not match!");
       return;
     }
 
     if (!passwordData.currentPassword || !passwordData.newPassword) {
-      alert("Please fill in all fields.");
+      toast.error("Please fill in all fields.");
       return;
     }
 
     console.log("Password changed successfully");
-    alert("Password changed successfully!");
+    toast.success("Password changed successfully!");
 
     // Reset form
     setPasswordData({

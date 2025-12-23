@@ -1,5 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import DashboardLayoutClient from "./DashboardLayoutClient";
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -23,7 +23,26 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <DashboardLayoutClient>{children}</DashboardLayoutClient>
+        {children}
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          gutter={8}
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: "#333",
+              color: "#fff",
+              fontSize: "14px",
+            },
+            success: {
+              duration: 3000,
+            },
+            error: {
+              duration: 5000,
+            },
+          }}
+        />
       </body>
     </html>
   );

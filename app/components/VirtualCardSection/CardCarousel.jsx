@@ -1,4 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function CardCarousel() {
@@ -71,7 +73,7 @@ export default function CardCarousel() {
               `}
             >
               <div
-                className={`bg-gradient-to-br ${card.gradient} text-white p-4 rounded-2xl shadow-xl w-72 sm:w-80`}
+                className={`bg-linear-to-br ${card.gradient} text-white p-4 rounded-2xl shadow-xl w-72 sm:w-80`}
               >
                 {/* Top Row */}
                 <div className="flex justify-between mb-3">
@@ -80,16 +82,20 @@ export default function CardCarousel() {
 
                 {/* Chip + signal waves */}
                 <div className="flex items-center gap-2 mb-3">
-                  <img
+                  <Image
                     src="/Chip.png"
                     alt="chip"
-                    className="w-10 h-7 object-contain"
+                    width={40}
+                    height={28}
+                    className="object-contain"
                   />
 
-                  <img
+                  <Image
                     src="/waves.png"
                     alt="nfc"
-                    className="w-6 h-6 object-contain opacity-80"
+                    width={20}
+                    height={20}
+                    className="object-contain opacity-80"
                   />
                 </div>
 
@@ -105,10 +111,12 @@ export default function CardCarousel() {
                     <p>{card.validThru}</p>
                   </div>
 
-                  <img
+                  <Image
                     src="/Visa-Logo.png"
                     alt="visa"
-                    className="w-12 object-contain"
+                    width={48}
+                    height={24}
+                    className="object-contain"
                   />
                 </div>
               </div>

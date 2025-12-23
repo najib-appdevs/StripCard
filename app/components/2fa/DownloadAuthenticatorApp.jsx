@@ -1,4 +1,5 @@
 import { Download } from "lucide-react";
+import Image from "next/image";
 
 const DownloadAuthenticatorApp = () => {
   return (
@@ -14,10 +15,12 @@ const DownloadAuthenticatorApp = () => {
       </p>
 
       <div className="flex justify-center mb-8">
-        <img
+        <Image
           src="/google-authenticator.webp"
           alt="Google Authenticator"
-          className="w-48 h-48 object-contain rounded-2xl"
+          width={192}
+          height={192}
+          className="w-56 h-56 object-contain rounded-2xl"
         />
       </div>
 

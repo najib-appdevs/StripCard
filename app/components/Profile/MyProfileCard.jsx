@@ -1,12 +1,16 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { countryOptions } from "../../utils/countries";
 
 function MyProfileCard() {
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
     country: "",
+    countryCode: "",
     phone: "",
     address: "",
     city: "",
@@ -19,19 +23,6 @@ function MyProfileCard() {
   // Dummy logged-in email
   const userEmail = "user@appdevs.net";
 
-  const countries = [
-    "United States",
-    "United Kingdom",
-    "Canada",
-    "Australia",
-    "Germany",
-    "France",
-    "Japan",
-    "India",
-    "China",
-    "Brazil",
-  ];
-
   const handleProfileChange = (e) => {
     setProfileData({
       ...profileData,
@@ -40,13 +31,32 @@ function MyProfileCard() {
   };
 
   const handleCountrySelect = (country) => {
-    setProfileData({ ...profileData, country });
+    setProfileData((prev) => ({
+      ...prev,
+      country: country.name,
+      countryCode: country.callingCode,
+    }));
     setIsCountryOpen(false);
   };
 
+  useEffect(() => {
+    if (profileData.countryCode) {
+      setProfileData((prev) => ({
+        ...prev,
+        phone: `${profileData.countryCode} `,
+      }));
+    }
+  }, [profileData.countryCode]);
+
   const handleProfileUpdate = () => {
-    console.log("Profile updated:", profileData);
-    alert("Profile updated successfully!");
+    console.log("Profile updated:", {
+      ...profileData,
+      phone: profileData.phone.startsWith("+")
+        ? profileData.phone
+        : `${profileData.countryCode}${profileData.phone}`,
+    });
+
+    toast.success("Profile updated successfully!");
   };
 
   const handleDeleteAccount = () => {
@@ -56,11 +66,11 @@ function MyProfileCard() {
       )
     ) {
       console.log("Account deleted");
-      alert("Account deleted");
+      toast.success("Account deleted successfully!");
     }
   };
 
-  // Reusable styles
+  // Reusable styles (UNCHANGED)
   const inputClass =
     "w-full px-4 py-3 border border-gray-300 rounded-lg placeholder:text-gray-500 text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-100 outline-none transition-all";
 
@@ -68,13 +78,10 @@ function MyProfileCard() {
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 max-w-4xl mx-auto">
-      {" "}
-      {/* Reduced padding & shadow */}
-      {/* Header with Email */}
+      {/* Header */}
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-3">My Profile</h2>
 
-        {/* Compact & Visible Email Badge */}
         <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-5 py-2.5 rounded-full text-base font-medium shadow-sm">
           <svg
             className="w-4 h-4"
@@ -92,6 +99,7 @@ function MyProfileCard() {
           {userEmail}
         </div>
       </div>
+
       {/* Profile Image */}
       <div className="flex justify-center mb-8">
         <div className="relative">
@@ -120,17 +128,13 @@ function MyProfileCard() {
           </button>
         </div>
       </div>
-      {/* Form Fields - Precise Layout */}
+
+      {/* Form */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {" "}
-        {/* Tighter gap */}
-        {/* First Name & Last Name */}
+        {/* First / Last */}
         <div>
-          <label className={labelClass}>
-            First Name <span className="text-red-500">*</span>
-          </label>
+          <label className={labelClass}>First Name *</label>
           <input
-            type="text"
             name="firstName"
             value={profileData.firstName}
             onChange={handleProfileChange}
@@ -138,12 +142,10 @@ function MyProfileCard() {
             placeholder="Enter first name"
           />
         </div>
+
         <div>
-          <label className={labelClass}>
-            Last Name <span className="text-red-500">*</span>
-          </label>
+          <label className={labelClass}>Last Name *</label>
           <input
-            type="text"
             name="lastName"
             value={profileData.lastName}
             onChange={handleProfileChange}
@@ -151,7 +153,8 @@ function MyProfileCard() {
             placeholder="Enter last name"
           />
         </div>
-        {/* Country & Phone */}
+
+        {/* Country */}
         <div className="relative">
           <label className={labelClass}>Country</label>
           <button
@@ -185,18 +188,20 @@ function MyProfileCard() {
 
           {isCountryOpen && (
             <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl max-h-64 overflow-y-auto">
-              {countries.map((country) => (
+              {countryOptions.map((country) => (
                 <div
-                  key={country}
+                  key={country.code}
                   onClick={() => handleCountrySelect(country)}
                   className="px-4 py-3 hover:bg-emerald-50 cursor-pointer transition text-gray-800"
                 >
-                  {country}
+                  {country.name}
                 </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* Phone */}
         <div>
           <label className={labelClass}>Phone</label>
           <input
@@ -205,14 +210,14 @@ function MyProfileCard() {
             value={profileData.phone}
             onChange={handleProfileChange}
             className={inputClass}
-            placeholder="Enter phone number"
+            placeholder="Enter Phone Number"
           />
         </div>
-        {/* Address & City - Side by Side */}
+
+        {/* Address */}
         <div>
           <label className={labelClass}>Address</label>
           <input
-            type="text"
             name="address"
             value={profileData.address}
             onChange={handleProfileChange}
@@ -220,10 +225,10 @@ function MyProfileCard() {
             placeholder="Enter address"
           />
         </div>
+
         <div>
           <label className={labelClass}>City</label>
           <input
-            type="text"
             name="city"
             value={profileData.city}
             onChange={handleProfileChange}
@@ -231,11 +236,10 @@ function MyProfileCard() {
             placeholder="Enter city"
           />
         </div>
-        {/* State & Zip Code - Side by Side */}
+
         <div>
           <label className={labelClass}>State</label>
           <input
-            type="text"
             name="state"
             value={profileData.state}
             onChange={handleProfileChange}
@@ -243,10 +247,10 @@ function MyProfileCard() {
             placeholder="Enter state"
           />
         </div>
+
         <div>
           <label className={labelClass}>Zip Code</label>
           <input
-            type="text"
             name="zipCode"
             value={profileData.zipCode}
             onChange={handleProfileChange}
@@ -255,7 +259,8 @@ function MyProfileCard() {
           />
         </div>
       </div>
-      {/* Action Buttons */}
+
+      {/* Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
         <button
           onClick={handleDeleteAccount}

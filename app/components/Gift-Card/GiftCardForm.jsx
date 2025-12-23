@@ -1,37 +1,29 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { countryOptions } from "../../utils/countries";
 import BuyGiftCardModal from "./BuyGiftCardModal";
 
 const GiftCardForm = ({ card }) => {
   const [amount, setAmount] = useState("");
   const [receiverEmail, setReceiverEmail] = useState("");
   const [country, setCountry] = useState("");
+  const [countryCode, setCountryCode] = useState("");
   const [phone, setPhone] = useState("");
   const [fromName, setFromName] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [wallet, setWallet] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const walletOptions = ["United States dollar (USD)"];
-
-  const countryOptions = [
-    "United States",
-    "United Kingdom",
-    "Canada",
-    "Germany",
-    "France",
-    "Nigeria",
-    "Ghana",
-    "South Africa",
-    "Kenya",
-    "Australia",
-  ];
+  const walletOptions = ["United States dollar (USD)"]; // Will Come real data from APIs Later
 
   const handleSubmit = () => {
     if (!amount || !receiverEmail || !country || !wallet) {
-      alert("Please fill Amount, Receiver Email, Country and Payment Method");
+      toast.error("Please fill in all fields");
       return;
     }
     setIsModalOpen(true);
@@ -43,13 +35,13 @@ const GiftCardForm = ({ card }) => {
       amount: Number(amount),
       receiverEmail,
       country,
-      phone,
+      phone: phone.startsWith("+") ? phone : `${countryCode}${phone}`,
       fromName,
       quantity,
       wallet,
       cardId: card.id,
     });
-    // → Here you would call my real payment API
+
     setIsModalOpen(false);
   };
 
@@ -62,6 +54,12 @@ const GiftCardForm = ({ card }) => {
     phone: phone || "N/A",
     fromName: fromName || "N/A",
   };
+
+  useEffect(() => {
+    if (countryCode) {
+      setPhone(countryCode + " ");
+    }
+  }, [countryCode]);
 
   return (
     <>
@@ -142,14 +140,23 @@ const GiftCardForm = ({ card }) => {
                   </label>
                   <div className="relative">
                     <select
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
+                      value={
+                        countryOptions.find((c) => c.name === country)?.code ||
+                        ""
+                      }
+                      onChange={(e) => {
+                        const selected = countryOptions.find(
+                          (c) => c.code === e.target.value
+                        );
+                        setCountry(selected?.name || "");
+                        setCountryCode(selected?.callingCode || "");
+                      }}
                       className="w-full px-4 py-3 pr-10 border border-neutral-300 rounded-lg text-gray-800 bg-white focus:border-emerald-500 focus:outline-none appearance-none transition-all"
                     >
                       <option value="">Select country</option>
                       {countryOptions.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
+                        <option key={c.code} value={c.code}>
+                          {c.name}
                         </option>
                       ))}
                     </select>
@@ -168,12 +175,12 @@ const GiftCardForm = ({ card }) => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="Enter Phone Number"
-                    className="w-full px-4 py-3 border border-neutral-300 rounded-lg text-gray-800 placeholder-gray-400 focus:border-emerald-500 focus:outline-none transition-all"
+                    className="w-full px-4 py-3 border border-neutral-300 rounded-lg text-gray-800 placeholder-gray-400 focus:border-emerald-500 focus:outline-none transition-all no-spinner"
                   />
                 </div>
               </div>
 
-              {/* From Name & Quantity */}
+              {/* From & Quantity */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -238,8 +245,7 @@ const GiftCardForm = ({ card }) => {
           </div>
         </div>
       </div>
-
-      {/* The modal – now shows everything you asked for */}
+      {/* The modal – now shows everything you asked for */}{" "}
       <BuyGiftCardModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

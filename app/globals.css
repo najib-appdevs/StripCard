@@ -44,3 +44,16 @@ body {
 [role="option"] {
   outline: none;
 }
+
+@layer components {
+  /* Primary button background - Main gradient used for most call-to-action buttons */
+  /* Gradient: from #0EBE98 (teal-green) to #50C631 (bright green) at ~77deg angle */
+  .btn-primary {
+    @apply bg-gradient-to-r; /* Tailwind base for gradient (direction can be adjusted) */
+    background-image: linear-gradient(
+      76.84deg,
+      #0ebe98 -2.66%,
+      #50c631 105.87%
+    );
+  }
+}

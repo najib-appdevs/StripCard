@@ -1,26 +1,16 @@
-import VirtualCardContent from "./components/VirtualCardSection/VirtualCardContent";
-import TransactionHistory from "./components/wallet/TransactionHistory";
-import WalletContentArea from "./components/wallet/WalletContentArea";
+import Link from "next/link";
 
-export default function Home() {
+function RootHomePage() {
   return (
-    <div>
-      {/* Top Section - Left and Right Components */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-6">
-        {/* Left Side */}
-        <div>
-          <WalletContentArea />
-        </div>
-
-        {/* Right Side */}
-        <div>
-          <VirtualCardContent />
-        </div>
-      </div>
-
-      {/* Bottom Section - Full Width Transaction History */}
-
-      <TransactionHistory />
+    <div className="min-h-screen flex items-center justify-center">
+      <Link
+        href="/dashboard"
+        className="px-5 py-2 btn-primary text-white rounded-md"
+      >
+        Go to Dashboard
+      </Link>
     </div>
   );
 }
+
+export default RootHomePage;
