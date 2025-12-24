@@ -1,6 +1,10 @@
 import DownloadAuthenticatorApp from "../../components/2fa/DownloadAuthenticatorApp";
 import TwoFactorAuthenticator from "../../components/2fa/TwoFactorAuthenticator";
 
+export const metadata = {
+  title: "Two Factor Authenticator",
+};
+
 function SecurityPage() {
   return (
     <>

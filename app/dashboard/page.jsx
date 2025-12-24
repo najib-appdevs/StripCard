@@ -2,6 +2,10 @@ import VirtualCardContent from "../components/VirtualCardSection/VirtualCardCont
 import TransactionHistory from "../components/wallet/TransactionHistory";
 import WalletContentArea from "../components/wallet/WalletContentArea";
 
+export const metadata = {
+  title: "Dashboard",
+};
+
 export default function Home() {
   return (
     <div>

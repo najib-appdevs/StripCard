@@ -2,8 +2,8 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { countryOptions } from "../../utils/countries";
 import BuyGiftCardModal from "./BuyGiftCardModal";
@@ -18,6 +18,11 @@ const GiftCardForm = ({ card }) => {
   const [quantity, setQuantity] = useState(1);
   const [wallet, setWallet] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+  const [walletDropdownOpen, setWalletDropdownOpen] = useState(false);
+
+  const countryDropdownRef = useRef(null);
+  const walletDropdownRef = useRef(null);
 
   const walletOptions = ["United States dollar (USD)"]; // Will Come real data from APIs Later
 
@@ -60,6 +65,27 @@ const GiftCardForm = ({ card }) => {
       setPhone(countryCode + " ");
     }
   }, [countryCode]);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        countryDropdownRef.current &&
+        !countryDropdownRef.current.contains(event.target)
+      ) {
+        setCountryDropdownOpen(false);
+      }
+      if (
+        walletDropdownRef.current &&
+        !walletDropdownRef.current.contains(event.target)
+      ) {
+        setWalletDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <>
@@ -138,31 +164,45 @@ const GiftCardForm = ({ card }) => {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Country
                   </label>
-                  <div className="relative">
-                    <select
-                      value={
-                        countryOptions.find((c) => c.name === country)?.code ||
-                        ""
+                  <div className="relative" ref={countryDropdownRef}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setCountryDropdownOpen(!countryDropdownOpen)
                       }
-                      onChange={(e) => {
-                        const selected = countryOptions.find(
-                          (c) => c.code === e.target.value
-                        );
-                        setCountry(selected?.name || "");
-                        setCountryCode(selected?.callingCode || "");
-                      }}
-                      className="w-full px-4 py-3 pr-10 border border-neutral-300 rounded-lg text-gray-800 bg-white focus:border-emerald-500 focus:outline-none appearance-none transition-all"
+                      className="w-full px-4 py-3 pr-10 border border-neutral-300 rounded-lg text-gray-800 bg-white focus:border-emerald-500 focus:outline-none transition-all text-left"
                     >
-                      <option value="">Select country</option>
-                      {countryOptions.map((c) => (
-                        <option key={c.code} value={c.code}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
+                      <span
+                        className={country ? "text-gray-800" : "text-gray-400"}
+                      >
+                        {country || "Select country"}
+                      </span>
+                    </button>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <ChevronDown className="w-5 h-5 text-gray-500" />
+                      {countryDropdownOpen ? (
+                        <ChevronUp className="w-5 h-5 text-gray-500" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gray-500" />
+                      )}
                     </div>
+
+                    {countryDropdownOpen && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-neutral-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
+                        {countryOptions.map((c) => (
+                          <div
+                            key={c.code}
+                            onClick={() => {
+                              setCountry(c.name);
+                              setCountryCode(c.callingCode);
+                              setCountryDropdownOpen(false);
+                            }}
+                            className="px-4 py-3 hover:bg-emerald-50 cursor-pointer transition-colors text-gray-800 border-b border-neutral-100 last:border-b-0"
+                          >
+                            {c.name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -201,10 +241,27 @@ const GiftCardForm = ({ card }) => {
                   </label>
                   <input
                     type="number"
-                    min="1"
-                    max="10"
+                    min={1}
+                    max={100}
                     value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
+                    onChange={(e) => {
+                      const val = e.target.value;
+
+                      // Allow empty string (user deleting) or valid positive integers
+                      if (val === "" || /^[1-9]\d*$/.test(val)) {
+                        setQuantity(val === "" ? "" : Number(val));
+                      }
+                      // if user types 0 or 00 or 001 etc → we just ignore it
+                    }}
+                    onBlur={(e) => {
+                      // When user leaves the field → force valid value
+                      const num = Number(e.target.value);
+                      if (isNaN(num) || num < 1) {
+                        setQuantity(1);
+                      } else if (num > 10) {
+                        setQuantity(10);
+                      }
+                    }}
                     className="w-full px-4 py-3 border border-neutral-300 rounded-lg text-gray-800 placeholder-gray-400 focus:border-emerald-500 focus:outline-none transition-all no-spinner"
                   />
                 </div>
@@ -215,29 +272,49 @@ const GiftCardForm = ({ card }) => {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
                   Wallet
                 </label>
-                <div className="relative">
-                  <select
-                    value={wallet}
-                    onChange={(e) => setWallet(e.target.value)}
-                    className="w-full px-4 py-3 pr-10 border border-neutral-300 rounded-lg text-gray-800 bg-white focus:border-emerald-500 focus:outline-none appearance-none transition-all"
+                <div className="relative" ref={walletDropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setWalletDropdownOpen(!walletDropdownOpen)}
+                    className="w-full px-4 py-3 pr-10 border border-neutral-300 rounded-lg text-gray-800 bg-white focus:border-emerald-500 focus:outline-none transition-all text-left"
                   >
-                    <option value="">Select wallet</option>
-                    {walletOptions.map((w) => (
-                      <option key={w} value={w}>
-                        {w}
-                      </option>
-                    ))}
-                  </select>
+                    <span
+                      className={wallet ? "text-gray-800" : "text-gray-400"}
+                    >
+                      {wallet || "Select wallet"}
+                    </span>
+                  </button>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <ChevronDown className="w-5 h-5 text-gray-500" />
+                    {walletDropdownOpen ? (
+                      <ChevronUp className="w-5 h-5 text-gray-500" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-gray-500" />
+                    )}
                   </div>
+
+                  {walletDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-neutral-300 rounded-lg shadow-lg max-h-60 overflow-y-auto z-50">
+                      {walletOptions.map((w) => (
+                        <div
+                          key={w}
+                          onClick={() => {
+                            setWallet(w);
+                            setWalletDropdownOpen(false);
+                          }}
+                          className="px-4 py-3 hover:bg-emerald-50 cursor-pointer transition-colors text-gray-800 border-b border-neutral-100 last:border-b-0"
+                        >
+                          {w}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Buy Now Button */}
               <button
                 onClick={handleSubmit}
-                className="cursor-pointer w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold py-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg mt-6 hover:from-emerald-600 hover:to-green-700"
+                className="cursor-pointer w-full btn-primary text-white font-semibold py-4 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg mt-6 hover:from-emerald-600 hover:to-green-700"
               >
                 Buy Now
               </button>
@@ -245,7 +322,7 @@ const GiftCardForm = ({ card }) => {
           </div>
         </div>
       </div>
-      {/* The modal – now shows everything you asked for */}{" "}
+      {/* The modal – now shows everything you asked for */}
       <BuyGiftCardModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

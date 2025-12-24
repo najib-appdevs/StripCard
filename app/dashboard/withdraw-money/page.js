@@ -3,6 +3,10 @@ import WithdrawMoney from "../../components/Withdraw-Money/WithdrawMoney";
 import WithdrawMoneyLog from "../../components/Withdraw-Money/WithdrawMoneyLog";
 import WithdrawMoneyPreview from "../../components/Withdraw-Money/WithdrawMoneyPreview";
 
+export const metadata = {
+  title: "Withdraw Money",
+};
+
 function WithdrawMoneyPage() {
   return (
     <>

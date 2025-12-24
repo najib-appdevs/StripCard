@@ -3,6 +3,10 @@ import AddMoneyLog from "../../components/Add-Money/AddMoneyLog";
 import AddMoneyPreview from "../../components/Add-Money/AddMoneyPreview";
 import LimitInformation from "../../components/Add-Money/LimitInformation";
 
+export const metadata = {
+  title: "Add Money",
+};
+
 function AddMoney() {
   return (
     <>

@@ -3,6 +3,10 @@ import TransferMoney from "../../components/Transfer-Money/TransferMoney";
 import TransferMoneyLog from "../../components/Transfer-Money/TransferMoneyLog";
 import TransferMoneyPreview from "../../components/Transfer-Money/TransferMoneyPreview";
 
+export const metadata = {
+  title: "Transfer Money",
+};
+
 function TransferMoneyPage() {
   return (
     <>

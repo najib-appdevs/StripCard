@@ -1,6 +1,10 @@
 import ChangePasswordCard from "../../components/Profile/ChangePasswordCard";
 import MyProfileCard from "../../components/Profile/MyProfileCard";
 
+export const metadata = {
+  title: "My Profile",
+};
+
 function ProfilePage() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">

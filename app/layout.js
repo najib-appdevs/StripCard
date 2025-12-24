@@ -13,8 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Dashboard App",
-  description: "Next.js Dashboard with Sidebar & Navbar",
+  title: {
+    default: "StripCard",
+    template: "%s | StripCard",
+  },
+  icons: {
+    icon: "/favicon-white.png",
+  },
 };
 
 export default function RootLayout({ children }) {
