@@ -48,6 +48,7 @@ export const useLogout = () => {
       // Always clean up and redirect
       localStorage.removeItem("auth_token");
       localStorage.removeItem("user");
+      sessionStorage.clear();
       router.push("/login");
     }
   };

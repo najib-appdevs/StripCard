@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { CheckCircle2, Mail, Shield } from "lucide-react";
@@ -7,35 +6,43 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import toast from "react-hot-toast";
+import { forgotPassword, verifyOtp } from "../../utils/api";
+
+import { useRouter } from "next/navigation";
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [captchaValue, setCaptchaValue] = useState(null);
   const [captchaError, setCaptchaError] = useState(false);
-  const [stage, setStage] = useState("email"); // "email" or "otp"
+  const [stage, setStage] = useState("email");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [countdown, setCountdown] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [canResend, setCanResend] = useState(true);
 
-  // Dummy hardcoded email for testing
-  const DUMMY_EMAIL = "test@example.com";
-
-  const handleEmailSubmit = (e) => {
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
-
     if (!captchaValue) {
       setCaptchaError(true);
       toast.error("Please complete the CAPTCHA verification");
       return;
     }
-
-    if (email.trim() === DUMMY_EMAIL) {
-      setCaptchaError(false);
-      setStage("otp");
-      setCountdown(60);
-      setCanResend(false);
-    } else {
-      toast.error("No user found with this email address");
+    setLoading(true);
+    try {
+      const data = await forgotPassword(email);
+      if (data.message.success) {
+        toast.success(data.message.success[0]);
+        setStage("otp");
+        setCountdown(60);
+        setCanResend(false);
+      } else {
+        toast.error(data.message.error[0]);
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,24 +65,48 @@ export default function ForgotPasswordPage() {
     }
   };
 
-  const handleOtpSubmit = (e) => {
+  const handleOtpSubmit = async (e) => {
     e.preventDefault();
     const enteredOtp = otp.join("");
-    if (enteredOtp.length === 6) {
-      toast.success(
-        `OTP Verified! Code: ${enteredOtp}\nIn real app, proceed to reset password.`
-      );
-      // Proceed to password reset page in real implementation
-    } else {
+    if (enteredOtp.length !== 6) {
       toast.error("Please enter the complete 6-digit OTP");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const data = await verifyOtp(enteredOtp);
+      if (data.message.success) {
+        toast.success(data.message.success[0]);
+        router.push(`/Password-Reset?otp=${enteredOtp}`);
+      } else {
+        toast.error(data.message.error[0]);
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred during OTP verification.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     if (!canResend) return;
-    setCountdown(60);
-    setCanResend(false);
-    toast.success("New OTP sent! (dummy)");
+    setLoading(true);
+
+    try {
+      const data = await forgotPassword(email);
+      if (data.message.success) {
+        toast.success(data.message.success[0]);
+        setCountdown(60);
+        setCanResend(false);
+      } else {
+        toast.error(data.message.error[0]);
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Countdown timer
@@ -197,9 +228,10 @@ export default function ForgotPasswordPage() {
 
               <button
                 type="submit"
-                className="w-full bg-linear-to-r from-emerald-500 to-green-500 text-white font-semibold py-3.5 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                disabled={loading}
+                className="w-full bg-linear-to-r from-emerald-500 to-green-500 text-white font-semibold py-3.5 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50"
               >
-                Send OTP
+                {loading ? "Sending..." : "Send OTP"}
               </button>
             </form>
           </>
@@ -213,7 +245,7 @@ export default function ForgotPasswordPage() {
             </h2>
             <p className="text-center text-gray-500 text-sm mb-8">
               We&apos;ve sent a 6-digit code to{" "}
-              <span className="font-bold text-gray-700">{DUMMY_EMAIL}</span>
+              <span className="font-bold text-gray-700">{email}</span>
             </p>
 
             <form onSubmit={handleOtpSubmit} className="space-y-8">
@@ -249,9 +281,10 @@ export default function ForgotPasswordPage() {
                     <button
                       type="button"
                       onClick={handleResend}
-                      className="text-emerald-600 font-semibold hover:text-emerald-700 hover:underline transition-colors"
+                      disabled={!canResend || loading}
+                      className="text-emerald-600 font-semibold hover:text-emerald-700 hover:underline transition-colors disabled:opacity-50"
                     >
-                      Resend
+                      {loading ? "Resending..." : "Resend Code"}
                     </button>
                   </p>
                 )}

@@ -3,7 +3,8 @@ import axios from "axios";
 const api = axios.create({
   baseURL: "https://fahim.appdevs.team/stripcard/public/api",
   headers: {
-    "Content-Type": "application/json",
+    "Content-Type": "application/x-www-form-urlencoded",
+    // "Content-Type": "application/json",
   },
 });
 
@@ -19,9 +20,8 @@ api.interceptors.request.use((config) => {
 export const loginUser = async (credentials) => {
   try {
     const { data } = await api.post("/user/login", credentials);
-    return data; // return the whole { message, data } object
+    return data;
   } catch (error) {
-    // throw error; // component will handle error display
     console.log("Error", error);
   }
 };
@@ -29,9 +29,8 @@ export const loginUser = async (credentials) => {
 export const registerUser = async (userData) => {
   try {
     const { data } = await api.post("/user/register", userData);
-    return data; // Return the whole { message, data } object
+    return data;
   } catch (error) {
-    // throw error; // Component will handle error display
     console.log("Error", error);
   }
 };
@@ -42,5 +41,54 @@ export const logoutUser = async () => {
     return data;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const forgotPassword = async (email) => {
+  const formData = new FormData();
+  formData.append("email", email);
+  try {
+    const { data } = await api.post("/user/forget/password", formData);
+    return data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["An unexpected error occurred."] } };
+  }
+};
+
+export const verifyOtp = async (otp) => {
+  const formData = new FormData();
+  formData.append("code", otp);
+  try {
+    const { data } = await api.post("/user/forget/verify/code", formData);
+    return data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["An unexpected error occurred."] } };
+  }
+};
+
+export const resetPassword = async ({
+  code,
+  password,
+  password_confirmation,
+}) => {
+  const formData = new FormData();
+  formData.append("code", code);
+  formData.append("password", password);
+  formData.append("password_confirmation", password_confirmation);
+
+  try {
+    const { data } = await api.post("/user/forget/reset/password", formData);
+    return data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["An unexpected error occurred."] } };
   }
 };

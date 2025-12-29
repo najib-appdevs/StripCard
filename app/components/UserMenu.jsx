@@ -16,6 +16,7 @@ import { useLogout } from "../(auth)/useLogout.js";
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const menuRef = useRef(null);
   const { handleLogout } = useLogout();
 
@@ -36,10 +37,15 @@ export default function UserMenu() {
     };
   }, [isOpen]);
 
-  const confirmLogout = () => {
-    handleLogout();
-    setShowLogoutModal(false);
-    setIsOpen(false);
+  const confirmLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await handleLogout();
+    } finally {
+      setIsLoggingOut(false);
+      setShowLogoutModal(false);
+      setIsOpen(false);
+    }
   };
 
   return (
@@ -132,24 +138,28 @@ export default function UserMenu() {
             <div className="text-center">
               <LogOut size={48} className="mx-auto text-red-500 mb-4" />
               <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Are you sure?
+                {isLoggingOut ? "Logging Out..." : "Are you sure?"}
               </h3>
               <p className="text-gray-600 mb-6">
-                You will be logged out of your account.
+                {isLoggingOut
+                  ? "Please wait while we securely log you out."
+                  : "You will be logged out of your account."}
               </p>
 
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={() => setShowLogoutModal(false)}
-                  className="px-6 py-2.5 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition-colors font-medium cursor-pointer"
+                  disabled={isLoggingOut}
+                  className="px-6 py-2.5 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition-colors font-medium cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmLogout}
-                  className="px-6 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium cursor-pointer"
+                  disabled={isLoggingOut}
+                  className="px-6 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium cursor-pointer disabled:opacity-50"
                 >
-                  Yes, Logout
+                  {isLoggingOut ? "Logging Out..." : "Yes, Logout"}
                 </button>
               </div>
             </div>
