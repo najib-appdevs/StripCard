@@ -1,7 +1,7 @@
 import PasswordReset from "./PasswordReset";
 
 export const metadata = {
-  title: "Forgot Password",
+  title: "Password Reset",
 };
 
 export default function Page() {

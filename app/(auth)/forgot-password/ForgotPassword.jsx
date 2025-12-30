@@ -78,7 +78,9 @@ export default function ForgotPasswordPage() {
       const data = await verifyOtp(enteredOtp);
       if (data.message.success) {
         toast.success(data.message.success[0]);
-        router.push(`/Password-Reset?otp=${enteredOtp}`);
+        // Store in sessionStorage – disappears when tab closes
+        sessionStorage.setItem("reset_otp", enteredOtp);
+        router.push("/Password-Reset");
       } else {
         toast.error(data.message.error[0]);
       }

@@ -96,7 +96,6 @@ export default function LoginPage() {
         if (user) {
           localStorage.setItem("user", JSON.stringify(user));
         }
-        localStorage.setItem("remember_me", "true");
       } else {
         // Store in sessionStorage for session-only login
         sessionStorage.setItem("auth_token", token);
@@ -105,12 +104,18 @@ export default function LoginPage() {
         }
       }
 
-      toast.success("Login successful! Redirecting...");
-
-      // Redirect to protected/main page
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 500);
+      // Redirect based on email verification status
+      if (user?.email_verified === 1) {
+        toast.success("Login successful! Redirecting to dashboard...");
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 500);
+      } else {
+        toast.success("Login successful! Please verify your email.");
+        setTimeout(() => {
+          router.push("/email-verify");
+        }, 500);
+      }
     } catch (error) {
       console.error("Login error:", error);
 

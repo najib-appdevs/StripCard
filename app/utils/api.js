@@ -10,7 +10,8 @@ const api = axios.create({
 
 // Interceptor to automatically add Bearer token from localStorage
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("auth_token");
+  const token =
+    localStorage.getItem("auth_token") || sessionStorage.getItem("auth_token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -92,3 +93,31 @@ export const resetPassword = async ({
     return { message: { error: ["An unexpected error occurred."] } };
   }
 };
+
+export const verifyEmail = async (code) => {
+  const formData = new FormData();
+  formData.append("code", code);
+  try {
+    const { data } = await api.post("/user/email-verify", formData);
+    return data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["An unexpected error occurred."] } };
+  }
+};
+
+export const resendEmailVerifyCode = async () => {
+  try {
+    const { data } = await api.post("/user/send-code");
+    return data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["An unexpected error occurred."] } };
+  }
+};
+
+
