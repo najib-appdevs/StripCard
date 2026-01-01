@@ -120,4 +120,15 @@ export const resendEmailVerifyCode = async () => {
   }
 };
 
-
+export const getUserDashboard = async () => {
+  try {
+    const { data } = await api.get("/user/dashboard");
+    return data;
+  } catch (error) {
+    console.error("Dashboard fetch error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["An unexpected error occurred."] } };
+  }
+};
