@@ -132,3 +132,76 @@ export const getUserDashboard = async () => {
     return { message: { error: ["An unexpected error occurred."] } };
   }
 };
+
+export const getUserProfile = async () => {
+  try {
+    const { data } = await api.get("/user/profile");
+    return data;
+  } catch (error) {
+    console.error("Profile fetch error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["An unexpected error occurred."] } };
+  }
+};
+
+export const updateUserProfile = async (profileData, imageFile) => {
+  const formData = new FormData();
+
+  for (const key in profileData) {
+    if (profileData[key] !== null && profileData[key] !== undefined) {
+      formData.append(key, profileData[key]);
+    }
+  }
+
+  if (imageFile) {
+    formData.append("image", imageFile);
+  }
+
+  try {
+    const { data } = await api.post("/user/profile/update", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  } catch (error) {
+    return { message: { error: ["An unexpected error occurred."] } };
+  }
+};
+
+export const deleteUserAccount = async () => {
+  try {
+    const { data } = await api.post("/user/delete/account");
+    return data;
+  } catch (error) {
+    console.error("Delete account error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["An unexpected error occurred."] } };
+  }
+};
+
+
+export const updateUserPassword = async ({
+  current_password,
+  password,
+  password_confirmation,
+}) => {
+  const formData = new FormData();
+  formData.append("current_password", current_password);
+  formData.append("password", password);
+  formData.append("password_confirmation", password_confirmation);
+
+  try {
+    const { data } = await api.post("/user/password/update", formData);
+    return data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["An unexpected error occurred."] } };
+  }
+};

@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { updateUserPassword } from "../../utils/api";
+import { getToastMessage } from "../../utils/toastHelper";
+
 
 function ChangePasswordCard() {
   const [passwordData, setPasswordData] = useState({
@@ -30,28 +33,42 @@ function ChangePasswordCard() {
     }));
   };
 
-  const handlePasswordChangeSubmit = () => {
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("New password and confirm password do not match!");
-      return;
-    }
+  const handlePasswordChangeSubmit = async () => {
+  if (!passwordData.currentPassword || !passwordData.newPassword) {
+    toast.error("Please fill in all fields.");
+    return;
+  }
 
-    if (!passwordData.currentPassword || !passwordData.newPassword) {
-      toast.error("Please fill in all fields.");
-      return;
-    }
+  if (passwordData.newPassword !== passwordData.confirmPassword) {
+    toast.error("New password and confirm password do not match!");
+    return;
+  }
 
-    console.log("Password changed successfully");
-    toast.success("Password changed successfully!");
+  const loadingToast = toast.loading("Updating password...");
 
-    // Reset form
+  const response = await updateUserPassword({
+    current_password: passwordData.currentPassword,
+    password: passwordData.newPassword,
+    password_confirmation: passwordData.confirmPassword,
+  });
+
+  toast.dismiss(loadingToast);
+
+  // 🔥 HERE is the magic
+  const { type, text } = getToastMessage(response);
+
+  toast[type](text);
+
+  // Reset form only on success
+  if (type === "success") {
     setPasswordData({
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     });
     setShowPasswords({ current: false, new: false, confirm: false });
-  };
+  }
+};
 
   // Reusable input class (same as profile card)
   const inputClass =
