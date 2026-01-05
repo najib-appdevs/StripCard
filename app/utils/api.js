@@ -184,7 +184,6 @@ export const deleteUserAccount = async () => {
   }
 };
 
-
 export const updateUserPassword = async ({
   current_password,
   password,
@@ -203,5 +202,137 @@ export const updateUserPassword = async ({
       return error.response.data;
     }
     return { message: { error: ["An unexpected error occurred."] } };
+  }
+};
+
+export const getKycInputFields = async () => {
+  try {
+    const { data } = await api.get("/user/kyc/input-fields");
+    return data;
+  } catch (error) {
+    console.error("KYC fetch error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["Failed to fetch KYC data"] } };
+  }
+};
+
+export const submitKyc = async (kycFormValues) => {
+  const formData = new FormData();
+
+  // Append dynamic fields
+  Object.keys(kycFormValues).forEach((key) => {
+    if (kycFormValues[key] !== null && kycFormValues[key] !== undefined) {
+      formData.append(key, kycFormValues[key]);
+    }
+  });
+
+  try {
+    const { data } = await api.post("/user/kyc/submit", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  } catch (error) {
+    console.error("KYC submit error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["Failed to submit KYC"] } };
+  }
+};
+
+export const getAllGiftCards = async (page = 2) => {
+  try {
+    const { data } = await api.get(`/user/gift-card/all?page=${page}`);
+    return data;
+  } catch (error) {
+    console.error("Error fetching gift cards:", error);
+
+    if (error.response?.data) {
+      return error.response.data;
+    }
+
+    return {
+      message: {
+        error: ["An unexpected error occurred while fetching gift cards"],
+      },
+    };
+  }
+};
+
+export const searchGiftCardsByCountry = async (iso2, page = 1) => {
+  try {
+    const { data } = await api.get(
+      `/user/gift-card/search?country=${iso2.toUpperCase()}&page=${page}`
+    );
+    return data;
+  } catch (error) {
+    console.error("Gift cards search error:", error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: {
+        error: ["An unexpected error occurred while searching gift cards"],
+      },
+    };
+  }
+};
+
+export const getGiftCardDetails = async (productId) => {
+  try {
+    const { data } = await api.get(
+      `/user/gift-card/details?product_id=${productId}`
+    );
+    return data;
+  } catch (error) {
+    console.error("Gift card details fetch error:", error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: {
+        error: [
+          "An unexpected error occurred while fetching gift card details",
+        ],
+      },
+    };
+  }
+};
+
+export const submitGiftCardOrder = async (orderData) => {
+  try {
+    // Using FormData since many of your other endpoints use it
+    const formData = new FormData();
+
+    // Append all fields
+    Object.entries(orderData).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    const { data } = await api.post("/user/gift-card/order", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("Gift card order submission error:", error);
+
+    if (error.response?.data) {
+      return error.response.data;
+    }
+
+    return {
+      message: {
+        error: [
+          "An unexpected error occurred while placing the gift card order",
+        ],
+      },
+    };
   }
 };

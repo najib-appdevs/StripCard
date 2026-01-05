@@ -1,222 +1,175 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getKycInputFields, submitKyc } from "../../utils/api";
 
-const VerifiedKYC = () => {
-  const [isVerified, setIsVerified] = useState(false);
-
-  const [formData, setFormData] = useState({
-    fullName: "",
-    dob: "",
-    idType: "",
-    idNumber: "",
-    address: "",
-  });
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsVerified(true);
-  };
-
-  return (
-    <div className="flex items-center justify-center">
-      <div className="w-full max-w-2xl">
-        {!isVerified ? (
-          <div className="bg-white rounded-2xl shadow-xl p-8">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-linear-to-r from-[#0EBE98] to-[#50C631] mb-4">
-                <svg
-                  className="w-8 h-8 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-3xl font-bold text-gray-800">
-                KYC Verification
-              </h2>
-              <p className="text-gray-500 mt-2">
-                Complete your identity verification
-              </p>
-            </div>
-
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder="Enter your full name"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 text-gray-800 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0EBE98] focus:border-transparent outline-none transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date of Birth
-                </label>
-                <input
-                  type="date"
-                  name="dob"
-                  value={formData.dob}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 text-gray-800 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0EBE98] focus:border-transparent outline-none transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ID Type
-                </label>
-                <select
-                  name="idType"
-                  value={formData.idType}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 text-gray-800 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0EBE98] focus:border-transparent outline-none transition-all bg-white"
-                >
-                  <option value="">Select ID Type</option>
-                  <option value="passport">Passport</option>
-                  <option value="national_id">National ID</option>
-                  <option value="driving_license">Driving License</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ID Number
-                </label>
-                <input
-                  type="text"
-                  name="idNumber"
-                  placeholder="Enter your ID number"
-                  value={formData.idNumber}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 text-gray-800 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0EBE98] focus:border-transparent outline-none transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Address
-                </label>
-                <textarea
-                  name="address"
-                  placeholder="Enter your complete address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  required
-                  rows={3}
-                  className="w-full px-4 py-3 text-gray-800 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0EBE98] focus:border-transparent outline-none transition-all resize-none"
-                />
-              </div>
-
-              <button
-                onClick={handleSubmit}
-                className="w-full py-3 px-6 rounded-lg text-white font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-                style={{
-                  background:
-                    "linear-gradient(76.84deg, #0EBE98 -2.66%, #50C631 105.87%)",
-                }}
-              >
-                Submit KYC
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl shadow-xl p-8">
-            <div className="text-center mb-6">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-linear-to-r from-[#0EBE98] to-[#50C631] mb-4 animate-pulse">
-                <svg
-                  className="w-10 h-10 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-3xl font-bold text-gray-800 mb-2">
-                KYC Verified
-              </h3>
-              <p className="text-gray-500">
-                Your identity has been successfully verified
-              </p>
-            </div>
-
-            <div className="space-y-4 mt-8">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-500 mb-1">Full Name</p>
-                <p className="text-gray-800 font-semibold">
-                  {formData.fullName}
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-500 mb-1">Date of Birth</p>
-                <p className="text-gray-800 font-semibold">{formData.dob}</p>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-500 mb-1">ID Type</p>
-                <p className="text-gray-800 font-semibold capitalize">
-                  {formData.idType.replace("_", " ")}
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-500 mb-1">ID Number</p>
-                <p className="text-gray-800 font-semibold">
-                  ···· ···· {formData.idNumber.slice(-4)}
-                </p>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-500 mb-1">Address</p>
-                <p className="text-gray-800 font-semibold">
-                  {formData.address}
-                </p>
-              </div>
-            </div>
-
-            {/* <button
-              onClick={() => setIsVerified(false)}
-              className="w-full mt-6 py-3 px-6 rounded-lg text-white font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-              style={{ background: 'linear-gradient(76.84deg, #0EBE98 -2.66%, #50C631 105.87%)' }}
-            >
-              Edit Information
-            </button> */}
-          </div>
-        )}
-      </div>
-    </div>
-  );
+const KYC_STATUS_MAP = {
+  0: { label: "Unverified", color: "text-red-500" },
+  1: { label: "Verified", color: "text-green-600" },
+  2: { label: "Pending", color: "text-yellow-500" },
+  3: { label: "Rejected", color: "text-red-600" },
 };
 
-export default VerifiedKYC;
+export default function VerifiedKYC() {
+  const [loading, setLoading] = useState(true);
+  const [kycData, setKycData] = useState(null);
+  const [formValues, setFormValues] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState([]);
+  const [success, setSuccess] = useState("");
+
+  // Fetch KYC input fields
+  useEffect(() => {
+    const fetchKyc = async () => {
+      setLoading(true);
+      const res = await getKycInputFields();
+      if (res?.data) {
+        setKycData(res.data);
+      }
+      setLoading(false);
+    };
+
+    fetchKyc();
+  }, []);
+
+  // Handle input change
+  const handleChange = (name, value) => {
+    setFormValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Submit KYC
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setErrors([]);
+    setSuccess("");
+
+    const res = await submitKyc(formValues);
+
+    if (res?.message?.success) {
+      setSuccess(res.message.success[0] || "KYC submitted successfully");
+    } else if (res?.message?.error) {
+      setErrors(res.message.error);
+    }
+
+    setSubmitting(false);
+  };
+
+  // Loading UI
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <p className="text-gray-500">Loading KYC information...</p>
+      </div>
+    );
+  }
+
+  // Error fallback
+  if (!kycData) {
+    return <p className="text-red-500 text-center">Failed to load KYC data.</p>;
+  }
+
+  const status = KYC_STATUS_MAP[kycData.kyc_status];
+
+  return (
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold">KYC Verification</h2>
+        <p className={`mt-2 font-medium ${status.color}`}>
+          Status: {status.label}
+        </p>
+      </div>
+
+      {/* Success Message */}
+      {success && (
+        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
+          {success}
+        </div>
+      )}
+
+      {/* Error Messages */}
+      {errors.length > 0 && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          <ul className="list-disc pl-5">
+            {errors.map((err, i) => (
+              <li key={i}>{err}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* KYC Form (Only for Unverified / Rejected) */}
+      {(kycData.kyc_status === 0 || kycData.kyc_status === 3) && (
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {kycData.input_fields.map((field, index) => (
+            <div key={index}>
+              <label className="block mb-1 font-medium">
+                {field.label}
+                {field.required && <span className="text-red-500"> *</span>}
+              </label>
+
+              {/* File Input */}
+              {field.type === "file" && (
+                <input
+                  type="file"
+                  accept={field.validation.mimes
+                    .map((m) => `.${m.trim()}`)
+                    .join(",")}
+                  required={field.required}
+                  onChange={(e) => handleChange(field.name, e.target.files[0])}
+                  className="w-full border rounded p-2"
+                />
+              )}
+
+              {/* Select Input */}
+              {field.type === "select" && (
+                <select
+                  required={field.required}
+                  onChange={(e) => handleChange(field.name, e.target.value)}
+                  className="w-full border rounded p-2"
+                >
+                  <option value="">Select {field.label}</option>
+                  {field.validation.options.map((option, i) => (
+                    <option key={i} value={option.trim()}>
+                      {option.trim()}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          ))}
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className={`w-full py-2 rounded text-white ${
+              submitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          >
+            {submitting ? "Submitting..." : "Submit KYC"}
+          </button>
+        </form>
+      )}
+
+      {/* Pending Message */}
+      {kycData.kyc_status === 2 && (
+        <p className="text-yellow-600 font-medium">
+          Your KYC is under review. Please wait for approval.
+        </p>
+      )}
+
+      {/* Verified Message */}
+      {kycData.kyc_status === 1 && (
+        <p className="text-green-600 font-medium">
+          Your KYC is verified successfully.
+        </p>
+      )}
+    </div>
+  );
+}

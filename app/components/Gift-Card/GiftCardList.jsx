@@ -1,324 +1,285 @@
 "use client";
-
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { getAllGiftCards, searchGiftCardsByCountry } from "../../utils/api";
 
 const GiftCardList = () => {
-  const [selectedCountry, setSelectedCountry] = useState("all");
-  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const countries = [
-    { value: "all", label: "All Countries" },
-    { value: "us", label: "United States" },
-    { value: "uk", label: "United Kingdom" },
-    { value: "ca", label: "Canada" },
-    { value: "au", label: "Australia" },
-  ];
+  // Read initial country from URL (persists on reload)
+  const initialCountry = searchParams.get("country") || "all";
 
-  const giftCards = [
-    {
-      id: 1,
-      name: "Amazon Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=400&h=300&fit=crop",
-      country: "us",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 2,
-      name: "iTunes Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=400&h=300&fit=crop",
-      country: "us",
-      minAmount: 25,
-      maxAmount: 100,
-    },
-    {
-      id: 3,
-      name: "Google Play Card",
-      image:
-        "https://images.unsplash.com/photo-1633167606207-d840b5070fc2?w=400&h=300&fit=crop",
-      country: "uk",
-      minAmount: 20,
-      maxAmount: 150,
-    },
-    {
-      id: 4,
-      name: "Steam Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop",
-      country: "us",
-      minAmount: 25,
-      maxAmount: 200,
-    },
-    {
-      id: 5,
-      name: "Netflix Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=400&h=300&fit=crop",
-      country: "ca",
-      minAmount: 25,
-      maxAmount: 100,
-    },
-    {
-      id: 6,
-      name: "Spotify Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=400&h=300&fit=crop",
-      country: "uk",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 7,
-      name: "PlayStation Card",
-      image:
-        "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=300&fit=crop",
-      country: "us",
-      minAmount: 25,
-      maxAmount: 100,
-    },
-    {
-      id: 8,
-      name: "Xbox Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=400&h=300&fit=crop",
-      country: "us",
-      minAmount: 25,
-      maxAmount: 100,
-    },
-    {
-      id: 9,
-      name: "Uber Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=300&fit=crop",
-      country: "au",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 10,
-      name: "Starbucks Card",
-      image:
-        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=300&fit=crop",
-      country: "us",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 11,
-      name: "eBay Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1560393464-5c69a73c5770?w=400&h=300&fit=crop",
-      country: "uk",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 12,
-      name: "Target Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=300&fit=crop",
-      country: "us",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 13,
-      name: "Walmart Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop",
-      country: "us",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 14,
-      name: "Best Buy Card",
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop",
-      country: "ca",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 15,
-      name: "Sephora Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop",
-      country: "us",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 16,
-      name: "Nike Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop",
-      country: "uk",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 17,
-      name: "Apple Store Card",
-      image:
-        "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&h=300&fit=crop",
-      country: "us",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-    {
-      id: 18,
-      name: "Disney+ Gift Card",
-      image:
-        "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=400&h=300&fit=crop",
-      country: "au",
-      minAmount: 25,
-      maxAmount: 89.08,
-    },
-  ];
+  const [selectedCountry, setSelectedCountry] = useState(initialCountry);
+  const [pendingCountry, setPendingCountry] = useState(initialCountry); // temp selection before search
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Filtered Cards by Country Name
-  const filteredCards =
-    selectedCountry === "all"
-      ? giftCards
-      : giftCards.filter((card) => card.country === selectedCountry);
+  const [giftCards, setGiftCards] = useState([]);
+  const [countries, setCountries] = useState([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [paginationLinks, setPaginationLinks] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchGiftCards = async (page = 1, countryIso = selectedCountry) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      let result;
+      if (countryIso === "all" || !countryIso) {
+        result = await getAllGiftCards(page);
+      } else {
+        result = await searchGiftCardsByCountry(countryIso, page);
+      }
+
+      if (result?.message?.error) {
+        throw new Error(result.message.error[0] || "Failed to load gift cards");
+      }
+
+      const productsData = result?.data?.products || {};
+      const products = productsData.data || [];
+      const apiCountries = result?.data?.countries || [];
+
+      setGiftCards(products);
+      setCurrentPage(productsData.current_page || 1);
+      setLastPage(productsData.last_page || 1);
+      setPaginationLinks(productsData.links || []);
+
+      // Load countries only once
+      if (countries.length === 0 && countryIso === "all") {
+        const formattedCountries = [
+          { id: 0, name: "All Countries", iso2: "all" },
+          ...apiCountries.map((c) => ({
+            id: c.id,
+            name: c.name,
+            iso2: c.iso2.toLowerCase(),
+          })),
+        ];
+        setCountries(formattedCountries);
+      }
+    } catch (err) {
+      setError(err.message || "Failed to load gift cards");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load on mount + when page changes in URL
+  useEffect(() => {
+    const countryFromUrl = searchParams.get("country") || "all";
+    const pageFromUrl = Number(searchParams.get("page")) || 1;
+
+    setSelectedCountry(countryFromUrl);
+    setPendingCountry(countryFromUrl);
+    setCurrentPage(pageFromUrl);
+
+    fetchGiftCards(pageFromUrl, countryFromUrl);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  const handleSearch = () => {
+    const newParams = new URLSearchParams(searchParams);
+    if (pendingCountry === "all") {
+      newParams.delete("country");
+    } else {
+      newParams.set("country", pendingCountry.toUpperCase());
+    }
+    newParams.set("page", "1"); // reset to page 1 on new search
+
+    router.push(`?${newParams.toString()}`);
+    setIsOpen(false);
+  };
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= lastPage) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set("page", page.toString());
+      router.push(`?${newParams.toString()}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
 
   const selectedLabel =
-    countries.find((c) => c.value === selectedCountry)?.label ||
-    "All Countries";
+    countries.find((c) => c.iso2 === selectedCountry)?.name || "All Countries";
 
-  // Navigate To Specific Card
   const handleCardClick = (card) => {
-    router.push(`/dashboard/gift-card/${card.id}`);
+    router.push(`/dashboard/gift-card/${card.productId}`);
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-600 py-10">
+        {error}
+        <br />
+        <button
+          onClick={() => fetchGiftCards(currentPage, selectedCountry)}
+          className="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
     <>
-      {/* Header with Filter */}
+      {/* Header with Filter + Search Button */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Gift Cards</h1>
 
-        {/* Custom Dropdown with Search Icon */}
-        <div className="relative">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 min-w-[200px]"
+            >
+              <svg
+                className="w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <span className="flex-1 text-left">{countries.find(c => c.iso2 === pendingCountry)?.name || "All Countries"}</span>
+              <svg
+                className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {isOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+                <div className="absolute z-20 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg max-h-80 overflow-y-auto">
+                  {countries.map((country) => (
+                    <button
+                      key={country.iso2}
+                      onClick={() => {
+                        setPendingCountry(country.iso2);
+                        setIsOpen(false);
+                      }}
+                      className={`w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg ${
+                        pendingCountry === country.iso2
+                          ? "bg-emerald-50 text-emerald-700 font-medium"
+                          : "text-gray-700"
+                      }`}
+                    >
+                      {country.name}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Search Button */}
           <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 min-w-[200px]"
+            onClick={handleSearch}
+            className="px-5 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm transition-colors"
           >
-            <svg
-              className="w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <span className="flex-1 text-left">{selectedLabel}</span>
-            <svg
-              className={`w-4 h-4 text-gray-500 transition-transform ${
-                isOpen ? "rotate-180" : ""
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+            Search
           </button>
-
-          {/* Dropdown Menu */}
-          {isOpen && (
-            <>
-              {/* Backdrop */}
-              <div
-                className="fixed inset-0 z-10"
-                onClick={() => setIsOpen(false)}
-              />
-
-              {/* Dropdown Content */}
-              <div className="absolute z-20 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
-                {countries.map((country) => (
-                  <button
-                    key={country.value}
-                    onClick={() => {
-                      setSelectedCountry(country.value);
-                      setIsOpen(false);
-                    }}
-                    className={`w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg ${
-                      selectedCountry === country.value
-                        ? "bg-emerald-50 text-emerald-700 font-medium"
-                        : "text-gray-700"
-                    }`}
-                  >
-                    {country.label}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
         </div>
       </div>
 
+      {/* Rest of the component remains the same */}
       {/* Gift Cards Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
-        {filteredCards.map((card) => (
-          <div
-            key={card.id}
-            onClick={() => handleCardClick(card)}
-            className="group cursor-pointer rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:border-emerald-400"
-          >
-            {/* Card Image */}
-            <div className="aspect-[4/3] overflow-hidden bg-gray-100">
-              <img
-                src={card.image}
-                alt={card.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-              />
-            </div>
-
-            {/* Card Name */}
-            <div className="p-3">
-              <h3 className="text-sm font-medium text-gray-900 text-center truncate">
-                {card.name}
-              </h3>
-            </div>
+        {giftCards.length === 0 ? (
+          <div className="col-span-full text-center py-12 text-gray-600">
+            No gift cards found
           </div>
-        ))}
+        ) : (
+          giftCards.map((card) => (
+            <div
+              key={card.productId}
+              onClick={() => handleCardClick(card)}
+              className="group cursor-pointer rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:border-emerald-400"
+            >
+              <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+                <img
+                  src={card.logoUrls?.[0] || "/images/placeholder-giftcard.png"}
+                  alt={card.productName}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                />
+              </div>
+              <div className="p-3">
+                <h3 className="text-sm font-medium text-gray-900 text-center truncate">
+                  {card.productName}
+                </h3>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
-      {/* Pagination - Centered */}
-      <div className="flex items-center justify-center gap-2">
-        <button className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-          Previous
-        </button>
-        <div className="flex items-center gap-1">
-          <button className="w-9 h-9 rounded-lg bg-emerald-500 text-white text-sm font-medium">
-            1
+      {/* Pagination */}
+      {lastPage > 1 && (
+        <div className="flex items-center justify-center gap-2 flex-wrap">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Previous
           </button>
-          <button className="w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50">
-            2
-          </button>
-          <button className="w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50">
-            3
+
+          {paginationLinks
+            .filter((link) => link.label !== "&laquo; Previous" && link.label !== "Next &raquo;")
+            .map((link, index) => {
+              if (link.url === null) {
+                return (
+                  <span key={index} className="px-4 py-2 text-sm text-gray-500">
+                    ...
+                  </span>
+                );
+              }
+              return (
+                <button
+                  key={index}
+                  onClick={() => handlePageChange(Number(link.label))}
+                  className={`w-9 h-9 rounded-lg text-sm font-medium ${
+                    currentPage === Number(link.label)
+                      ? "bg-emerald-500 text-white"
+                      : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  {link.label}
+                </button>
+              );
+            })}
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === lastPage}
+            className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Next
           </button>
         </div>
-        <button className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50">
-          Next
-        </button>
-      </div>
+      )}
     </>
   );
 };
