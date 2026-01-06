@@ -1,9 +1,47 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { getTransferMoneyInfo } from "../../utils/api";
+
 const TransferMoneyPreview = () => {
+  const [previewData, setPreviewData] = useState(null);
+
+  useEffect(() => {
+    const fetchInfo = async () => {
+      const response = await getTransferMoneyInfo();
+
+      if (response?.data) {
+        setPreviewData(response.data);
+      }
+    };
+
+    fetchInfo();
+  }, []);
+
+  const latestTransaction =
+    previewData?.transactions?.length > 0 ? previewData.transactions[0] : null;
+
   const data = [
-    { label: "Enter Amount", value: "0.0000 USD" },
-    { label: "Transfer Fee", value: "0.0000 USD" },
-    { label: "Recipient Received", value: "0.0000 USD" },
-    { label: "Total Payable Amount", value: "0.0000 USD" },
+    {
+      label: "Enter Amount",
+      value: latestTransaction
+        ? latestTransaction.request_amount
+        : `0.0000 ${previewData?.base_curr || "USD"}`,
+    },
+    {
+      label: "Transfer Fee",
+      value: latestTransaction ? latestTransaction.total_charge : "0.0000 USD",
+    },
+    {
+      label: "Recipient Received",
+      value: latestTransaction
+        ? latestTransaction.recipient_received
+        : "0.0000 USD",
+    },
+    {
+      label: "Total Payable Amount",
+      value: latestTransaction ? latestTransaction.payable : "0.0000 USD",
+    },
   ];
 
   return (
@@ -17,7 +55,6 @@ const TransferMoneyPreview = () => {
 
       {/* Body */}
       <div className="p-6 ">
-        {/* Data rows with consistent spacing */}
         <div className="space-y-7">
           {data.map((item, index) => (
             <div

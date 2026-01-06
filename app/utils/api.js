@@ -336,3 +336,58 @@ export const submitGiftCardOrder = async (orderData) => {
     };
   }
 };
+
+export const transferMoneyConfirmed = async ({ email, amount }) => {
+  const formData = new FormData();
+  formData.append("email", email);
+  formData.append("amount", amount);
+
+  try {
+    const { data } = await api.post("/user/transfer-money/confirmed", formData);
+    return data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: {
+        error: ["An unexpected error occurred"],
+      },
+    };
+  }
+};
+
+export const checkTransferReceiverExist = async (email) => {
+  const formData = new FormData();
+  formData.append("email", email);
+
+  try {
+    const { data } = await api.post("/user/transfer-money/exist", formData);
+    return data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: {
+        error: ["An unexpected error occurred"],
+      },
+    };
+  }
+};
+
+export const getTransferMoneyInfo = async () => {
+  try {
+    const { data } = await api.get("/user/transfer-money/info");
+    return data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: {
+        error: ["An unexpected error occurred"],
+      },
+    };
+  }
+};

@@ -1,10 +1,48 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { getTransferMoneyInfo } from "../../utils/api";
+
 const MoneyTransferLimit = () => {
+  const [limitInfo, setLimitInfo] = useState(null);
+
+  const [currency, setCurrency] = useState("");
+
+  useEffect(() => {
+    const fetchLimits = async () => {
+      const response = await getTransferMoneyInfo();
+
+      if (response?.data?.transferMoneyCharge) {
+        setLimitInfo(response.data.transferMoneyCharge);
+        // Set currency dynamically from API response
+        setCurrency(response.data.base_curr || "USD");
+      }
+    };
+
+    fetchLimits();
+  }, []);
+
   const data = [
-    { label: "Transaction Limit", value: "1.0000 USD - 1000.0000 USD" },
-    { label: "Daily Limit", value: "10000.0000 USD" },
-    { label: "Remaining Daily Limit", value: "10000.0000 USD" },
-    { label: "Monthly Limit", value: "50000.0000 USD" },
-    { label: "Remaining Monthly Limit", value: "50000.0000 USD" },
+    {
+      label: "Transaction Limit",
+      value: limitInfo
+        ? `${Number(limitInfo.min_limit).toFixed(4)} ${currency} - ${Number(
+            limitInfo.max_limit
+          ).toFixed(4)} ${currency}`
+        : `0.0000 ${currency} - 0.0000 ${currency}`,
+    },
+    {
+      label: "Daily Limit",
+      value: limitInfo
+        ? `${Number(limitInfo.daily_limit).toFixed(4)} ${currency}`
+        : `0.0000 ${currency}`,
+    },
+    {
+      label: "Monthly Limit",
+      value: limitInfo
+        ? `${Number(limitInfo.monthly_limit).toFixed(4)} ${currency}`
+        : `0.0000 ${currency}`,
+    },
   ];
 
   return (
