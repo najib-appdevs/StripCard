@@ -391,3 +391,73 @@ export const getTransferMoneyInfo = async () => {
     };
   }
 };
+
+export const getWithdrawInfo = async () => {
+  try {
+    const { data } = await api.get("/user/withdraw/info");
+    return data;
+  } catch (error) {
+    console.error("Error fetching withdraw info:", error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: {
+        error: ["Failed to load withdrawal information"],
+      },
+    };
+  }
+};
+
+export const submitWithdrawInsert = async ({ gateway, amount }) => {
+  try {
+    const formData = new FormData();
+
+    // BACKEND EXPECTS CURRENCY ALIAS HERE
+    formData.append("gateway", gateway);
+    formData.append("amount", amount);
+
+    const response = await api.post("/user/withdraw/insert", formData);
+    return response.data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: {
+        error: ["Network error or server unreachable"],
+      },
+    };
+  }
+};
+
+export const submitFinalWithdraw = async (data) => {
+  try {
+    const formData = new FormData();
+
+    // Required trx
+    formData.append("trx", data.trx);
+
+    // Append all dynamic fields (email, card_number, etc.)
+    Object.entries(data).forEach(([key, value]) => {
+      if (key !== "trx") {
+        formData.append(key, value);
+      }
+    });
+
+    const response = await api.post(
+      "/user/withdraw/manual/confirmed",
+      formData
+    );
+    return response.data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: {
+        error: ["Network error or server unreachable"],
+      },
+    };
+  }
+};

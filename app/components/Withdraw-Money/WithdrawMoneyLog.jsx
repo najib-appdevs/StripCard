@@ -1,42 +1,88 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getWithdrawInfo } from "../../utils/api";
 
 const WithdrawMoneyLog = () => {
   const [search, setSearch] = useState("");
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const logs = [
-    {
-      trxId: "WD123456789",
-      withdrawBy: "StripCard(Manual)",
-      exchangeRate: "1 USD = 1.0000 USD",
-      fees: "1.2500 USD",
-      willGet: "98.0000 USD",
-      currentBalance: "757.9000 USD",
-      date: "16-12-25 05:44:14 PM",
-      status: "Success",
-    },
-    {
-      trxId: "WD987654321",
-      withdrawBy: "StripCard(Manual)",
-      exchangeRate: "1 USD = 1.0000 USD",
-      fees: "1.2500 USD",
-      willGet: "247.5000 USD",
-      currentBalance: "510.4000 USD",
-      date: "16-12-25 05:44:14 PM",
-      status: "Success",
-    },
-    {
-      trxId: "WD456789123",
-      withdrawBy: "StripCard(Manual)",
-      exchangeRate: "1 USD = 1.0000 USD",
-      fees: "1.2500 USD",
-      willGet: "99.0000 USD",
-      currentBalance: "411.4000 USD",
-      date: "16-12-25 05:44:14 PM",
-      status: "Pending",
-    },
-  ];
+  // Fetch withdrawal transactions
+  useEffect(() => {
+    const fetchWithdrawLogs = async () => {
+      try {
+        setLoading(true);
+        const response = await getWithdrawInfo();
+
+        if (response?.data?.transactions) {
+          // Map API response to component-friendly format
+          const formattedLogs = response.data.transactions.map((tx) => ({
+            trxId: tx.trx,
+            withdrawBy: tx.gateway_name,
+            gatewayCurrency: tx.gateway_currency_name,
+            exchangeRate: tx.exchange_rate,
+            fees: tx.total_charge,
+            willGet: tx.will_get,
+            currentBalance: tx.current_balance,
+            date: new Date(tx.date_time).toLocaleString("en-US", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }),
+            status:
+              tx.status === "Pending"
+                ? "Pending"
+                : tx.status === "Success"
+                ? "Success"
+                : "Rejected", // or handle other statuses
+          }));
+
+          setLogs(formattedLogs);
+        } else {
+          setError("No transaction data available");
+        }
+      } catch (err) {
+        setError("Failed to load withdrawal history");
+        console.log("Withdraw log fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWithdrawLogs();
+  }, []);
+
+  // Optional: client-side search/filter
+  const filteredLogs = logs.filter(
+    (log) =>
+      log.trxId?.toLowerCase().includes(search.toLowerCase()) ||
+      log.willGet?.toLowerCase().includes(search.toLowerCase()) ||
+      log.withdrawBy?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="px-6 py-12 text-center text-gray-500">
+        <div className="flex justify-center items-center gap-3">
+          <div className="w-5 h-5 border-3 border-gray-300 border-t-emerald-500 rounded-full animate-spin"></div>
+          <p className="text-lg font-medium">Loading withdrawal history...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-sm min-h-[300px] flex items-center justify-center">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-6">
@@ -79,60 +125,67 @@ const WithdrawMoneyLog = () => {
 
           {/* Rows */}
           <div className="divide-y min-w-[1000px]">
-            {logs.map((log, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-1 md:grid-cols-8 gap-3 px-6 py-4 text-sm"
-              >
-                {/* 1. Withdraw Money by */}
-                <span className="font-medium text-gray-900">
-                  {log.withdrawBy}
-                </span>
-
-                {/* 2. Status */}
-                <span className="inline-flex items-center gap-2 text-xs font-medium">
-                  <span
-                    className={`h-2 w-2 rounded-full
-                      ${
-                        log.status === "Success"
-                          ? "bg-green-500"
-                          : log.status === "Pending"
-                          ? "bg-yellow-500"
-                          : "bg-red-500"
-                      }`}
-                  />
-                  <span
-                    className={
-                      log.status === "Success"
-                        ? "text-green-600"
-                        : log.status === "Pending"
-                        ? "text-yellow-600"
-                        : "text-red-600"
-                    }
-                  >
-                    {log.status}
-                  </span>
-                </span>
-
-                {/* 3. Transaction ID */}
-                <span className="text-gray-600">{log.trxId}</span>
-
-                {/* 4. Exchange Rate */}
-                <span className="text-gray-600">{log.exchangeRate}</span>
-
-                {/* 5. Fees & Charges */}
-                <span className="text-gray-600">{log.fees}</span>
-
-                {/* 6. Will Get */}
-                <span className="text-gray-600">{log.willGet}</span>
-
-                {/* 7. Current Balance */}
-                <span className="text-gray-600">{log.currentBalance}</span>
-
-                {/* 8. Time & Date */}
-                <span className="text-gray-600">{log.date}</span>
+            {filteredLogs.length === 0 ? (
+              <div className="px-6 py-10 text-center text-gray-500">
+                No withdrawal transactions found
+                {search && " matching your search"}
               </div>
-            ))}
+            ) : (
+              filteredLogs.map((log, index) => (
+                <div
+                  key={log.trxId || index}
+                  className="grid grid-cols-1 md:grid-cols-8 gap-3 px-6 py-4 text-sm"
+                >
+                  {/* 1. Withdraw Money by */}
+                  <span className="font-medium text-gray-900">
+                    {log.withdrawBy}
+                  </span>
+
+                  {/* 2. Status */}
+                  <span className="inline-flex items-center gap-2 text-xs font-medium">
+                    <span
+                      className={`h-2 w-2 rounded-full
+                        ${
+                          log.status === "Success"
+                            ? "bg-green-500"
+                            : log.status === "Pending"
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
+                        }`}
+                    />
+                    <span
+                      className={
+                        log.status === "Success"
+                          ? "text-green-600"
+                          : log.status === "Pending"
+                          ? "text-yellow-600"
+                          : "text-red-600"
+                      }
+                    >
+                      {log.status}
+                    </span>
+                  </span>
+
+                  {/* 3. Transaction ID */}
+                  <span className="text-gray-600">{log.trxId}</span>
+
+                  {/* 4. Exchange Rate */}
+                  <span className="text-gray-600">{log.exchangeRate}</span>
+
+                  {/* 5. Fees & Charges */}
+                  <span className="text-gray-600">{log.fees}</span>
+
+                  {/* 6. Will Get */}
+                  <span className="text-gray-600">{log.willGet}</span>
+
+                  {/* 7. Current Balance */}
+                  <span className="text-gray-600">{log.currentBalance}</span>
+
+                  {/* 8. Time & Date */}
+                  <span className="text-gray-600">{log.date}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

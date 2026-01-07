@@ -10,15 +10,43 @@ import {
   UserCheck,
   X,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useLogout } from "../(auth)/useLogout.js";
+import { getUserProfile } from "../utils/api";
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const menuRef = useRef(null);
   const { handleLogout } = useLogout();
+  const router = useRouter();
+
+  // Fetch user profile on mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const response = await getUserProfile();
+
+        // Check different possible response structures
+        if (response?.data?.user) {
+          setUser(response.data.user);
+        } else if (response?.user) {
+          setUser(response.user);
+        }
+      } catch (error) {
+        console.log("Failed to load user profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -48,6 +76,24 @@ export default function UserMenu() {
     }
   };
 
+  // Derive initials & full name safely
+  const getInitials = () => {
+    if (!user) return "User";
+    const first = user.firstname?.charAt(0) || "";
+    const last = user.lastname?.charAt(0) || "";
+    return (
+      (first + last).toUpperCase() ||
+      user.username?.slice(0, 2).toUpperCase() ||
+      "User"
+    );
+  };
+
+  const fullName = user
+    ? user.fullname || `${user.firstname || ""} ${user.lastname || ""}`.trim()
+    : "User";
+  const email = user?.email || "loading...";
+  const avatarUrl = user?.userImage || "/IMG.webp";
+
   return (
     <>
       <div className="relative" ref={menuRef}>
@@ -55,11 +101,24 @@ export default function UserMenu() {
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="flex items-center gap-3 rounded-lg hover:bg-gray-100 px-3 py-2 transition-colors"
+          disabled={loading}
         >
           {/* Avatar */}
-          <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-            TW
-          </div>
+          {loading || !avatarUrl ? (
+            <div className="w-10 h-10 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm animate-pulse">
+              {getInitials()}
+            </div>
+          ) : (
+            <img
+              src={avatarUrl}
+              alt={fullName}
+              className="w-10 h-10 rounded-full object-cover border border-gray-200"
+              onError={(e) => {
+                e.target.src = "/IMG.webp";
+                e.target.onerror = null;
+              }}
+            />
+          )}
 
           {/* Mobile 3 dots */}
           <MoreVertical size={20} className="sm:hidden text-gray-600" />
@@ -70,50 +129,79 @@ export default function UserMenu() {
           <>
             {/* Mobile backdrop */}
             <div
-              className="fixed inset-0 z-40 sm:hidden"
+              className="fixed inset-0 z-40 sm:hidden bg-black/20"
               onClick={() => setIsOpen(false)}
             />
 
-            <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50">
+            <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50">
               {/* Header */}
-              <div className="px-4 py-4 bg-white text-gray-800 border-b-2 border-gray-200">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold text-gray-700">
-                    TW
-                  </div>
+              <div className="px-5 py-5 bg-linear-to-r from-gray-50 to-white">
+                <div className="flex items-center gap-4">
+                  {loading ? (
+                    <div className="w-14 h-14 rounded-full bg-gray-200 animate-pulse" />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                      <img
+                        src={avatarUrl}
+                        alt={fullName}
+                        className="w-full h-full object-cover"
+                        onError={(e) => (e.target.src = "/IMG.webp")}
+                      />
+                    </div>
+                  )}
+
                   <div>
-                    <p className="font-semibold text-gray-900">Tomas William</p>
-                    <p className="text-sm text-gray-500">william@gmail.com</p>
+                    <p className="font-semibold text-gray-900 text-lg">
+                      {loading ? "Loading..." : fullName}
+                    </p>
+                    <p className="text-sm text-gray-500 mt-0.5">{email}</p>
                   </div>
                 </div>
               </div>
 
               {/* Menu Items */}
               <div className="py-2">
-                <MenuItem icon={<Send size={18} />} label="Send Money" />
-                <MenuItem icon={<DollarSign size={18} />} label="Add Funds" />
-                <MenuItem icon={<CreditCard size={18} />} label="Withdraw" />
+                <MenuItem
+                  icon={<Send size={18} />}
+                  label="Send Money"
+                  onClick={() => router.push("/send")}
+                />
 
-                <hr className="my-2 border-gray-200" />
+                <MenuItem
+                  icon={<DollarSign size={18} />}
+                  label="Add Funds"
+                  onClick={() => router.push("/add-funds")}
+                />
+
+                <MenuItem
+                  icon={<CreditCard size={18} />}
+                  label="Withdraw"
+                  onClick={() => router.push("/dashboard/withdraw-money")}
+                />
+
+                <hr className="my-2 border-gray-200 mx-2" />
 
                 <MenuItem
                   icon={<UserCheck size={18} />}
                   label="KYC Verification"
+                  onClick={() => router.push("/dashboard/kyc")}
                 />
+
                 <MenuItem
                   icon={<Shield size={18} />}
                   label="2FA Verification"
+                  onClick={() => router.push("/dashboard/2fa")}
                 />
 
-                <hr className="my-2 border-gray-200" />
+                <hr className="my-2 border-gray-200 mx-2" />
 
                 <MenuItem
                   icon={<LogOut size={18} />}
                   label="Logout"
-                  className="text-red-600 hover:bg-red-50"
+                  className="text-red-600 hover:bg-red-50 active:bg-red-100"
                   onClick={() => {
                     setShowLogoutModal(true);
-                    setIsOpen(false); // Close menu when opening modal
+                    setIsOpen(false);
                   }}
                 />
               </div>
@@ -124,23 +212,25 @@ export default function UserMenu() {
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-none ">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 relative border border-gray-200">
-            {/* Close button */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-none">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-5 p-7 relative border border-gray-100">
             <button
               onClick={() => setShowLogoutModal(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+              className="absolute top-5 right-5 text-gray-500 hover:text-gray-800 transition-colors"
+              disabled={isLoggingOut}
             >
-              <X size={20} />
+              <X size={22} />
             </button>
 
-            {/* Modal Content */}
             <div className="text-center">
-              <LogOut size={48} className="mx-auto text-red-500 mb-4" />
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
+              <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-red-50 flex items-center justify-center">
+                <LogOut size={40} className="text-red-600" />
+              </div>
+
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">
                 {isLoggingOut ? "Logging Out..." : "Are you sure?"}
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-8">
                 {isLoggingOut
                   ? "Please wait while we securely log you out."
                   : "You will be logged out of your account."}
@@ -150,16 +240,16 @@ export default function UserMenu() {
                 <button
                   onClick={() => setShowLogoutModal(false)}
                   disabled={isLoggingOut}
-                  className="px-6 py-2.5 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition-colors font-medium cursor-pointer disabled:opacity-50"
+                  className="cursor-pointer px-8 py-3 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition disabled:opacity-50 font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmLogout}
                   disabled={isLoggingOut}
-                  className="px-6 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium cursor-pointer disabled:opacity-50"
+                  className="cursor-pointer px-8 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition disabled:opacity-50 font-medium"
                 >
-                  {isLoggingOut ? "Logging Out..." : "Yes, Logout"}
+                  {isLoggingOut ? "Logging out..." : "Yes, Logout"}
                 </button>
               </div>
             </div>
@@ -177,16 +267,14 @@ function MenuItem({ icon, label, className = "", onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-3 text-sm cursor-pointer hover:bg-gray-100 transition-colors ${className}`}
+      className={`w-full flex items-center gap-3 px-5 py-3.5 text-base cursor-pointer hover:bg-gray-50 transition-colors ${className}`}
     >
       <span className={isDanger ? "text-red-600" : "text-gray-600"}>
         {icon}
       </span>
       <span
         className={
-          isDanger
-            ? "text-red-600 font-semibold"
-            : "text-gray-800 font-semibold"
+          isDanger ? "text-red-600 font-semibold" : "text-gray-900 font-medium"
         }
       >
         {label}

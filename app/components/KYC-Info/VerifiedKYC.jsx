@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { getKycInputFields, submitKyc } from "../../utils/api";
 
 const KYC_STATUS_MAP = {
-  0: { label: "Unverified", color: "text-red-500" },
+  0: { label: "Unverified", color: "text-red-600" },
   1: { label: "Verified", color: "text-green-600" },
-  2: { label: "Pending", color: "text-yellow-500" },
-  3: { label: "Rejected", color: "text-red-600" },
+  2: { label: "Pending", color: "text-yellow-600" },
+  3: { label: "Rejected", color: "text-red-700" },
 };
 
 export default function VerifiedKYC() {
@@ -18,7 +18,6 @@ export default function VerifiedKYC() {
   const [errors, setErrors] = useState([]);
   const [success, setSuccess] = useState("");
 
-  // Fetch KYC input fields
   useEffect(() => {
     const fetchKyc = async () => {
       setLoading(true);
@@ -28,11 +27,9 @@ export default function VerifiedKYC() {
       }
       setLoading(false);
     };
-
     fetchKyc();
   }, []);
 
-  // Handle input change
   const handleChange = (name, value) => {
     setFormValues((prev) => ({
       ...prev,
@@ -40,7 +37,6 @@ export default function VerifiedKYC() {
     }));
   };
 
-  // Submit KYC
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -58,43 +54,47 @@ export default function VerifiedKYC() {
     setSubmitting(false);
   };
 
-  // Loading UI
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <p className="text-gray-500">Loading KYC information...</p>
+        <p className="text-gray-600 font-medium">Loading KYC information...</p>
       </div>
     );
   }
 
-  // Error fallback
   if (!kycData) {
-    return <p className="text-red-500 text-center">Failed to load KYC data.</p>;
+    return (
+      <p className="text-red-600 text-center font-medium">
+        Failed to load KYC data.
+      </p>
+    );
   }
 
   const status = KYC_STATUS_MAP[kycData.kyc_status];
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow">
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-md border border-gray-200">
       {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold">KYC Verification</h2>
-        <p className={`mt-2 font-medium ${status.color}`}>
+      <div className="mb-6 border-b pb-4">
+        <h2 className="text-2xl font-semibold text-gray-800">
+          KYC Verification
+        </h2>
+        <p className={`mt-2 text-sm font-semibold ${status.color}`}>
           Status: {status.label}
         </p>
       </div>
 
       {/* Success Message */}
       {success && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
+        <div className="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
           {success}
         </div>
       )}
 
       {/* Error Messages */}
       {errors.length > 0 && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
-          <ul className="list-disc pl-5">
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+          <ul className="list-disc pl-5 space-y-1">
             {errors.map((err, i) => (
               <li key={i}>{err}</li>
             ))}
@@ -102,17 +102,16 @@ export default function VerifiedKYC() {
         </div>
       )}
 
-      {/* KYC Form (Only for Unverified / Rejected) */}
+      {/* KYC Form */}
       {(kycData.kyc_status === 0 || kycData.kyc_status === 3) && (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {kycData.input_fields.map((field, index) => (
             <div key={index}>
-              <label className="block mb-1 font-medium">
+              <label className="block mb-1 text-sm font-medium text-gray-700">
                 {field.label}
                 {field.required && <span className="text-red-500"> *</span>}
               </label>
 
-              {/* File Input */}
               {field.type === "file" && (
                 <input
                   type="file"
@@ -121,24 +120,49 @@ export default function VerifiedKYC() {
                     .join(",")}
                   required={field.required}
                   onChange={(e) => handleChange(field.name, e.target.files[0])}
-                  className="w-full border rounded p-2"
+                  className="w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-green-400 focus:outline-none"
                 />
               )}
 
-              {/* Select Input */}
               {field.type === "select" && (
-                <select
-                  required={field.required}
-                  onChange={(e) => handleChange(field.name, e.target.value)}
-                  className="w-full border rounded p-2"
-                >
-                  <option value="">Select {field.label}</option>
-                  {field.validation.options.map((option, i) => (
-                    <option key={i} value={option.trim()}>
-                      {option.trim()}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    required={field.required}
+                    onChange={(e) => handleChange(field.name, e.target.value)}
+                    className="
+      w-full appearance-none
+      rounded-lg border border-gray-300
+      bg-white px-3 py-2.5 pr-10
+      text-sm text-gray-700
+      focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400
+    "
+                  >
+                    <option value="">Select {field.label}</option>
+                    {field.validation.options.map((option, i) => (
+                      <option key={i} value={option.trim()}>
+                        {option.trim()}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* Custom dropdown arrow */}
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <svg
+                      className="h-4 w-4 text-gray-500"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </div>
+                </div>
               )}
             </div>
           ))}
@@ -146,27 +170,26 @@ export default function VerifiedKYC() {
           <button
             type="submit"
             disabled={submitting}
-            className={`w-full py-2 rounded text-white ${
-              submitting
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
+            className={`w-full py-2.5 rounded-lg text-white font-semibold transition-all
+              ${
+                submitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "btn-primary hover:opacity-90"
+              }`}
           >
             {submitting ? "Submitting..." : "Submit KYC"}
           </button>
         </form>
       )}
 
-      {/* Pending Message */}
       {kycData.kyc_status === 2 && (
-        <p className="text-yellow-600 font-medium">
+        <p className="text-yellow-600 font-medium mt-4">
           Your KYC is under review. Please wait for approval.
         </p>
       )}
 
-      {/* Verified Message */}
       {kycData.kyc_status === 1 && (
-        <p className="text-green-600 font-medium">
+        <p className="text-green-600 font-medium mt-4">
           Your KYC is verified successfully.
         </p>
       )}
