@@ -461,3 +461,56 @@ export const submitFinalWithdraw = async (data) => {
     };
   }
 };
+
+export const getGoogle2FASetup = async () => {
+  try {
+    const { data } = await api.get("/user/security/google-2fa");
+    return data;
+  } catch (error) {
+    "Error fetching 2FA setup:", error;
+
+    if (error.response?.data) {
+      return error.response.data;
+    }
+
+    return {
+      message: { error: ["Failed to load 2FA setup information"] },
+      data: null,
+    };
+  }
+};
+
+export const google2FAUpdateStatus = async () => {
+  try {
+    const { data } = await api.post("/user/security/google-2fa/status/update");
+    return data;
+  } catch (error) {
+    "Error enabling Google 2FA:", error;
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["An unexpected error occurred while enabling 2FA"] },
+    };
+  }
+};
+
+export const verifyGoogle2FA = async (otpCode) => {
+  const formData = new FormData();
+  formData.append("otp", otpCode);
+
+  try {
+    const { data } = await api.post("/user/google-2fa/otp/verify", formData);
+    return data;
+  } catch (error) {
+    // ("2FA verification error:", error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: {
+        error: ["Network error or server unreachable"],
+      },
+    };
+  }
+};

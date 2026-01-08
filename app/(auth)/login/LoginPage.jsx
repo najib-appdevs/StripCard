@@ -20,28 +20,32 @@ export default function LoginPage() {
 
   const router = useRouter();
 
-  // Check if user is already logged in on component mount
   useEffect(() => {
-    const checkExistingSession = () => {
-      // Check localStorage first (remember me)
-      const localToken = localStorage.getItem("auth_token");
-      const localUser = localStorage.getItem("user");
+    const localToken = localStorage.getItem("auth_token");
+    const localUser = localStorage.getItem("user");
+    const sessionToken = sessionStorage.getItem("auth_token");
+    const sessionUser = sessionStorage.getItem("user");
 
-      // Check sessionStorage (current session)
-      const sessionToken = sessionStorage.getItem("auth_token");
-      const sessionUser = sessionStorage.getItem("user");
-
-      if (localToken && localUser) {
-        // User had "remember me" checked, redirect to dashboard
-        router.push("/dashboard");
-      } else if (sessionToken && sessionUser) {
-        // User has active session, redirect to dashboard
-        router.push("/dashboard");
-      }
-    };
-
-    checkExistingSession();
+    if ((localToken && localUser) || (sessionToken && sessionUser)) {
+      router.push("/dashboard");
+    }
   }, [router]);
+
+  const getMessageString = (message) => {
+    if (!message) return "";
+
+    if (typeof message === "string") return message;
+    if (Array.isArray(message)) return message.join(" • ");
+
+    if (message.success && Array.isArray(message.success)) {
+      return message.success.join(" • ");
+    }
+    if (message.error && Array.isArray(message.error)) {
+      return message.error.join(" • ");
+    }
+
+    return "Response received";
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,80 +65,64 @@ export default function LoginPage() {
         password,
       });
 
-      // Check if login was successful based on the backend response structure
-      const isSuccess = response?.message?.success?.some((msg) =>
-        msg.toLowerCase().includes("login successful")
-      );
-
-      if (!isSuccess) {
-        toast.error("Login was not successful");
-        console.log("Login was not successful");
-        setLoading(false);
-        return;
+      // Show server success message if available
+      if (response?.message) {
+        const successMsg = getMessageString(response.message);
+        if (successMsg) {
+          toast.success(successMsg);
+        }
       }
 
       const token = response?.data?.token;
       const user = response?.data?.user;
 
-      if (!token) {
-        console.log("No authentication token received from server");
-        toast.error("Authentication failed. Please try again.");
+      if (!token || !user) {
+        toast.error("Invalid response from server");
         setLoading(false);
         return;
       }
 
-      // Clear any existing auth data from both storages
+      // Clear previous auth data
       localStorage.removeItem("auth_token");
       localStorage.removeItem("user");
       sessionStorage.removeItem("auth_token");
       sessionStorage.removeItem("user");
 
-      // Store based on "Remember Me" preference
+      // Store auth data
       if (rememberMe) {
-        // Store in localStorage for persistent login
         localStorage.setItem("auth_token", token);
-        if (user) {
-          localStorage.setItem("user", JSON.stringify(user));
-        }
+        localStorage.setItem("user", JSON.stringify(user));
       } else {
-        // Store in sessionStorage for session-only login
         sessionStorage.setItem("auth_token", token);
-        if (user) {
-          sessionStorage.setItem("user", JSON.stringify(user));
-        }
+        sessionStorage.setItem("user", JSON.stringify(user));
       }
 
-      // Redirect based on email verification status
-      if (user?.email_verified === 1) {
-        toast.success("Login successful! Redirecting to dashboard...");
+      // ====== 2FA Priority Check ======
+      if (user.two_factor_status === 1 && user.two_factor_verified === 0) {
+        // 2FA is enabled but not yet verified in this session
+        setTimeout(() => {
+          router.push("/GoogleTwoFactorAuth");
+        }, 600);
+        return; // Stop further redirection
+      }
+
+      // ====== Normal flow (no pending 2FA) ======
+      if (user.email_verified === 1) {
         setTimeout(() => {
           router.push("/dashboard");
-        }, 500);
+        }, 600);
       } else {
-        toast.success("Login successful! Please verify your email.");
         setTimeout(() => {
           router.push("/email-verify");
-        }, 500);
+        }, 600);
       }
     } catch (error) {
-      console.error("Login error:", error);
+      let errorMessage = "Something went wrong. Please try again later.";
 
-      let errorMessage = "Login failed. Please try again.";
-
-      // Try to get meaningful error message from backend
-      if (error.response?.data) {
-        const backendData = error.response.data;
-
-        if (backendData.message) {
-          // message can be string or object with arrays
-          if (typeof backendData.message === "string") {
-            errorMessage = backendData.message;
-          } else if (Array.isArray(backendData.message?.error)) {
-            errorMessage = backendData.message.error.join(" • ");
-          } else if (Array.isArray(backendData.message)) {
-            errorMessage = backendData.message.join(" • ");
-          }
-        }
+      if (error.response?.data?.message) {
+        errorMessage = getMessageString(error.response.data.message);
+      } else if (error.response?.data?.error) {
+        errorMessage = getMessageString(error.response.data.error);
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -158,7 +146,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-emerald-50 via-teal-50 to-green-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8 border border-gray-100">
-        {/* Logo / Title */}
         <div className="text-center mb-8">
           <Image
             src="/logo-dark.png"
@@ -170,7 +157,6 @@ export default function LoginPage() {
           <div className="h-1 w-20 bg-linear-to-r from-emerald-400 to-green-400 mx-auto rounded-full"></div>
         </div>
 
-        {/* Main Heading */}
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
           Welcome Back
         </h2>
@@ -179,7 +165,6 @@ export default function LoginPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email Field */}
           <div>
             <label
               htmlFor="email"
@@ -203,7 +188,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Password Field */}
           <div>
             <label
               htmlFor="password"
@@ -227,7 +211,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition-colors"
+                className="cursor-pointer absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition-colors"
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -238,7 +222,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Remember Me & Forgot Password */}
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <input
@@ -263,7 +246,6 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* reCAPTCHA */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
               <Shield className="h-4 w-4 text-emerald-600" />
@@ -309,17 +291,23 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-linear-to-r from-emerald-500 to-green-500 text-white font-semibold py-3.5 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className={`w-full flex items-center justify-center btn-primary text-white font-semibold py-3.5 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 ${
+              loading
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer hover:opacity-90"
+            }`}
           >
-            {loading ? "Logging in..." : "Log In"}
+            {loading ? (
+              <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              "Log In"
+            )}
           </button>
         </form>
 
-        {/* Bottom Links */}
         <div className="mt-6 text-center text-sm text-gray-600 space-y-2">
           <p>
             Don&apos;t have an account?{" "}
