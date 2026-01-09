@@ -126,7 +126,7 @@ export default function WithdrawMoney() {
     ? `${
         currentGatewayCurrency.fixed_charge?.toFixed(4) || "0.0000"
       } ${baseCurrency} + ${
-        currentGatewayCurrency.percent_charge?.toFixed(2) || "0.00"
+        currentGatewayCurrency.percent_charge?.toFixed(4) || "0.00"
       }%`
     : "—";
 
@@ -203,7 +203,7 @@ export default function WithdrawMoney() {
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
+                placeholder="Enter Amount"
                 className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 focus:outline-none no-spinner"
               />
 

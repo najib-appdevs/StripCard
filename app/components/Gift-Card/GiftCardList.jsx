@@ -1,17 +1,23 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getAllGiftCards, searchGiftCardsByCountry } from "../../utils/api";
+import GiftCardListSkeleton from "./GiftCardListSkeleton";
 
 const GiftCardList = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // ============================================================
+  // STATE MANAGEMENT
+  // ============================================================
+
   // Read initial country from URL (persists on reload)
   const initialCountry = searchParams.get("country") || "all";
 
   const [selectedCountry, setSelectedCountry] = useState(initialCountry);
-  const [pendingCountry, setPendingCountry] = useState(initialCountry); // temp selection before search
+  const [pendingCountry, setPendingCountry] = useState(initialCountry);
   const [isOpen, setIsOpen] = useState(false);
 
   const [giftCards, setGiftCards] = useState([]);
@@ -23,6 +29,10 @@ const GiftCardList = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // ============================================================
+  // DATA FETCHING
+  // ============================================================
 
   const fetchGiftCards = async (page = 1, countryIso = selectedCountry) => {
     setLoading(true);
@@ -37,7 +47,8 @@ const GiftCardList = () => {
       }
 
       if (result?.message?.error) {
-        throw new Error(result.message.error[0] || "Failed to load gift cards");
+        setError(result.message.error[0] || "Failed to load gift cards");
+        return;
       }
 
       const productsData = result?.data?.products || {};
@@ -50,7 +61,7 @@ const GiftCardList = () => {
       setPaginationLinks(productsData.links || []);
 
       // Load countries only once
-      if (countries.length === 0 && countryIso === "all") {
+      if (countries.length === 0) {
         const formattedCountries = [
           { id: 0, name: "All Countries", iso2: "all" },
           ...apiCountries.map((c) => ({
@@ -68,9 +79,13 @@ const GiftCardList = () => {
     }
   };
 
+  // ============================================================
+  // EFFECTS
+  // ============================================================
+
   // Load on mount + when page changes in URL
   useEffect(() => {
-    const countryFromUrl = searchParams.get("country") || "all";
+    const countryFromUrl = searchParams.get("country")?.toLowerCase() || "all";
     const pageFromUrl = Number(searchParams.get("page")) || 1;
 
     setSelectedCountry(countryFromUrl);
@@ -80,6 +95,10 @@ const GiftCardList = () => {
     fetchGiftCards(pageFromUrl, countryFromUrl);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  // ============================================================
+  // EVENT HANDLERS
+  // ============================================================
 
   const handleSearch = () => {
     const newParams = new URLSearchParams(searchParams);
@@ -103,20 +122,28 @@ const GiftCardList = () => {
     }
   };
 
-  const selectedLabel =
-    countries.find((c) => c.iso2 === selectedCountry)?.name || "All Countries";
-
   const handleCardClick = (card) => {
     router.push(`/dashboard/gift-card/${card.productId}`);
   };
 
+  // ============================================================
+  // DERIVED VALUES
+  // ============================================================
+
+  const selectedLabel =
+    countries.find((c) => c.iso2 === selectedCountry)?.name || "All Countries";
+
+  // ============================================================
+  // LOADING STATE
+  // ============================================================
+
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-      </div>
-    );
+    return <GiftCardListSkeleton />;
   }
+
+  // ============================================================
+  // ERROR STATE
+  // ============================================================
 
   if (error) {
     return (
@@ -125,7 +152,7 @@ const GiftCardList = () => {
         <br />
         <button
           onClick={() => fetchGiftCards(currentPage, selectedCountry)}
-          className="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+          className="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 cursor-pointer"
         >
           Try Again
         </button>
@@ -133,17 +160,25 @@ const GiftCardList = () => {
     );
   }
 
+  // ============================================================
+  // MAIN RENDER
+  // ============================================================
+
   return (
     <>
-      {/* Header with Filter + Search Button */}
+      {/* ============================================================ */}
+      {/* HEADER SECTION - Filter Dropdown + Search Button */}
+      {/* ============================================================ */}
+
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Gift Cards</h1>
 
         <div className="flex items-center gap-3">
+          {/* Country Filter Dropdown */}
           <div className="relative">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 min-w-[200px]"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-emerald-400 min-w-[200px] cursor-pointer"
             >
               <svg
                 className="w-5 h-5 text-gray-400"
@@ -158,20 +193,35 @@ const GiftCardList = () => {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
-              <span className="flex-1 text-left">{countries.find(c => c.iso2 === pendingCountry)?.name || "All Countries"}</span>
+              <span className="flex-1 text-left">
+                {countries.find((c) => c.iso2 === pendingCountry)?.name ||
+                  "All Countries"}
+              </span>
+
               <svg
-                className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                className={`w-4 h-4 text-gray-500 transition-transform ${
+                  isOpen ? "rotate-180" : ""
+                }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
 
+            {/* Dropdown Menu */}
             {isOpen && (
               <>
-                <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+                <div
+                  className="fixed inset-0 z-10 cursor-pointer"
+                  onClick={() => setIsOpen(false)}
+                />
                 <div className="absolute z-20 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg max-h-80 overflow-y-auto">
                   {countries.map((country) => (
                     <button
@@ -180,7 +230,7 @@ const GiftCardList = () => {
                         setPendingCountry(country.iso2);
                         setIsOpen(false);
                       }}
-                      className={`w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg ${
+                      className={`w-full px-4 py-2.5 text-left text-sm hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg cursor-pointer ${
                         pendingCountry === country.iso2
                           ? "bg-emerald-50 text-emerald-700 font-medium"
                           : "text-gray-700"
@@ -197,15 +247,17 @@ const GiftCardList = () => {
           {/* Search Button */}
           <button
             onClick={handleSearch}
-            className="px-5 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm transition-colors"
+            className="px-5 py-2.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 font-medium text-sm transition-colors cursor-pointer"
           >
             Search
           </button>
         </div>
       </div>
 
-      {/* Rest of the component remains the same */}
-      {/* Gift Cards Grid */}
+      {/* ============================================================ */}
+      {/* GIFT CARDS GRID SECTION */}
+      {/* ============================================================ */}
+
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
         {giftCards.length === 0 ? (
           <div className="col-span-full text-center py-12 text-gray-600">
@@ -218,7 +270,7 @@ const GiftCardList = () => {
               onClick={() => handleCardClick(card)}
               className="group cursor-pointer rounded-xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-200 hover:border-emerald-400"
             >
-              <div className="aspect-[4/3] overflow-hidden bg-gray-100">
+              <div className="aspect-4/3 overflow-hidden bg-gray-100">
                 <img
                   src={card.logoUrls?.[0] || "/images/placeholder-giftcard.png"}
                   alt={card.productName}
@@ -235,19 +287,26 @@ const GiftCardList = () => {
         )}
       </div>
 
-      {/* Pagination */}
+      {/* ============================================================ */}
+      {/* PAGINATION SECTION */}
+      {/* ============================================================ */}
+
       {lastPage > 1 && (
         <div className="flex items-center justify-center gap-2 flex-wrap">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             Previous
           </button>
 
           {paginationLinks
-            .filter((link) => link.label !== "&laquo; Previous" && link.label !== "Next &raquo;")
+            .filter(
+              (link) =>
+                link.label !== "&laquo; Previous" &&
+                link.label !== "Next &raquo;"
+            )
             .map((link, index) => {
               if (link.url === null) {
                 return (
@@ -260,7 +319,7 @@ const GiftCardList = () => {
                 <button
                   key={index}
                   onClick={() => handlePageChange(Number(link.label))}
-                  className={`w-9 h-9 rounded-lg text-sm font-medium ${
+                  className={`w-9 h-9 rounded-lg text-sm font-medium cursor-pointer ${
                     currentPage === Number(link.label)
                       ? "bg-emerald-500 text-white"
                       : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
@@ -274,7 +333,7 @@ const GiftCardList = () => {
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === lastPage}
-            className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             Next
           </button>

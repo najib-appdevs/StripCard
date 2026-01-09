@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getGoogle2FASetup, google2FAUpdateStatus } from "../../utils/api";
+import TwoFactorSkeleton from "./TwoFactorSkeleton";
 
 const TwoFactorAuthenticator = () => {
   const [secret, setSecret] = useState("");
@@ -101,6 +102,10 @@ const TwoFactorAuthenticator = () => {
   const buttonAction = isEnabled
     ? () => openConfirmModal("disable")
     : () => openConfirmModal("enable");
+
+  if (loading) {
+    return <TwoFactorSkeleton />;
+  }
 
   return (
     <>

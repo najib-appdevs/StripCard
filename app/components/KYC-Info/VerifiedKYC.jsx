@@ -1,7 +1,11 @@
 "use client";
 
+import { Listbox } from "@headlessui/react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { getKycInputFields, submitKyc } from "../../utils/api";
+import KycSkeleton from "./KycSkeleton";
 
 const KYC_STATUS_MAP = {
   0: { label: "Unverified", color: "text-red-600" },
@@ -9,6 +13,10 @@ const KYC_STATUS_MAP = {
   2: { label: "Pending", color: "text-yellow-600" },
   3: { label: "Rejected", color: "text-red-700" },
 };
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(" ");
+}
 
 export default function VerifiedKYC() {
   const [loading, setLoading] = useState(true);
@@ -43,23 +51,34 @@ export default function VerifiedKYC() {
     setErrors([]);
     setSuccess("");
 
-    const res = await submitKyc(formValues);
+    try {
+      const res = await submitKyc(formValues);
 
-    if (res?.message?.success) {
-      setSuccess(res.message.success[0] || "KYC submitted successfully");
-    } else if (res?.message?.error) {
-      setErrors(res.message.error);
+      if (res?.message?.success) {
+        const msg = res.message.success[0] || "KYC submitted successfully";
+        setSuccess(msg);
+        toast.success(msg);
+      } else if (res?.message?.error) {
+        const errorMsg = res.message.error[0] || "Submission failed";
+        setErrors(res.message.error);
+        toast.error(errorMsg);
+      } else {
+        // This is your "Server Error" case
+        toast.error("Server Error", {
+          duration: 5000,
+        });
+      }
+    } catch (err) {
+      toast.error("Something went wrong. Please check your connection", {
+        duration: 5000,
+      });
+    } finally {
+      setSubmitting(false);
     }
-
-    setSubmitting(false);
   };
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <p className="text-gray-600 font-medium">Loading KYC information...</p>
-      </div>
-    );
+    return <KycSkeleton />;
   }
 
   if (!kycData) {
@@ -119,50 +138,95 @@ export default function VerifiedKYC() {
                     .map((m) => `.${m.trim()}`)
                     .join(",")}
                   required={field.required}
-                  onChange={(e) => handleChange(field.name, e.target.files[0])}
-                  className="w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-700 focus:ring-2 focus:ring-green-400 focus:outline-none"
+                  onChange={(e) =>
+                    handleChange(field.name, e.target.files?.[0] ?? null)
+                  }
+                  className="w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-700 focus:ring-1 focus:ring-green-400 focus:outline-none cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
                 />
               )}
 
               {field.type === "select" && (
-                <div className="relative">
-                  <select
-                    required={field.required}
-                    onChange={(e) => handleChange(field.name, e.target.value)}
-                    className="
-      w-full appearance-none
-      rounded-lg border border-gray-300
-      bg-white px-3 py-2.5 pr-10
-      text-sm text-gray-700
-      focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400
-    "
-                  >
-                    <option value="">Select {field.label}</option>
-                    {field.validation.options.map((option, i) => (
-                      <option key={i} value={option.trim()}>
-                        {option.trim()}
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* Custom dropdown arrow */}
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <svg
-                      className="h-4 w-4 text-gray-500"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                <Listbox
+                  value={formValues[field.name] ?? ""}
+                  onChange={(value) => handleChange(field.name, value)}
+                >
+                  <div className="relative mt-1">
+                    <Listbox.Button
+                      className={`
+                        relative w-full cursor-pointer 
+                        rounded-lg border border-gray-300 
+                        bg-white py-2.5 pl-3 pr-10 
+                        text-left text-sm text-gray-700
+                        focus:outline-none focus:ring-1 focus:ring-green-400 focus:border-green-400
+                      `}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 9l-7 7-7-7"
-                      />
-                    </svg>
+                      <span className="block truncate">
+                        {formValues[field.name]
+                          ? formValues[field.name]
+                          : `Select ${field.label}`}
+                      </span>
+                      <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <ChevronDown
+                          className="h-5 w-5 text-gray-500"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </Listbox.Button>
+
+                    <Listbox.Options
+                      className={`
+                        absolute z-10 mt-1 max-h-60 w-full 
+                        overflow-auto rounded-lg bg-white py-1 
+                        text-base shadow-lg ring-1 ring-black/5 
+                        focus:outline-none sm:text-sm
+                      `}
+                    >
+                      {field.validation.options.map((option, i) => (
+                        <Listbox.Option
+                          key={i}
+                          value={option.trim()}
+                          className={({ active, selected }) =>
+                            classNames(
+                              active
+                                ? "bg-green-50 text-green-900"
+                                : "text-gray-900",
+                              selected ? "font-semibold bg-green-100" : "",
+                              "relative cursor-pointer select-none py-2 pl-10 pr-4"
+                            )
+                          }
+                        >
+                          {({ selected }) => (
+                            <>
+                              <span
+                                className={classNames(
+                                  selected ? "font-semibold" : "font-normal",
+                                  "block truncate"
+                                )}
+                              >
+                                {option.trim()}
+                              </span>
+                              {selected ? (
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-green-600">
+                                  <svg
+                                    className="h-5 w-5"
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </span>
+                              ) : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
                   </div>
-                </div>
+                </Listbox>
               )}
             </div>
           ))}
@@ -170,14 +234,20 @@ export default function VerifiedKYC() {
           <button
             type="submit"
             disabled={submitting}
-            className={`w-full py-2.5 rounded-lg text-white font-semibold transition-all
+            className={`w-full py-2.5 rounded-lg text-white font-semibold transition-all cursor-pointer flex items-center justify-center gap-2 btn-primary
               ${
                 submitting
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "btn-primary hover:opacity-90"
+                  ? "opacity-90 cursor-wait"
+                  : "hover:opacity-90 active:opacity-80"
               }`}
           >
-            {submitting ? "Submitting..." : "Submit KYC"}
+            {submitting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+              </>
+            ) : (
+              "Submit KYC"
+            )}
           </button>
         </form>
       )}

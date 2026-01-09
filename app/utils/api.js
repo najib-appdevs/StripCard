@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://fahim.appdevs.team/stripcard/public/api",
+  // baseURL: "https://fahim.appdevs.team/stripcard/public/api",
+  baseURL: "https://mehedi.appdevs.team/stripcard/public/api",
   headers: {
     "Content-Type": "application/x-www-form-urlencoded",
     // "Content-Type": "application/json",
@@ -138,7 +139,7 @@ export const getUserProfile = async () => {
     const { data } = await api.get("/user/profile");
     return data;
   } catch (error) {
-    console.error("Profile fetch error:", error);
+    // console.error("Profile fetch error:", error);
     if (error.response) {
       return error.response.data;
     }
@@ -167,6 +168,9 @@ export const updateUserProfile = async (profileData, imageFile) => {
     });
     return data;
   } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
     return { message: { error: ["An unexpected error occurred."] } };
   }
 };
@@ -236,11 +240,22 @@ export const submitKyc = async (kycFormValues) => {
     });
     return data;
   } catch (error) {
-    console.error("KYC submit error:", error);
+    // console.error("KYC submit error:", error);
     if (error.response) {
       return error.response.data;
     }
     return { message: { error: ["Failed to submit KYC"] } };
+  }
+};
+
+export const getUserGiftCards = async () => {
+  try {
+    const { data } = await api.get("/user/gift-card");
+    return data;
+  } catch (error) {
+    if (error.response) {
+      return error.response?.data || { message: { error: ["Network error"] } };
+    }
   }
 };
 
@@ -289,7 +304,7 @@ export const getGiftCardDetails = async (productId) => {
     );
     return data;
   } catch (error) {
-    console.error("Gift card details fetch error:", error);
+    // console.error("Gift card details fetch error:", error);
     if (error.response?.data) {
       return error.response.data;
     }
@@ -321,7 +336,7 @@ export const submitGiftCardOrder = async (orderData) => {
 
     return data;
   } catch (error) {
-    console.error("Gift card order submission error:", error);
+    // console.error("Gift card order submission error:", error);
 
     if (error.response?.data) {
       return error.response.data;

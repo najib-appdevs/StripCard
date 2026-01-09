@@ -1,5 +1,3 @@
-// "use client";
-// import { useRouter } from "next/navigation";
 import GiftCardTable from "../../components/Gift-Card/GiftCardTable";
 
 export const metadata = {
@@ -7,8 +5,6 @@ export const metadata = {
 };
 
 export default function Page() {
-  // const router = useRouter();
-
   return (
     <>
       <GiftCardTable />

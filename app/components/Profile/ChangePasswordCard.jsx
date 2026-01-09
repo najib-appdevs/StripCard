@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { updateUserPassword } from "../../utils/api";
 import { getToastMessage } from "../../utils/toastHelper";
-
+import ChangePasswordSkeleton from "./ChangePasswordSkeleton";
 
 function ChangePasswordCard() {
   const [passwordData, setPasswordData] = useState({
@@ -13,11 +14,22 @@ function ChangePasswordCard() {
     confirmPassword: "",
   });
 
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
     confirm: false,
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handlePasswordChange = (e) => {
     setPasswordData({
@@ -33,48 +45,41 @@ function ChangePasswordCard() {
     }));
   };
 
-  const handlePasswordChangeSubmit = async () => {
-  if (!passwordData.currentPassword || !passwordData.newPassword) {
-    toast.error("Please fill in all fields.");
-    return;
-  }
+  const handlePasswordChangeSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  if (passwordData.newPassword !== passwordData.confirmPassword) {
-    toast.error("New password and confirm password do not match!");
-    return;
-  }
-
-  const loadingToast = toast.loading("Updating password...");
-
-  const response = await updateUserPassword({
-    current_password: passwordData.currentPassword,
-    password: passwordData.newPassword,
-    password_confirmation: passwordData.confirmPassword,
-  });
-
-  toast.dismiss(loadingToast);
-
-  // 🔥 HERE is the magic
-  const { type, text } = getToastMessage(response);
-
-  toast[type](text);
-
-  // Reset form only on success
-  if (type === "success") {
-    setPasswordData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+    const response = await updateUserPassword({
+      current_password: passwordData.currentPassword,
+      password: passwordData.newPassword,
+      password_confirmation: passwordData.confirmPassword,
     });
-    setShowPasswords({ current: false, new: false, confirm: false });
-  }
-};
 
-  // Reusable input class (same as profile card)
+    const { type, text } = getToastMessage(response);
+    toast[type](text);
+
+    // Reset form only on success
+    if (type === "success") {
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setShowPasswords({ current: false, new: false, confirm: false });
+    }
+
+    setIsSubmitting(false);
+  };
+
+  // Reusable input class
   const inputClass =
     "w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg placeholder:text-gray-500 text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-100 outline-none transition-all";
 
   const labelClass = "block text-sm font-medium text-gray-700 mb-2";
+
+  if (loading) {
+    return <ChangePasswordSkeleton />;
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 max-w-4xl mx-auto">
@@ -82,7 +87,7 @@ function ChangePasswordCard() {
         Change Password
       </h2>
 
-      <div className="space-y-6">
+      <form onSubmit={handlePasswordChangeSubmit} className="space-y-6">
         {/* Current Password */}
         <div>
           <label className={labelClass}>
@@ -96,11 +101,14 @@ function ChangePasswordCard() {
               onChange={handlePasswordChange}
               className={inputClass}
               placeholder="Enter Current Password"
+              required
+              disabled={isSubmitting}
             />
             <button
               type="button"
               onClick={() => togglePasswordVisibility("current")}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition cursor-pointer"
+              disabled={isSubmitting}
             >
               {showPasswords.current ? (
                 <svg
@@ -154,11 +162,14 @@ function ChangePasswordCard() {
               onChange={handlePasswordChange}
               className={inputClass}
               placeholder="Enter New Password"
+              required
+              disabled={isSubmitting}
             />
             <button
               type="button"
               onClick={() => togglePasswordVisibility("new")}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition cursor-pointer"
+              disabled={isSubmitting}
             >
               {showPasswords.new ? (
                 <svg
@@ -212,11 +223,14 @@ function ChangePasswordCard() {
               onChange={handlePasswordChange}
               className={inputClass}
               placeholder="Enter Confirmed Password"
+              required
+              disabled={isSubmitting}
             />
             <button
               type="button"
               onClick={() => togglePasswordVisibility("confirm")}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition cursor-pointer"
+              disabled={isSubmitting}
             >
               {showPasswords.confirm ? (
                 <svg
@@ -256,21 +270,29 @@ function ChangePasswordCard() {
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Submit Button */}
-      <div className="flex justify-end mt-10">
-        <button
-          onClick={handlePasswordChangeSubmit}
-          className="cursor-pointer px-10 py-3 w-full text-white rounded-lg font-semibold shadow-md hover:shadow-lg"
-          style={{
-            background:
-              "linear-gradient(76.84deg, #0EBE98 -2.66%, #50C631 105.87%)",
-          }}
-        >
-          Change
-        </button>
-      </div>
+        {/* Submit Button */}
+        <div className="flex justify-end mt-10">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`cursor-pointer px-10 py-3 w-full text-white rounded-lg font-semibold shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all
+              ${isSubmitting ? "opacity-90 cursor-wait" : ""}`}
+            style={{
+              background:
+                "linear-gradient(76.84deg, #0EBE98 -2.66%, #50C631 105.87%)",
+            }}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+              </>
+            ) : (
+              "Change"
+            )}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

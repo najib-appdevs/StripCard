@@ -1,33 +1,11 @@
-// "use client";
-
-// import { useParams } from "next/navigation";
-// import { giftCards } from "../../../components/Gift-Card/giftCardData"; // Mock Data
-// import GiftCardForm from "../../../components/Gift-Card/GiftCardForm";
-
-// export default function Page() {
-//   const params = useParams();
-
-//   const cardId = Number(params.id);
-
-//   const card = giftCards.find((c) => c.id === cardId);
-
-//   if (!card) {
-//     return <p>Gift Card not found</p>;
-//   }
-
-//   return (
-//     <div className="max-w-3xl mx-auto">
-//       <GiftCardForm card={card} />
-//     </div>
-//   );
-// }
-// ----------------------------------------------------------
 "use client";
 
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import GiftCardForm from "../../../components/Gift-Card/GiftCardForm"; // adjust path if needed
-import { getGiftCardDetails } from "../../../utils/api"; // ← we'll add this API function
+import { Suspense, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import GiftCardForm from "../../../components/Gift-Card/GiftCardForm";
+import GiftCardFormSkeleton from "../../../components/Gift-Card/GiftCardFormSkeleton";
+import { getGiftCardDetails } from "../../../utils/api";
 
 export default function GiftCardDetailPage() {
   const { id } = useParams();
@@ -39,7 +17,12 @@ export default function GiftCardDetailPage() {
 
   useEffect(() => {
     const fetchCardDetails = async () => {
-      if (!productId) return;
+      if (!productId || isNaN(productId)) {
+        setError("Invalid Gift Card ID");
+        setLoading(false);
+
+        return;
+      }
 
       setLoading(true);
       setError(null);
@@ -47,38 +30,135 @@ export default function GiftCardDetailPage() {
       try {
         const response = await getGiftCardDetails(productId);
 
+        // Handle API-level error messages
         if (response?.message?.error) {
-          throw new Error(
-            response.message.error[0] || "Failed to load gift card details"
-          );
+          const errorMsg =
+            response.message.error[0] || "Failed to load gift card details";
+          setError(errorMsg);
+          toast.error(errorMsg);
+          return;
         }
 
-        const product = response?.data?.product || null;
+        const product = response?.data?.product;
         if (!product) {
-          throw new Error("Gift card not found");
+          setError("Gift Card not Found");
+
+          return;
         }
 
-        // Map API response to the shape your GiftCardForm expects
+        // Main data mapping
         const mappedCard = {
           id: product.productId,
-          name: product.productName,
+          name: product.productName?.trim() || "Unnamed Gift Card",
+          slug:
+            product.productName
+              ?.toLowerCase()
+              .replace(/\s+/g, "-")
+              .replace(/[^a-z0-9-]/g, "") || "",
+
           image: product.logoUrls?.[0] || "/images/placeholder-giftcard.png",
-          country: product.country?.name || "",
-          minAmount: product.minRecipientDenomination || 0,
-          maxAmount: product.maxRecipientDenomination || 0,
-          denominationType: product.denominationType, // "RANGE" or "FIXED"
-          fixedRecipientDenominations:
-            product.fixedRecipientDenominations || [],
-          fixedSenderDenominations: product.fixedSenderDenominations || [],
-          // Add more fields if your form needs them later
-          currency: product.recipientCurrencyCode,
-          brand: product.brand?.brandName,
-          redeemInstruction: product.redeemInstruction?.concise,
+
+          brand: {
+            name: product.brand?.brandName || "Unknown Brand",
+            logo: product.brand?.logoUrl || null,
+            id: product.brand?.brandId,
+          },
+
+          category: product.category?.name || null,
+
+          country: {
+            name: product.country?.name || "",
+            iso: product.country?.isoName || "",
+            flag: product.country?.flagUrl || null,
+          },
+
+          denominationType: product.denominationType || "RANGE",
+          currency: product.recipientCurrencyCode || "",
+          minAmount: Number(product.minRecipientDenomination) || 0,
+          maxAmount: Number(product.maxRecipientDenomination) || 0,
+          fixedRecipientDenominations: Array.isArray(
+            product.fixedRecipientDenominations
+          )
+            ? product.fixedRecipientDenominations.map(Number)
+            : [],
+
+          recipient: {
+            currency: product.recipientCurrencyCode || "",
+            minAmount: Number(product.minRecipientDenomination) || 0,
+            maxAmount: Number(product.maxRecipientDenomination) || 0,
+            fixedDenominations: Array.isArray(
+              product.fixedRecipientDenominations
+            )
+              ? product.fixedRecipientDenominations.map(Number)
+              : [],
+          },
+
+          sender: {
+            currency: product.senderCurrencyCode || "",
+            minAmount: Number(product.minSenderDenomination) || 0,
+            maxAmount: Number(product.maxSenderDenomination) || 0,
+            fixedDenominations: Array.isArray(product.fixedSenderDenominations)
+              ? product.fixedSenderDenominations.map(Number)
+              : [],
+          },
+
+          exchangeRate:
+            Number(product.recipientCurrencyToSenderCurrencyExchangeRate) || 1,
+
+          fees: {
+            senderFee: Number(product.senderFee) || 0,
+            senderFeePercentage: Number(product.senderFeePercentage) || 0,
+            discountPercentage: Number(product.discountPercentage) || 0,
+          },
+
+          redeemInstructions: {
+            concise: product.redeemInstruction?.concise?.trim() || "",
+            verbose: product.redeemInstruction?.verbose?.trim() || "",
+          },
+
+          status: product.status || "ACTIVE",
+          isGlobal: !!product.global,
+          supportsPreOrder: !!product.supportsPreOrder,
+          additionalRequirements: {
+            userIdRequired:
+              product.additionalRequirements?.userIdRequired ?? false,
+          },
         };
+
+        // User wallet
+        const wallet = response?.data?.userWallet?.[0];
+        if (wallet) {
+          mappedCard.userWallet = {
+            currency: wallet.currency_code,
+            symbol: wallet.currency_symbol,
+            balance: Number(wallet.balance) || 0,
+            name: wallet.name,
+            rate: Number(wallet.rate) || 1,
+          };
+        }
+
+        // Platform charges (including daily/monthly limits)
+        const charge = response?.data?.cardCharge;
+        if (charge) {
+          mappedCard.platformCharges = {
+            fixed: Number(charge.fixed_charge) || 0,
+            percentage: Number(charge.percent_charge) || 0,
+            minLimit: Number(charge.min_limit) || 0,
+            maxLimit: Number(charge.max_limit) || 0,
+            dailyLimit: Number(charge.daily_limit) || 0,
+            monthlyLimit: Number(charge.monthly_limit) || 0,
+          };
+        }
 
         setCard(mappedCard);
       } catch (err) {
-        setError(err.message || "Something went wrong");
+        // Only show user-friendly message
+        const userMessage = err.message?.includes("network")
+          ? "Network error. Please check your connection."
+          : "Something went wrong while loading the gift card";
+
+        setError(userMessage);
+        toast.error(userMessage);
       } finally {
         setLoading(false);
       }
@@ -88,20 +168,18 @@ export default function GiftCardDetailPage() {
   }, [productId]);
 
   if (loading) {
-    return (
-      <div className="min-h-[70vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-      </div>
-    );
+    return <GiftCardFormSkeleton />;
   }
 
   if (error) {
     return (
-      <div className="text-center py-16 text-red-600">
-        <p className="text-xl font-medium">{error}</p>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-4">
+        <div className="text-red-600 text-xl md:text-2xl font-medium text-center">
+          {error}
+        </div>
         <button
           onClick={() => window.location.reload()}
-          className="mt-6 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+          className="cursor-pointer px-8 py-3 btn-primary text-white rounded-lg font-medium transition-colors"
         >
           Try Again
         </button>
@@ -111,13 +189,17 @@ export default function GiftCardDetailPage() {
 
   if (!card) {
     return (
-      <div className="text-center py-16 text-gray-600">Gift Card not found</div>
+      <div className="min-h-[60vh] flex items-center justify-center text-red-600 text-xl">
+        Gift Card not Found
+      </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <GiftCardForm card={card} />
+    <div className="max-w-6xl mx-auto px-4 py-8 lg:py-12">
+      <Suspense fallback={<GiftCardFormSkeleton />}>
+        <GiftCardForm card={card} />
+      </Suspense>
     </div>
   );
 }

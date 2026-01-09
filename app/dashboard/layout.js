@@ -13,8 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Dashboard App",
-  description: "Next.js Dashboard with Sidebar & Navbar",
+  title: "Dashboard",
 };
 
 export default function DashboardLayout({ children }) {

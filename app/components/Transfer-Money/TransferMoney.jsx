@@ -188,7 +188,7 @@ export default function TransferMoney() {
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="0.00"
+                placeholder="Enter Amount"
                 min="0"
                 step="0.01"
                 required

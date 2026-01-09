@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import MyProfileSkeleton from "./MyProfileSkeleton";
+
+import { Loader2 } from "lucide-react";
 import {
   deleteUserAccount,
   getUserProfile,
@@ -61,8 +64,6 @@ function MyProfileCard() {
 
         setUserEmail(user.email);
         setProfileImage(user.userImage);
-      } else {
-        toast.error("Failed to load profile");
       }
 
       setLoading(false);
@@ -99,8 +100,10 @@ function MyProfileCard() {
     setIsCountryOpen(false);
   };
 
-  const handleProfileUpdate = async () => {
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
     setLoading(true);
+
     const payload = {
       firstname: profileData.firstName,
       lastname: profileData.lastName,
@@ -120,17 +123,16 @@ function MyProfileCard() {
     if (res?.message?.success) {
       toast.success(res.message.success[0]);
       if (imageFile) {
-        setProfileImage(URL.createObjectURL(imageFile)); // Update profile image preview
+        setProfileImage(URL.createObjectURL(imageFile));
       }
-      setImageFile(null); // Clear selected file
+      setImageFile(null);
       if (imageInputRef.current) {
-        imageInputRef.current.value = ""; // Clear file input
+        imageInputRef.current.value = "";
       }
     } else if (res?.message?.error) {
       toast.error(res.message.error[0]);
-    } else {
-      toast.error("Failed to update profile.");
     }
+
     setLoading(false);
   };
 
@@ -147,13 +149,11 @@ function MyProfileCard() {
       if (res?.message?.success?.length) {
         toast.success(res.message.success[0]);
 
-        // clear auth
         localStorage.removeItem("auth_token");
         sessionStorage.removeItem("auth_token");
         localStorage.removeItem("user");
         sessionStorage.removeItem("user");
 
-        // redirect
         router.push("/login");
         return;
       }
@@ -162,8 +162,6 @@ function MyProfileCard() {
         toast.error(res.message.error[0]);
         return;
       }
-      // FALLBACK (should never hit)
-      toast.error("Failed to delete account.");
     } catch (error) {
       toast.error("An unexpected error occurred during account deletion.");
     } finally {
@@ -186,11 +184,7 @@ function MyProfileCard() {
   /* ================= LOADING ================= */
 
   if (loading) {
-    return (
-      <div className="bg-white rounded-xl shadow-md p-10 text-center">
-        <p className="text-gray-600">Loading profile</p>
-      </div>
-    );
+    return <MyProfileSkeleton />;
   }
 
   return (
@@ -242,7 +236,10 @@ function MyProfileCard() {
         </div>
 
         {/* FORM */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <form
+          onSubmit={handleProfileUpdate}
+          className="grid grid-cols-1 md:grid-cols-2 gap-5"
+        >
           <div>
             <label className={labelClass}>First Name *</label>
             <input
@@ -250,6 +247,7 @@ function MyProfileCard() {
               value={profileData.firstName}
               onChange={handleProfileChange}
               className={inputClass}
+              required
             />
           </div>
 
@@ -260,16 +258,17 @@ function MyProfileCard() {
               value={profileData.lastName}
               onChange={handleProfileChange}
               className={inputClass}
+              required
             />
           </div>
 
-          {/* COUNTRY DROPDOWN (FROM API) */}
+          {/* COUNTRY DROPDOWN */}
           <div className="relative">
-            <label className={labelClass}>Country</label>
+            <label className={labelClass}>Country *</label>
             <button
               type="button"
               onClick={() => setIsCountryOpen(!isCountryOpen)}
-              className={`${inputClass} flex justify-between items-center bg-white`}
+              className={`${inputClass} flex justify-between items-center bg-white cursor-pointer`}
             >
               <span>{profileData.country || "Select country"}</span>
               <span>
@@ -299,7 +298,7 @@ function MyProfileCard() {
                     onClick={() => handleCountrySelect(country)}
                     className="px-4 py-3 hover:bg-emerald-50 cursor-pointer text-gray-800 font-medium text-base transition-colors"
                   >
-                    {country.name} (+{country.mobile_code})
+                    {country.name}
                   </div>
                 ))}
               </div>
@@ -308,7 +307,7 @@ function MyProfileCard() {
 
           {/* PHONE */}
           <div>
-            <label className={labelClass}>Phone</label>
+            <label className={labelClass}>Phone *</label>
             <input
               name="phone"
               value={
@@ -320,12 +319,13 @@ function MyProfileCard() {
                 setProfileData({
                   ...profileData,
                   phone: e.target.value
-                    .replace(profileData.countryCode, "")
+                    .replace(profileData.countryCode || "", "")
                     .trim(),
                 })
               }
               className={inputClass}
               placeholder="Enter phone number"
+              required
             />
           </div>
 
@@ -368,35 +368,43 @@ function MyProfileCard() {
               className={inputClass}
             />
           </div>
-        </div>
 
-        {/* BUTTONS */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-          <button
-            onClick={handleDeleteAccount}
-            className="px-8 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-          >
-            Delete Account
-          </button>
+          {/* BUTTONS */}
+          <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row gap-4 justify-center mt-6">
+            <button
+              type="button"
+              onClick={handleDeleteAccount}
+              className="px-8 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer font-semibold"
+            >
+              Delete Account
+            </button>
 
-          <button
-            onClick={handleProfileUpdate}
-            className="px-10 py-3 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity"
-            style={{
-              background:
-                "linear-gradient(76.84deg, #0EBE98 -2.66%, #50C631 105.87%)",
-            }}
-          >
-            Update Profile
-          </button>
-        </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`px-10 py-3 text-white rounded-lg font-semibold transition-all cursor-pointer flex items-center justify-center gap-2
+                ${loading ? "opacity-70 cursor-wait" : "hover:opacity-90"}`}
+              style={{
+                background:
+                  "linear-gradient(76.84deg, #0EBE98 -2.66%, #50C631 105.87%)",
+              }}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                </>
+              ) : (
+                "Update Profile"
+              )}
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* DELETE CONFIRMATION MODAL */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-none p-4">
           <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all">
-            {/* Warning Icon */}
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
                 <svg
@@ -415,28 +423,25 @@ function MyProfileCard() {
               </div>
             </div>
 
-            {/* Title */}
-            <h3 className="text-2xl font-bold text-gray-900 text-center mb-3">
+            <h3 className="text-2xl font-semibold text-gray-900 text-center mb-3">
               Delete Account?
             </h3>
 
-            {/* Message */}
             <p className="text-gray-600 text-center mb-6">
               Are you sure you want to delete your account? This action cannot
               be undone and all your data will be permanently removed.
             </p>
 
-            {/* Buttons */}
             <div className="flex gap-3">
               <button
                 onClick={cancelDeleteAccount}
-                className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteAccount}
-                className="flex-1 px-6 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-colors"
+                className="flex-1 px-6 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-colors cursor-pointer"
               >
                 Yes, Delete
               </button>
