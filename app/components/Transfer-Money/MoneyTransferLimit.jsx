@@ -29,19 +29,19 @@ const MoneyTransferLimit = () => {
         ? `${Number(limitInfo.min_limit).toFixed(4)} ${currency} - ${Number(
             limitInfo.max_limit
           ).toFixed(4)} ${currency}`
-        : `0.0000 ${currency} - 0.0000 ${currency}`,
+        : `--`,
     },
     {
       label: "Daily Limit",
       value: limitInfo
         ? `${Number(limitInfo.daily_limit).toFixed(4)} ${currency}`
-        : `0.0000 ${currency}`,
+        : `--`,
     },
     {
       label: "Monthly Limit",
       value: limitInfo
         ? `${Number(limitInfo.monthly_limit).toFixed(4)} ${currency}`
-        : `0.0000 ${currency}`,
+        : `--`,
     },
   ];
 

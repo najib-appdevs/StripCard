@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getWithdrawInfo } from "../../utils/api";
+import WithdrawMoneyLogSkeleton from "./WithdrawMoneyLogSkeleton";
 
 const WithdrawMoneyLog = () => {
   const [search, setSearch] = useState("");
@@ -66,14 +67,7 @@ const WithdrawMoneyLog = () => {
   );
 
   if (loading) {
-    return (
-      <div className="px-6 py-12 text-center text-gray-500">
-        <div className="flex justify-center items-center gap-3">
-          <div className="w-5 h-5 border-3 border-gray-300 border-t-emerald-500 rounded-full animate-spin"></div>
-          <p className="text-lg font-medium">Loading withdrawal history...</p>
-        </div>
-      </div>
-    );
+    return <WithdrawMoneyLogSkeleton />;
   }
 
   if (error) {

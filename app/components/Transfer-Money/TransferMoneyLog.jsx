@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getTransferMoneyInfo } from "../../utils/api";
+import TransferLogSkeleton from "./TransferLogSkeleton";
 
 const TransferMoneyLog = () => {
   const [search, setSearch] = useState("");
@@ -88,12 +89,7 @@ const TransferMoneyLog = () => {
 
           {/* Loading / Content / No Data */}
           {loading ? (
-            <div className="px-6 py-12 text-center text-gray-500">
-              <div className="flex justify-center items-center gap-3">
-                <div className="w-5 h-5 border-3 border-gray-300 border-t-emerald-500 rounded-full animate-spin"></div>
-                <p className="text-lg font-medium">Loading transactions...</p>
-              </div>
-            </div>
+            <TransferLogSkeleton />
           ) : filteredLogs.length > 0 ? (
             <div className="divide-y min-w-[900px]">
               {filteredLogs.map((log, index) => (

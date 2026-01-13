@@ -1,62 +1,146 @@
-const WithdrawMoneyPreview = () => {
-  const data = [
-    { label: "Enter Amount", value: "0.0000 USD" },
-    { label: "Exchange Rate", value: "1 USD = 1.0000 USD" },
-    { label: "Fees & Charges", value: "1.0000 USD" },
-    { label: "Conversion Amount", value: "0.0000 USD" },
-  ];
+"use client";
 
+import { useEffect, useState } from "react";
+import { getWithdrawInfo } from "../../utils/api";
+
+const WithdrawMoneyPreview = ({ amount = 0 }) => {
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
+  const [withdrawData, setWithdrawData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // ============================================================================
+  // DATA FETCHING
+  // ============================================================================
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await getWithdrawInfo();
+
+        if (response?.data) {
+          setWithdrawData(response.data);
+        } else if (response?.message?.error) {
+          setError(response.message.error[0] || "Failed to load data");
+        }
+      } catch (err) {
+        setError("Something went wrong while loading withdrawal info");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // ============================================================================
+  // ERROR HANDLING
+  // ============================================================================
+  if (error) {
+    return (
+      <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm p-6 min-h-[400px] flex items-center justify-center">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
+
+  // ============================================================================
+  // DATA EXTRACTION
+  // ============================================================================
+  const inputAmount = Number(amount) || 0;
+  const gatewayCurrency = withdrawData?.gateways?.[0]?.currencies?.[0];
+  const baseCurr = withdrawData?.base_curr || "USD";
+  const rate = gatewayCurrency?.rate || 1;
+  const fixedCharge = gatewayCurrency?.fixed_charge || 0;
+  const percentCharge = gatewayCurrency?.percent_charge || 0;
+
+  // ============================================================================
+  // CALCULATIONS
+  // ============================================================================
+  const chargePercentage = (inputAmount * percentCharge) / 100;
+  const totalFees = fixedCharge + chargePercentage;
+  const payableAmount = inputAmount + totalFees;
+  const willGetAmount = inputAmount;
+  const exchangeRateText = `1 ${baseCurr} = ${rate.toFixed(4)} ${baseCurr}`;
+
+  // ============================================================================
+  // LOADING STATE CHECK
+  // ============================================================================
+  const isLoading = loading || !withdrawData;
+
+  // ============================================================================
+  // RENDER
+  // ============================================================================
   return (
-    <>
-      <div className=" w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
-        {/* Header */}
-        <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
-          <h2 className="text-base text-center font-semibold text-white">
-            Withdraw Money Preview
-          </h2>
+    <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
+      {/* Header */}
+      <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
+        <h2 className="text-base text-center font-semibold text-white">
+          Withdraw Money Preview
+        </h2>
+      </div>
+
+      {/* Body */}
+      <div className="p-6 space-y-4 min-h-[400px] flex flex-col">
+        {/* Enter Amount */}
+        <div className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3">
+          <span className="text-sm text-gray-600">Enter Amount</span>
+          <span className="text-sm font-medium text-gray-900">
+            {isLoading ? "--" : `${inputAmount.toFixed(4)} ${baseCurr}`}
+          </span>
         </div>
 
-        {/* Body - Fixed height to match form */}
-        <div className="p-6 space-y-4 min-h-[400px] flex flex-col">
-          {data.map((item, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3"
-            >
-              <span className="text-sm text-gray-600">{item.label}</span>
-              <span className="text-sm font-medium text-gray-900">
-                {item.value}
-              </span>
-            </div>
-          ))}
+        {/* Exchange Rate */}
+        <div className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3">
+          <span className="text-sm text-gray-600">Exchange Rate</span>
+          <span className="text-sm font-medium text-gray-900">
+            {isLoading ? "--" : exchangeRateText}
+          </span>
+        </div>
 
-          {/* Spacer to push bottom sections down */}
-          <div className="flex-1" />
+        {/* Fees & Charges */}
+        <div className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3">
+          <span className="text-sm text-gray-600">Fees & Charges</span>
+          <span className="text-sm font-medium text-gray-900">
+            {isLoading ? "--" : `${totalFees.toFixed(4)} ${baseCurr}`}
+          </span>
+        </div>
 
-          {/* Divider */}
-          <div className="border-t border-dashed pt-4" />
+        {/* Conversion Amount */}
+        <div className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3">
+          <span className="text-sm text-gray-600">Conversion Amount</span>
+          <span className="text-sm font-medium text-gray-900">
+            {isLoading ? "--" : `${willGetAmount.toFixed(4)} ${baseCurr}`}
+          </span>
+        </div>
 
-          {/* Will Get */}
-          <div className="flex items-center justify-between rounded-xl bg-green-50 px-4 py-3">
-            <span className="text-sm font-medium text-green-700">Will Get</span>
-            <span className="text-sm font-semibold text-green-700">
-              0.0000 USD
-            </span>
-          </div>
+        {/* Spacer */}
+        <div className="flex-1" />
 
-          {/* Total Payable */}
-          <div
-            className="flex items-center justify-between rounded-xl px-4 py-4
-                bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)]"
-          >
-            <span className="text-base font-medium text-white">
-              Total Payable Amount
-            </span>
-            <span className="text-base font-bold text-white">1.0000 USD</span>
-          </div>
+        {/* Divider */}
+        <div className="border-t border-dashed pt-4" />
+
+        {/* Will Get */}
+        <div className="flex items-center justify-between rounded-xl bg-green-50 px-4 py-3">
+          <span className="text-sm font-medium text-green-700">Will Get</span>
+          <span className="text-sm font-semibold text-green-700">
+            {isLoading ? "--" : `${willGetAmount.toFixed(4)} ${baseCurr}`}
+          </span>
+        </div>
+
+        {/* Total Payable */}
+        <div className="flex items-center justify-between rounded-xl px-4 py-4 bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)]">
+          <span className="text-base font-medium text-white">
+            Total Payable Amount
+          </span>
+          <span className="text-base font-bold text-white">
+            {isLoading ? "--" : `${payableAmount.toFixed(4)} ${baseCurr}`}
+          </span>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

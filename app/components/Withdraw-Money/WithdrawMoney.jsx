@@ -7,24 +7,45 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getWithdrawInfo, submitWithdrawInsert } from "../../utils/api";
 
-export default function WithdrawMoney() {
+export default function WithdrawMoney({
+  amount,
+  setAmount,
+  selectedGatewayCurrency,
+  setSelectedGatewayCurrency,
+}) {
+  // ============================================================================
+  // HOOKS & ROUTER
+  // ============================================================================
   const router = useRouter();
 
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
-
-  // Main data from API
   const [withdrawData, setWithdrawData] = useState(null);
-
-  // Form values
-  const [selectedGatewayCurrency, setSelectedGatewayCurrency] = useState(null);
-  const [amount, setAmount] = useState("");
   const [selectedCurrencyCode, setSelectedCurrencyCode] = useState("");
 
+  // ============================================================================
+  // DERIVED DATA
+  // ============================================================================
   const gateways = withdrawData?.gateways || [];
   const currencies =
     withdrawData?.gateways?.flatMap((g) => g.currencies || []) || [];
+  const userBalance = withdrawData?.userWallet?.balance?.toFixed(4) || "--";
+  const baseCurrency = withdrawData?.base_curr || "";
 
+  const chargeText = selectedGatewayCurrency
+    ? `${
+        selectedGatewayCurrency.fixed_charge?.toFixed(4) || "0.0000"
+      } ${baseCurrency} + ${
+        selectedGatewayCurrency.percent_charge?.toFixed(4) || "0.00"
+      }%`
+    : "--";
+
+  // ============================================================================
+  // DATA FETCHING
+  // ============================================================================
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -34,15 +55,18 @@ export default function WithdrawMoney() {
         if (response?.data) {
           setWithdrawData(response.data);
 
-          // Auto-select first available currency
-          if (response.data.gateways?.[0]?.currencies?.[0]) {
+          // Auto-select first available currency only if nothing is selected yet
+          if (
+            !selectedGatewayCurrency &&
+            response.data.gateways?.[0]?.currencies?.[0]
+          ) {
             const first = response.data.gateways[0].currencies[0];
             setSelectedGatewayCurrency(first);
             setSelectedCurrencyCode(first.currency_code);
           }
         } else if (response?.message?.error) {
-          const msg = response.message.error[0] || "Failed to load data";
-          toast.error(msg);
+          const errorMsg = response.message.error[0] || "Failed to load data";
+          toast.error(errorMsg);
         }
       } catch (err) {
         toast.error("Failed to load withdrawal information");
@@ -53,9 +77,22 @@ export default function WithdrawMoney() {
     };
 
     fetchData();
-  }, []);
+  }, [selectedGatewayCurrency, setSelectedGatewayCurrency]);
 
+  // ============================================================================
+  // SYNC CURRENCY CODE WITH SELECTED GATEWAY
+  // ============================================================================
+  useEffect(() => {
+    if (selectedGatewayCurrency?.currency_code) {
+      setSelectedCurrencyCode(selectedGatewayCurrency.currency_code);
+    }
+  }, [selectedGatewayCurrency]);
+
+  // ============================================================================
+  // FORM SUBMISSION
+  // ============================================================================
   const handleConfirm = async () => {
+    // Validation
     if (!amount || Number(amount) <= 0) {
       return toast.error("Enter a valid amount");
     }
@@ -75,12 +112,11 @@ export default function WithdrawMoney() {
       const response = await submitWithdrawInsert(payload);
 
       if (response?.message?.success) {
-        // Show exact success message from server before redirect
         const successMsg =
           response.message.success[0] || "Withdrawal initiated successfully";
         toast.success(successMsg);
 
-        // Store data
+        // Store data for next step
         sessionStorage.setItem(
           "pendingWithdrawData",
           JSON.stringify({
@@ -102,9 +138,8 @@ export default function WithdrawMoney() {
         );
 
         router.push("/dashboard/ManualConfirm");
-      } else {
-        // Show exact error from server
-        const errorMsg = response?.message?.error?.[0] || "Withdraw failed";
+      } else if (response?.message?.error) {
+        const errorMsg = response.message.error[0] || "Withdrawal failed";
         toast.error(errorMsg);
       }
     } catch (err) {
@@ -115,29 +150,19 @@ export default function WithdrawMoney() {
     }
   };
 
-  const userBalance = withdrawData?.userWallet?.balance?.toFixed(4) || "0.0000";
-  const baseCurrency = withdrawData?.base_curr || "USD";
-
-  const currentGatewayCurrency = currencies.find(
-    (c) => c.currency_code === selectedCurrencyCode
-  );
-
-  const chargeText = currentGatewayCurrency
-    ? `${
-        currentGatewayCurrency.fixed_charge?.toFixed(4) || "0.0000"
-      } ${baseCurrency} + ${
-        currentGatewayCurrency.percent_charge?.toFixed(4) || "0.00"
-      }%`
-    : "—";
-
+  // ============================================================================
+  // RENDER
+  // ============================================================================
   return (
     <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
+      {/* Header */}
       <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
         <h2 className="text-base text-center font-semibold text-white">
           Withdraw Money
         </h2>
       </div>
 
+      {/* Body */}
       <div className="p-6 space-y-7 flex flex-col min-h-[400px]">
         {/* Payment Gateway */}
         <div>
@@ -147,14 +172,11 @@ export default function WithdrawMoney() {
 
           <Listbox
             value={selectedGatewayCurrency}
-            onChange={(value) => {
-              setSelectedGatewayCurrency(value);
-              setSelectedCurrencyCode(value?.currency_code || baseCurrency);
-            }}
+            onChange={setSelectedGatewayCurrency}
           >
             {({ open }) => (
               <div className="relative">
-                <Listbox.Button className="relative w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2.5 text-left text-sm text-gray-900 hover:bg-white focus:border-emerald-500 focus:outline-none focus:ring-emerald-200">
+                <Listbox.Button className="relative w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2.5 text-left text-sm text-gray-900 hover:bg-white focus:border-emerald-500 focus:outline-none focus:ring-emerald-200 cursor-pointer">
                   <span className="block truncate">
                     {selectedGatewayCurrency?.name || "Select Gateway"}
                   </span>
@@ -213,7 +235,7 @@ export default function WithdrawMoney() {
               >
                 {({ open }) => (
                   <div className="relative min-w-24">
-                    <Listbox.Button className="flex h-full w-full items-center justify-center px-4 py-2.5 text-sm text-gray-900 focus:outline-none">
+                    <Listbox.Button className="flex h-full w-full items-center justify-center px-4 py-2.5 text-sm text-gray-900 focus:outline-none cursor-pointer">
                       <span className="mr-2 font-medium">
                         {selectedCurrencyCode || baseCurrency}
                       </span>
@@ -264,16 +286,18 @@ export default function WithdrawMoney() {
           </p>
         </div>
 
+        {/* Spacer */}
         <div className="flex-1" />
 
+        {/* Divider */}
         <div className="border-t border-dashed border-gray-200" />
 
-        {/* Action */}
+        {/* Action Button */}
         <div className="space-y-3">
           <button
             onClick={handleConfirm}
-            // disabled={submitLoading || loading || !amount || !selectedGatewayCurrency}
-            className={`cursor-pointer w-full rounded-xl px-4 py-4 text-base font-bold text-white transition
+            disabled={submitLoading}
+            className={`w-full rounded-xl px-4 py-4 text-base font-bold text-white transition cursor-pointer
               bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)]
               hover:opacity-90
               ${submitLoading ? "opacity-70 cursor-wait" : ""}

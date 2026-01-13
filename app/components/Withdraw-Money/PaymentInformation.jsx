@@ -9,38 +9,79 @@ export default function PaymentInformation() {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  /* -------------------- Formatting Helpers -------------------- */
+
+  const formatMoney = (rawValue) => {
+    if (!rawValue || rawValue === "—" || rawValue === "-") return "—";
+
+    const match = String(rawValue)
+      .trim()
+      .match(/^([\d.,]+(?:\.\d+)?)\s*([A-Z]{3}|[A-Za-z$€£¥₹฿]+)?$/i);
+
+    if (!match) return rawValue;
+
+    const [, numStr, currency = ""] = match;
+    const num = Number(numStr.replace(/,/g, ""));
+
+    if (isNaN(num)) return rawValue;
+
+    return num.toFixed(4) + (currency ? ` ${currency}` : "");
+  };
+
+  const formatExchangeRate = (rawRate) => {
+    if (!rawRate || rawRate === "—" || rawRate === "-") return "—";
+
+    const parts = String(rawRate).split("=");
+    if (parts.length !== 2) return rawRate;
+
+    const leftRaw = parts[0].trim();
+    const rightRaw = parts[1].trim();
+
+    return `${leftRaw} = ${formatMoney(rightRaw)}`;
+  };
+
+  /* -------------------- Load Session Data -------------------- */
+
   useEffect(() => {
     const savedData = sessionStorage.getItem("pendingWithdrawData");
 
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        // Extract only the payment_informations part
-        if (parsed?.request_amount) {
-          setSummary({
-            request_amount: parsed.request_amount || "—",
-            exchange_rate: parsed.exchange_rate || "—",
-            total_charge: parsed.total_charge || "—",
-            conversion_amount: parsed.conversion_amount || "—",
-            will_get: parsed.will_get || "—",
-            payable: parsed.payable || "—",
-          });
-        } else {
-          throw new Error("Incomplete data");
-        }
-      } catch (err) {
-        toast.error("Failed to load payment summary. Please try again.");
-        router.push("/dashboard/withdraw-money");
-      }
-    } else {
+    if (!savedData) {
       toast.error(
         "No pending withdrawal found. Please start a new withdrawal."
       );
+      router.push("/dashboard/withdraw-money");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(savedData);
+
+      if (!parsed?.request_amount) {
+        toast.error("Failed to load payment summary. Please try again.");
+        router.push("/dashboard/withdraw-money");
+        setLoading(false);
+        return;
+      }
+
+      setSummary({
+        request_amount: parsed.request_amount || "—",
+        exchange_rate: parsed.exchange_rate || "—",
+        total_charge: parsed.total_charge || "—",
+        conversion_amount: parsed.conversion_amount || "—",
+        will_get: parsed.will_get || "—",
+        payable: parsed.payable || "—",
+      });
+    } catch {
+      toast.error("Failed to load payment summary. Please try again.");
       router.push("/dashboard/withdraw-money");
     }
 
     setLoading(false);
   }, [router]);
+
+  /* -------------------- Loading & Error States -------------------- */
 
   if (loading) {
     return (
@@ -53,17 +94,15 @@ export default function PaymentInformation() {
   if (!summary) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="text-red-600 text-lg mb-4">
-            Unable to load payment details
-          </p>
-        </div>
+        <p className="text-red-600 text-lg">Unable to load payment details</p>
       </div>
     );
   }
 
+  /* -------------------- UI -------------------- */
+
   return (
-    <div className="flex items-center justify-center  bg-gray-50 ">
+    <div className="flex items-center justify-center bg-gray-50">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-3xl">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-800 mb-4">
@@ -81,7 +120,7 @@ export default function PaymentInformation() {
                 Enter Amount
               </label>
               <p className="text-xl font-semibold text-gray-900">
-                {summary.request_amount}
+                {formatMoney(summary.request_amount)}
               </p>
             </div>
 
@@ -90,7 +129,7 @@ export default function PaymentInformation() {
                 Exchange Rate
               </label>
               <p className="text-xl font-semibold text-gray-900">
-                {summary.exchange_rate}
+                {formatExchangeRate(summary.exchange_rate)}
               </p>
             </div>
 
@@ -99,7 +138,7 @@ export default function PaymentInformation() {
                 Fees & Charges
               </label>
               <p className="text-xl font-semibold text-red-600">
-                {summary.total_charge}
+                {formatMoney(summary.total_charge)}
               </p>
             </div>
 
@@ -108,7 +147,7 @@ export default function PaymentInformation() {
                 Conversion Amount
               </label>
               <p className="text-xl font-semibold text-gray-900">
-                {summary.conversion_amount}
+                {formatMoney(summary.conversion_amount)}
               </p>
             </div>
 
@@ -117,7 +156,7 @@ export default function PaymentInformation() {
                 Will Get
               </label>
               <p className="text-xl font-semibold text-emerald-600">
-                {summary.will_get}
+                {formatMoney(summary.will_get)}
               </p>
             </div>
 
@@ -126,7 +165,7 @@ export default function PaymentInformation() {
                 Total Payable Amount
               </label>
               <p className="text-2xl font-bold text-gray-900">
-                {summary.payable}
+                {formatMoney(summary.payable)}
               </p>
             </div>
           </div>

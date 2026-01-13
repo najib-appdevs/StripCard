@@ -5,7 +5,7 @@ import { getWithdrawInfo } from "../../utils/api";
 
 const MoneyWithdrawalLimit = () => {
   const [limitInfo, setLimitInfo] = useState(null);
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState("");
   useEffect(() => {
     const fetchLimits = async () => {
       try {
@@ -14,7 +14,7 @@ const MoneyWithdrawalLimit = () => {
         if (response?.data?.gateways?.[0]?.currencies?.[0]) {
           const currencyData = response.data.gateways[0].currencies[0];
           setLimitInfo(currencyData);
-          setCurrency(response.data.base_curr || "USD");
+          setCurrency(response.data.base_curr || "");
         }
       } catch (error) {
         console.log("Error fetching withdrawal limits:", error);
@@ -35,19 +35,19 @@ const MoneyWithdrawalLimit = () => {
           )} ${currency} – ${Number(limitInfo.max_limit || 0).toFixed(
             4
           )} ${currency}`
-        : `0.0000 ${currency} – 0.0000 ${currency}`,
+        : `--`,
     },
     {
       label: "Daily Limit",
       value: limitInfo
         ? `${Number(limitInfo.daily_limit || 0).toFixed(4)} ${currency}`
-        : `0.0000 ${currency}`,
+        : `--`,
     },
     {
       label: "Monthly Limit",
       value: limitInfo
         ? `${Number(limitInfo.monthly_limit || 0).toFixed(4)} ${currency}`
-        : `0.0000 ${currency}`,
+        : `--`,
     },
   ];
 

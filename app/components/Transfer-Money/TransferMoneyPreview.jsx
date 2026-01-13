@@ -1,62 +1,76 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getTransferMoneyInfo } from "../../utils/api";
+const TransferMoneyPreview = ({
+  amount,
+  fixedCharge,
+  percentCharge,
+  currency,
+}) => {
+  // =======================
+  // SAFE NUMBERS
+  // =======================
+  const numericAmount = Number(amount);
+  const safeAmount = Number.isFinite(numericAmount) ? numericAmount : 0;
 
-const TransferMoneyPreview = () => {
-  const [previewData, setPreviewData] = useState(null);
+  const safeFixed = Number(fixedCharge) || 0;
+  const safePercent = Number(percentCharge) || 0;
 
-  useEffect(() => {
-    const fetchInfo = async () => {
-      const response = await getTransferMoneyInfo();
+  // =======================
+  // READY STATE
+  // =======================
+  const isReady =
+    typeof currency === "string" && currency.trim() !== "" && currency !== "--";
 
-      if (response?.data) {
-        setPreviewData(response.data);
-      }
-    };
+  // =======================
+  // CALCULATIONS
+  // =======================
+  const hasAmount = safeAmount > 0;
 
-    fetchInfo();
-  }, []);
+  const fee = hasAmount ? safeAmount * (safePercent / 100) + safeFixed : 0;
 
-  const latestTransaction =
-    previewData?.transactions?.length > 0 ? previewData.transactions[0] : null;
+  const payable = hasAmount ? safeAmount + fee : 0;
 
-  const data = [
+  // =======================
+  // FORMATTER
+  // =======================
+  const format = (value) =>
+    isReady ? `${value.toFixed(4)} ${currency}` : "--";
+
+  // =======================
+  // ROWS
+  // =======================
+  const rows = [
     {
       label: "Enter Amount",
-      value: latestTransaction
-        ? latestTransaction.request_amount
-        : `0.0000 ${previewData?.base_curr || "USD"}`,
+      value: format(safeAmount),
     },
     {
       label: "Transfer Fee",
-      value: latestTransaction ? latestTransaction.total_charge : "0.0000 USD",
+      value: format(fee),
     },
     {
       label: "Recipient Received",
-      value: latestTransaction
-        ? latestTransaction.recipient_received
-        : "0.0000 USD",
+      value: format(safeAmount),
     },
     {
       label: "Total Payable Amount",
-      value: latestTransaction ? latestTransaction.payable : "0.0000 USD",
+      value: format(payable),
     },
   ];
 
   return (
     <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
       {/* Header */}
-      <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
+      <div className="bg-gray-900 px-6 py-4 rounded-t-2xl">
         <h2 className="text-base text-center font-semibold text-white">
           Transfer Money Preview
         </h2>
       </div>
 
       {/* Body */}
-      <div className="p-6 ">
+      <div className="p-6">
         <div className="space-y-7">
-          {data.map((item, index) => (
+          {rows.map((item, index) => (
             <div
               key={index}
               className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3"

@@ -10,12 +10,21 @@ import {
   transferMoneyConfirmed,
 } from "../../utils/api";
 
-export default function TransferMoney() {
+export default function TransferMoney({
+  onAmountChange,
+  onChargesChange,
+  onCurrencyChange,
+}) {
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
   const [receiverEmail, setReceiverEmail] = useState("");
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("");
   const [loading, setLoading] = useState(false);
+  const [infoLoading, setInfoLoading] = useState(true);
 
+  // Email validation states
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
   const [emailMessage, setEmailMessage] = useState("");
@@ -26,9 +35,10 @@ export default function TransferMoney() {
   const [fixedCharge, setFixedCharge] = useState(0);
   const [percentCharge, setPercentCharge] = useState(0);
   const [availableCurrencies, setAvailableCurrencies] = useState([]);
-  const [infoLoading, setInfoLoading] = useState(true);
 
-  // Fetch transfer info on component mount
+  // ============================================================================
+  // DATA FETCHING - Transfer Info
+  // ============================================================================
   useEffect(() => {
     const fetchInfo = async () => {
       setInfoLoading(true);
@@ -46,8 +56,15 @@ export default function TransferMoney() {
 
           // Transfer charges
           if (response.data.transferMoneyCharge) {
-            setFixedCharge(response.data.transferMoneyCharge.fixed_charge);
-            setPercentCharge(response.data.transferMoneyCharge.percent_charge);
+            const fixed = response.data.transferMoneyCharge.fixed_charge;
+            const percent = response.data.transferMoneyCharge.percent_charge;
+            setFixedCharge(fixed);
+            setPercentCharge(percent);
+
+            // Pass charges to parent
+            if (onChargesChange) {
+              onChargesChange(fixed, percent);
+            }
           }
 
           // Currency - using base_curr as single currency for now
@@ -60,6 +77,11 @@ export default function TransferMoney() {
                 name: base,
               },
             ]);
+
+            // Pass currency to parent
+            if (onCurrencyChange) {
+              onCurrencyChange(base);
+            }
           }
         }
       } catch (error) {
@@ -71,9 +93,11 @@ export default function TransferMoney() {
     };
 
     fetchInfo();
-  }, []);
+  }, [onChargesChange, onCurrencyChange]);
 
-  // Check receiver email existence (debounced)
+  // ============================================================================
+  // EMAIL VALIDATION - Check Receiver Exists (Debounced)
+  // ============================================================================
   useEffect(() => {
     if (!receiverEmail.trim()) {
       setEmailStatus(null);
@@ -108,8 +132,43 @@ export default function TransferMoney() {
     return () => clearTimeout(delayDebounce);
   }, [receiverEmail]);
 
+  // ============================================================================
+  // EVENT HANDLERS
+  // ============================================================================
+  const handleAmountChange = (e) => {
+    const newAmount = e.target.value;
+    setAmount(newAmount);
+
+    if (onAmountChange) {
+      onAmountChange(newAmount);
+    }
+  };
+
+  const handleCurrencyChange = (newCurrency) => {
+    setCurrency(newCurrency);
+
+    if (onCurrencyChange) {
+      onCurrencyChange(newCurrency);
+    }
+  };
+
   const handleSubmit = async () => {
-    if (!receiverEmail || !amount || Number(amount) <= 0) return;
+    // Validation
+    if (!receiverEmail) {
+      return toast.error("Receiver email is required");
+    }
+
+    if (!amount || Number(amount) <= 0) {
+      return toast.error("Enter a valid amount");
+    }
+
+    if (Number(amount) > Number(availableBalance)) {
+      return toast.error("Insufficient balance");
+    }
+
+    if (!currency) {
+      return toast.error("Select currency");
+    }
     if (emailStatus !== "success") return;
 
     setLoading(true);
@@ -122,11 +181,17 @@ export default function TransferMoney() {
 
       if (response?.message?.success?.length) {
         response.message.success.forEach((msg) => toast.success(msg));
+
         // Reset form
         setReceiverEmail("");
         setAmount("");
         setEmailStatus(null);
         setEmailMessage("");
+
+        // Reset parent amount
+        if (onAmountChange) {
+          onAmountChange("");
+        }
       }
 
       if (response?.message?.error?.length) {
@@ -139,19 +204,24 @@ export default function TransferMoney() {
     }
   };
 
+  // ============================================================================
+  // RENDER
+  // ============================================================================
   return (
-    <div className="w-full max-w-3xl rounded-2xl border bg-white shadow-sm">
-      <div className="bg-gray-900 px-6 py-4 rounded-t-2xl">
-        <h2 className="text-white text-center font-semibold">
+    <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
+      {/* Header */}
+      <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
+        <h2 className="text-base text-center font-semibold text-white">
           Transfer Money
         </h2>
       </div>
 
-      <div className="p-6 space-y-7 min-h-[400px] flex flex-col">
+      {/* Body */}
+      <div className="p-6 space-y-7 flex flex-col min-h-[400px]">
         {/* Receiver Email */}
         <div>
-          <label className="text-sm font-medium text-gray-600">
-            Receiver Email *
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Receiver Email <span className="text-red-500">*</span>
           </label>
 
           <input
@@ -169,7 +239,7 @@ export default function TransferMoney() {
                 emailStatus === "success" ? "text-emerald-600" : "text-red-500"
               }`}
             >
-              {checkingEmail ? "Checking..." : emailMessage}
+              {checkingEmail ? "" : emailMessage}
             </span>
           )}
         </div>
@@ -185,7 +255,7 @@ export default function TransferMoney() {
               <input
                 type="number"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={handleAmountChange}
                 placeholder="Enter Amount"
                 min="0"
                 step="0.01"
@@ -193,10 +263,10 @@ export default function TransferMoney() {
                 className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 focus:outline-none no-spinner"
               />
 
-              <Listbox value={currency} onChange={setCurrency}>
+              <Listbox value={currency} onChange={handleCurrencyChange}>
                 {({ open }) => (
                   <div className="relative min-w-24">
-                    <Listbox.Button className="flex h-full w-full items-center justify-center px-4 py-2.5 text-sm text-gray-900 focus:outline-none">
+                    <Listbox.Button className="flex h-full w-full items-center justify-center px-4 py-2.5 text-sm text-gray-900 focus:outline-none cursor-pointer">
                       <span className="mr-2 font-medium">
                         {currency || balanceCurrency}
                       </span>
@@ -236,16 +306,14 @@ export default function TransferMoney() {
           <p className="flex justify-between text-gray-600">
             <span>Available Balance</span>
             <span className="font-medium text-gray-800">
-              {infoLoading
-                ? `0.0000 ${balanceCurrency}`
-                : `${availableBalance} ${balanceCurrency}`}
+              {infoLoading ? "--" : `${availableBalance} ${balanceCurrency}`}
             </span>
           </p>
           <p className="flex justify-between text-gray-600">
             <span>Transfer Fee</span>
             <span className="font-medium text-gray-800">
               {infoLoading
-                ? "0.0000 + 0.0000%"
+                ? "--"
                 : `${fixedCharge.toFixed(
                     4
                   )} ${balanceCurrency} + ${percentCharge.toFixed(4)}%`}
@@ -253,14 +321,17 @@ export default function TransferMoney() {
           </p>
         </div>
 
+        {/* Spacer */}
         <div className="flex-1" />
+
+        {/* Divider */}
         <div className="border-t border-dashed border-gray-200" />
 
         {/* Submit Button */}
         <button
           onClick={handleSubmit}
           // disabled={loading || emailStatus !== "success" || infoLoading}
-          className="cursor-pointer w-full rounded-xl px-4 py-4 text-base font-bold text-white transition bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)] hover:opacity-90 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2"
+          className="cursor-pointer w-full rounded-xl px-4 py-4 text-base font-bold text-white transition bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)] hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2"
         >
           {loading ? "Processing..." : "Confirm"}
         </button>

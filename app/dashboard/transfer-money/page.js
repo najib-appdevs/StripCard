@@ -1,31 +1,15 @@
-import MoneyTransferLimit from "../../components/Transfer-Money/MoneyTransferLimit";
-import TransferMoney from "../../components/Transfer-Money/TransferMoney";
-import TransferMoneyLog from "../../components/Transfer-Money/TransferMoneyLog";
-import TransferMoneyPreview from "../../components/Transfer-Money/TransferMoneyPreview";
+import TransferMoneyPage from "./transfer-money";
 
 export const metadata = {
   title: "Transfer Money",
 };
 
-function TransferMoneyPage() {
+function page() {
   return (
     <>
-      {/* Section showing transfer form and preview side by side on large screens */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-7 mb-7">
-        {/* Component to enter transfer details */}
-        <TransferMoney />
-
-        {/* Component to preview transfer information */}
-        <TransferMoneyPreview />
-      </div>
-
-      {/* Component displaying transfer limits */}
-      <MoneyTransferLimit />
-
-      {/* Component showing transfer history/logs */}
-      <TransferMoneyLog />
+      <TransferMoneyPage />
     </>
   );
 }
 
-export default TransferMoneyPage;
+export default page;
