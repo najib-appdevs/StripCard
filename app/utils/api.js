@@ -529,3 +529,17 @@ export const verifyGoogle2FA = async (otpCode) => {
     };
   }
 };
+
+export const getAddMoneyInformation = async () => {
+  try {
+    const { data } = await api.get("/user/add-money/information");
+    return data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to load add money information"] },
+    };
+  }
+};

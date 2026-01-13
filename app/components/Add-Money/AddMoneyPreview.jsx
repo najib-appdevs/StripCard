@@ -1,63 +1,119 @@
-const AddMoneyPreview = () => {
-  const data = [
-    { label: "Enter Amount", value: "0.0000 USD" },
-    { label: "Exchange Rate", value: "1 USD = 1.0000 USD" },
-    { label: "Fees & Charges", value: "2.0000 USD" },
-    { label: "Conversion Amount", value: "0.0000 USD" },
-  ];
+export default function AddMoneyPreview({
+  amount = "",
+  walletCurrency = "",
+  selectedGateway = null,
+  fixedCharge = 0,
+  percentCharge = 0,
+  chargeCurrency = "",
+  rate = 1,
+}) {
+  const enteredAmount = Number(amount) || 0;
+
+  // Exchange rate
+  const exchangeRate = Number(rate) || 0;
+
+  // 🔹 Detect loading state
+  const isLoading =
+    !walletCurrency ||
+    !chargeCurrency ||
+    !selectedGateway ||
+    !exchangeRate;
+
+  // Step 1: Convert entered amount to gateway currency
+  const convertedAmount = enteredAmount * exchangeRate;
+
+  // Step 2: Fees
+  const percentFee = convertedAmount * (percentCharge / 100);
+  const totalFee = fixedCharge + percentFee;
+
+  // Step 3: Total payable
+  const totalPayable = convertedAmount + totalFee;
+
+  // Will get
+  const willGet = enteredAmount;
+
+  // 🔹 Helper for display
+  const show = (value, currency) =>
+    isLoading ? (
+      <span className="animate-pulse text-gray-400">--</span>
+    ) : (
+      `${value.toFixed(4)} ${currency}`
+    );
 
   return (
-    <>
-      <div className=" w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
-        {/* Header */}
-        <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
-          <h2 className="text-base text-center font-semibold text-white">
-            Add Money Preview
-          </h2>
+    <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
+        <h2 className="text-base text-center font-semibold text-white">
+          Add Money Preview
+        </h2>
+      </div>
+
+      <div className="p-6 space-y-4 min-h-[400px] flex flex-col">
+        {/* Enter Amount */}
+        <div className="flex justify-between rounded-xl bg-gray-50 px-4 py-3">
+          <span className="text-sm text-gray-600">Enter Amount</span>
+          <span className="text-sm font-medium text-gray-900">
+            {isLoading ? (
+              <span className="animate-pulse text-gray-400">--</span>
+            ) : (
+              `${enteredAmount.toFixed(4)} ${walletCurrency}`
+            )}
+          </span>
         </div>
 
-        {/* Body - Fixed height to match form */}
-        <div className="p-6 space-y-4 min-h-[400px] flex flex-col">
-          {data.map((item, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3"
-            >
-              <span className="text-sm text-gray-600">{item.label}</span>
-              <span className="text-sm font-medium text-gray-900">
-                {item.value}
-              </span>
-            </div>
-          ))}
+        {/* Exchange Rate */}
+        <div className="flex justify-between rounded-xl bg-gray-50 px-4 py-3">
+          <span className="text-sm text-gray-600">Exchange Rate</span>
+          <span className="text-sm font-medium text-gray-900">
+            {isLoading ? (
+              <span className="animate-pulse text-gray-400">--</span>
+            ) : (
+              `1 ${walletCurrency} = ${exchangeRate.toFixed(4)} ${chargeCurrency}`
+            )}
+          </span>
+        </div>
 
-          {/* Spacer to push bottom sections down */}
-          <div className="flex-1" />
+        {/* Fees */}
+        <div className="flex justify-between rounded-xl bg-gray-50 px-4 py-3">
+          <span className="text-sm text-gray-600">Fees & Charges</span>
+          <span className="text-sm font-medium text-gray-900">
+            {show(totalFee, chargeCurrency)}
+          </span>
+        </div>
 
-          {/* Divider */}
-          <div className="border-t border-dashed pt-4" />
+        {/* Conversion Amount */}
+        <div className="flex justify-between rounded-xl bg-gray-50 px-4 py-3">
+          <span className="text-sm text-gray-600">Conversion Amount</span>
+          <span className="text-sm font-medium text-gray-900">
+            {show(convertedAmount, chargeCurrency)}
+          </span>
+        </div>
 
-          {/* Will Get */}
-          <div className="flex items-center justify-between rounded-xl bg-green-50 px-4 py-3">
-            <span className="text-sm font-medium text-green-700">Will Get</span>
-            <span className="text-sm font-semibold text-green-700">
-              0.0000 USD
-            </span>
-          </div>
+        <div className="flex-1" />
+        <div className="border-t border-dashed pt-4" />
 
-          {/* Total Payable */}
-          <div
-            className="flex items-center justify-between rounded-xl px-4 py-4
-                bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)]"
-          >
-            <span className="text-base font-medium text-white">
-              Total Payable Amount
-            </span>
-            <span className="text-base font-bold text-white">2.0000 USD</span>
-          </div>
+        {/* Will Get */}
+        <div className="flex justify-between rounded-xl bg-green-50 px-4 py-3">
+          <span className="text-sm font-medium text-green-700">Will Get</span>
+          <span className="text-sm font-semibold text-green-700">
+            {isLoading ? (
+              <span className="animate-pulse">--</span>
+            ) : (
+              `${willGet.toFixed(4)} ${walletCurrency}`
+            )}
+          </span>
+        </div>
+
+        {/* Total Payable */}
+        <div className="flex justify-between rounded-xl px-4 py-4 bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)]">
+          <span className="text-base font-medium text-white">
+            Total Payable Amount
+          </span>
+          <span className="text-base font-bold text-white">
+            {show(totalPayable, chargeCurrency)}
+          </span>
         </div>
       </div>
-    </>
+    </div>
   );
-};
-
-export default AddMoneyPreview;
+}
