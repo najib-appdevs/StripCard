@@ -140,20 +140,18 @@ export default function TransferMoney() {
   };
 
   return (
-    <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
-      {/* Header */}
-      <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
-        <h2 className="text-base text-center font-semibold text-white">
+    <div className="w-full max-w-3xl rounded-2xl border bg-white shadow-sm">
+      <div className="bg-gray-900 px-6 py-4 rounded-t-2xl">
+        <h2 className="text-white text-center font-semibold">
           Transfer Money
         </h2>
       </div>
 
-      {/* Body */}
-      <div className="p-6 space-y-7 flex flex-col min-h-[400px]">
+      <div className="p-6 space-y-7 min-h-[400px] flex flex-col">
         {/* Receiver Email */}
         <div>
-          <label className="block text-sm font-medium text-gray-600 mb-2">
-            Receiver Email <span className="text-red-500">*</span>
+          <label className="text-sm font-medium text-gray-600">
+            Receiver Email *
           </label>
 
           <input
