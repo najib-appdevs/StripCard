@@ -34,7 +34,7 @@ export default function DarkModeToggle() {
   return (
     <button
       onClick={toggle}
-      className="relative w-16 h-8 flex items-center rounded-full bg-white border border-gray-50 shadow-sm hover:shadow-md transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#012C20] "
+      className="relative w-16 h-8 flex items-center rounded-full bg-white border border-gray-50 shadow-sm hover:shadow-md transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#012C20] cursor-pointer "
       aria-label="Toggle dark mode"
     >
       <div

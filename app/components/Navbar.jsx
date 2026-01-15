@@ -43,7 +43,7 @@ export default function Navbar({ onMenuClick }) {
           {/* Hamburger Menu for Mobile */}
           <button
             onClick={onMenuClick}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
             aria-label="Open menu"
           >
             <Menu size={24} className="text-black" />

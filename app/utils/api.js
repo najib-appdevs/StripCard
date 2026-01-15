@@ -543,3 +543,41 @@ export const getAddMoneyInformation = async () => {
     };
   }
 };
+
+export const submitAddMoney = async ({ amount, currency }) => {
+  const formData = new FormData();
+  formData.append("amount", amount);
+  formData.append("currency", currency); // alias of the selected gateway currency
+
+  try {
+    const { data } = await api.post("/user/add-money/submit-data", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  } catch (error) {
+    if (error.response) {
+      return error.response.data;
+    }
+    return { message: { error: ["An unexpected error occurred."] } };
+  }
+};
+
+export const getUserTransactions = async (page = 1, limit = 12) => {
+  try {
+    const response = await api.get(
+      `/user/transactions?page=${page}&limit=${limit}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("getUserTransactions error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Network error or server is not responding"] },
+      data: { transactions: {} },
+    };
+  }
+};

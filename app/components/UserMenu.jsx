@@ -15,17 +15,26 @@ import { useEffect, useRef, useState } from "react";
 import { useLogout } from "../(auth)/useLogout.js";
 import { getUserProfile } from "../utils/api";
 
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
 export default function UserMenu() {
+  const router = useRouter();
+  const { handleLogout } = useLogout();
+  const menuRef = useRef(null);
+
+  // --------------------------------------------------------------------------
+  // State Management
+  // --------------------------------------------------------------------------
   const [isOpen, setIsOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const menuRef = useRef(null);
-  const { handleLogout } = useLogout();
-  const router = useRouter();
 
-  // Fetch user profile on mount
+  // --------------------------------------------------------------------------
+  // Fetch User Profile
+  // --------------------------------------------------------------------------
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -39,7 +48,7 @@ export default function UserMenu() {
           setUser(response.user);
         }
       } catch (error) {
-        console.log("Failed to load user profile:", error);
+        // Error handled by API utility
       } finally {
         setLoading(false);
       }
@@ -48,7 +57,9 @@ export default function UserMenu() {
     fetchProfile();
   }, []);
 
-  // Close dropdown when clicking outside
+  // --------------------------------------------------------------------------
+  // Close Dropdown When Clicking Outside
+  // --------------------------------------------------------------------------
   useEffect(() => {
     function handleClickOutside(event) {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -65,18 +76,9 @@ export default function UserMenu() {
     };
   }, [isOpen]);
 
-  const confirmLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      await handleLogout();
-    } finally {
-      setIsLoggingOut(false);
-      setShowLogoutModal(false);
-      setIsOpen(false);
-    }
-  };
-
-  // Derive initials & full name safely
+  // --------------------------------------------------------------------------
+  // Helper Functions
+  // --------------------------------------------------------------------------
   const getInitials = () => {
     if (!user) return "User";
     const first = user.firstname?.charAt(0) || "";
@@ -88,19 +90,39 @@ export default function UserMenu() {
     );
   };
 
+  // --------------------------------------------------------------------------
+  // Logout Handler
+  // --------------------------------------------------------------------------
+  const confirmLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await handleLogout();
+    } finally {
+      setIsLoggingOut(false);
+      setShowLogoutModal(false);
+      setIsOpen(false);
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // User Data
+  // --------------------------------------------------------------------------
   const fullName = user
     ? user.fullname || `${user.firstname || ""} ${user.lastname || ""}`.trim()
     : "User";
-  const email = user?.email || "loading...";
+  const email = user?.email || "";
   const avatarUrl = user?.userImage || "/IMG.webp";
 
+  // --------------------------------------------------------------------------
+  // Main Render
+  // --------------------------------------------------------------------------
   return (
     <>
       <div className="relative" ref={menuRef}>
         {/* Trigger Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-3 rounded-lg hover:bg-gray-100 px-3 py-2 transition-colors"
+          className="flex items-center gap-3 rounded-lg hover:bg-gray-100 px-3 py-2 transition-colors cursor-pointer"
           disabled={loading}
         >
           {/* Avatar */}
@@ -124,17 +146,17 @@ export default function UserMenu() {
           <MoreVertical size={20} className="sm:hidden text-gray-600" />
         </button>
 
-        {/* Dropdown */}
+        {/* Dropdown Menu */}
         {isOpen && (
           <>
             {/* Mobile backdrop */}
             <div
-              className="fixed inset-0 z-40 sm:hidden bg-black/20"
+              className="fixed inset-0 z-40 sm:hidden bg-black/20 cursor-pointer"
               onClick={() => setIsOpen(false)}
             />
 
             <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50">
-              {/* Header */}
+              {/* Header Section */}
               <div className="px-5 py-5 bg-linear-to-r from-gray-50 to-white">
                 <div className="flex items-center gap-4">
                   {loading ? (
@@ -159,18 +181,19 @@ export default function UserMenu() {
                 </div>
               </div>
 
-              {/* Menu Items */}
+              {/* Menu Items Section */}
               <div className="py-2">
+                {/* Transaction Actions */}
                 <MenuItem
                   icon={<Send size={18} />}
                   label="Send Money"
-                  onClick={() => router.push("/send")}
+                  onClick={() => router.push("/dashboard/transfer-money")}
                 />
 
                 <MenuItem
                   icon={<DollarSign size={18} />}
                   label="Add Funds"
-                  onClick={() => router.push("/add-funds")}
+                  onClick={() => router.push("/dashboard/add-money")}
                 />
 
                 <MenuItem
@@ -181,6 +204,7 @@ export default function UserMenu() {
 
                 <hr className="my-2 border-gray-200 mx-2" />
 
+                {/* Security Actions */}
                 <MenuItem
                   icon={<UserCheck size={18} />}
                   label="KYC Verification"
@@ -195,6 +219,7 @@ export default function UserMenu() {
 
                 <hr className="my-2 border-gray-200 mx-2" />
 
+                {/* Logout Action */}
                 <MenuItem
                   icon={<LogOut size={18} />}
                   label="Logout"
@@ -214,14 +239,16 @@ export default function UserMenu() {
       {showLogoutModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-none">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-5 p-7 relative border border-gray-100">
+            {/* Close Button */}
             <button
               onClick={() => setShowLogoutModal(false)}
-              className="absolute top-5 right-5 text-gray-500 hover:text-gray-800 transition-colors"
+              className="absolute top-5 right-5 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
               disabled={isLoggingOut}
             >
               <X size={22} />
             </button>
 
+            {/* Modal Content */}
             <div className="text-center">
               <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-red-50 flex items-center justify-center">
                 <LogOut size={40} className="text-red-600" />
@@ -236,18 +263,19 @@ export default function UserMenu() {
                   : "You will be logged out of your account."}
               </p>
 
+              {/* Action Buttons */}
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={() => setShowLogoutModal(false)}
                   disabled={isLoggingOut}
-                  className="cursor-pointer px-8 py-3 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition disabled:opacity-50 font-medium"
+                  className="cursor-pointer px-8 py-3 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmLogout}
                   disabled={isLoggingOut}
-                  className="cursor-pointer px-8 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition disabled:opacity-50 font-medium"
+                  className="cursor-pointer px-8 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
                   {isLoggingOut ? "Logging out..." : "Yes, Logout"}
                 </button>
@@ -260,7 +288,9 @@ export default function UserMenu() {
   );
 }
 
-// Reusable menu item
+// ============================================================================
+// HELPER COMPONENTS
+// ============================================================================
 function MenuItem({ icon, label, className = "", onClick }) {
   const isDanger = className.includes("text-red-600");
 

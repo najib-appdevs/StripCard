@@ -1,32 +1,40 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { Listbox } from "@headlessui/react";
 import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { getAddMoneyInformation } from "../../utils/api";
+import { getAddMoneyInformation, submitAddMoney } from "../../utils/api";
 import AddMoneyFormSkeleton from "./AddMoneyFormSkeleton";
 
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
 export default function AddMoneyForm({ onFormUpdate }) {
-  // ============================================================================
-  // STATE MANAGEMENT
-  // ============================================================================
+  // --------------------------------------------------------------------------
+  // State Management
+  // --------------------------------------------------------------------------
   const [loading, setLoading] = useState(true);
+  const [submitLoading, setSubmitLoading] = useState(false);
+
+  // Gateway & Form Data
   const [gatewayOptions, setGatewayOptions] = useState([]);
   const [selectedGateway, setSelectedGateway] = useState(null);
   const [amount, setAmount] = useState("");
+
+  // Wallet Information
   const [walletCurrency, setWalletCurrency] = useState("");
   const [balance, setBalance] = useState(0);
 
-  // Charge values
+  // Charge Information
   const [fixedCharge, setFixedCharge] = useState(0);
   const [percentCharge, setPercentCharge] = useState(0);
   const [chargeCurrency, setChargeCurrency] = useState("");
 
-  // ============================================================================
-  // NOTIFY PARENT (PREVIEW) WHEN DATA CHANGES
-  // ============================================================================
+  // --------------------------------------------------------------------------
+  // Notify Parent Component (Preview Update)
+  // --------------------------------------------------------------------------
   const notifyParent = () => {
     if (onFormUpdate) {
       onFormUpdate({
@@ -41,7 +49,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
     }
   };
 
-  // Call whenever relevant state changes
+  // Update parent when form data changes
   useEffect(() => {
     notifyParent();
   }, [
@@ -53,16 +61,16 @@ export default function AddMoneyForm({ onFormUpdate }) {
     chargeCurrency,
   ]);
 
-  // Call once after initial data is loaded
+  // Update parent after initial data load
   useEffect(() => {
     if (!loading && selectedGateway) {
       notifyParent();
     }
   }, [loading, selectedGateway]);
 
-  // ============================================================================
-  // DATA FETCHING - Payment Gateway Info
-  // ============================================================================
+  // --------------------------------------------------------------------------
+  // Fetch Payment Gateway Information
+  // --------------------------------------------------------------------------
   useEffect(() => {
     async function loadAddMoneyInfo() {
       try {
@@ -79,13 +87,14 @@ export default function AddMoneyForm({ onFormUpdate }) {
 
         const data = response.data || response;
 
-        // Flatten gateways → options
+        // Flatten gateways into options
         const options = [];
         (data.gateways || []).forEach((gw) => {
           (gw.currencies || []).forEach((curr) => {
             options.push({
               id: curr.alias,
               name: curr.name,
+              alias: curr.alias,
               fixed_charge: Number(curr.fixed_charge) || 0,
               percent_charge: Number(curr.percent_charge) || 0,
               min_limit: Number(curr.min_limit) || 0,
@@ -130,9 +139,9 @@ export default function AddMoneyForm({ onFormUpdate }) {
     loadAddMoneyInfo();
   }, []);
 
-  // ============================================================================
-  // UPDATE CHARGES - When Gateway Changes
-  // ============================================================================
+  // --------------------------------------------------------------------------
+  // Update Charges When Gateway Changes
+  // --------------------------------------------------------------------------
   useEffect(() => {
     if (selectedGateway) {
       setFixedCharge(selectedGateway.fixed_charge);
@@ -141,9 +150,9 @@ export default function AddMoneyForm({ onFormUpdate }) {
     }
   }, [selectedGateway]);
 
-  // ============================================================================
-  // HELPER FUNCTIONS
-  // ============================================================================
+  // --------------------------------------------------------------------------
+  // Helper Functions
+  // --------------------------------------------------------------------------
   const formatCharge = () => {
     if (!selectedGateway) return "—";
     const fixed = fixedCharge.toFixed(4);
@@ -151,29 +160,103 @@ export default function AddMoneyForm({ onFormUpdate }) {
     return `${fixed} ${chargeCurrency} + ${percent}%`;
   };
 
-  // ============================================================================
-  // LOADING STATE
-  // ============================================================================
+  // --------------------------------------------------------------------------
+  // Form Validation & Submit Handler
+  // --------------------------------------------------------------------------
+  const handleConfirm = async () => {
+    // Validate gateway selection
+    if (!selectedGateway) {
+      toast.error("Please select a payment gateway");
+      return;
+    }
+
+    // Validate amount
+    if (!amount || Number(amount) <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+
+    // Validate minimum limit
+    if (Number(amount) < selectedGateway.min_limit) {
+      toast.error(
+        `Minimum amount is ${selectedGateway.min_limit} ${selectedGateway.currency_code}`
+      );
+      return;
+    }
+
+    // Validate maximum limit
+    if (Number(amount) > selectedGateway.max_limit) {
+      toast.error(
+        `Maximum amount is ${selectedGateway.max_limit} ${selectedGateway.currency_code}`
+      );
+      return;
+    }
+
+    // Validate gateway alias
+    if (!selectedGateway.alias) {
+      toast.error("Gateway alias missing – please try again");
+      return;
+    }
+
+    setSubmitLoading(true);
+
+    try {
+      const payload = {
+        amount: amount,
+        currency: selectedGateway.alias,
+      };
+
+      const response = await submitAddMoney(payload);
+
+      // Handle error response
+      if (response?.message?.error) {
+        toast.error(response.message.error[0] || "Submission failed");
+        return;
+      }
+
+      // Show success message
+      toast.success(
+        response.message?.success?.[0] || "Add money request submitted!"
+      );
+
+      // Handle automatic payment redirect
+      if (response.data?.gateway_type === "AUTOMATIC" && response.data?.url) {
+        toast.success("Redirecting to payment page...");
+        window.location.href = response.data.url;
+      } else {
+        toast.success("Manual payment initiated — please complete payment");
+      }
+    } catch (err) {
+      const errorMsg = err.message || "Failed to process request";
+      toast.error(errorMsg);
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // Loading State
+  // --------------------------------------------------------------------------
   if (loading) {
     return <AddMoneyFormSkeleton />;
   }
 
-  // ============================================================================
-  // RENDER
-  // ============================================================================
+  // --------------------------------------------------------------------------
+  // Main Render
+  // --------------------------------------------------------------------------
   return (
     <div>
       <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
-        {/* Header */}
+        {/* Form Header */}
         <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
           <h2 className="text-base text-center font-semibold text-white">
             Add Money
           </h2>
         </div>
 
-        {/* Body */}
+        {/* Form Body */}
         <div className="flex flex-col space-y-7 p-6">
-          {/* Payment Gateway */}
+          {/* Payment Gateway Selection */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-600">
               Payment Gateway <span className="text-red-500">*</span>
@@ -221,7 +304,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
             </Listbox>
           </div>
 
-          {/* Amount & Currency */}
+          {/* Amount Input with Currency Selector */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-600">
               Enter Amount <span className="text-red-500">*</span>
@@ -274,7 +357,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
             </div>
           </div>
 
-          {/* Info Box */}
+          {/* Information Box */}
           <div className="space-y-2 rounded-xl bg-gray-50 px-4 py-3 text-sm">
             <p className="flex justify-between text-gray-600">
               <span>Available Balance</span>
@@ -297,8 +380,12 @@ export default function AddMoneyForm({ onFormUpdate }) {
           <div className="border-t border-dashed border-gray-200" />
 
           {/* Submit Button */}
-          <button className="cursor-pointer w-full rounded-xl px-4 py-4 text-base font-bold text-white transition bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
-            Confirm
+          <button
+            onClick={handleConfirm}
+            disabled={submitLoading}
+            className="cursor-pointer w-full rounded-xl px-4 py-4 text-base font-bold text-white transition bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitLoading ? "Processing..." : "Confirm"}
           </button>
         </div>
       </div>
