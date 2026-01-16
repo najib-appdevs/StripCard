@@ -3,34 +3,52 @@
 import { CheckCircle2, Mail, Shield } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import toast from "react-hot-toast";
 import { forgotPassword, verifyOtp } from "../../utils/api";
 
-import { useRouter } from "next/navigation";
-
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
 export default function ForgotPasswordPage() {
   const router = useRouter();
+
+  // --------------------------------------------------------------------------
+  // State Management
+  // --------------------------------------------------------------------------
+  const [stage, setStage] = useState("email");
+  const [loading, setLoading] = useState(false);
+
+  // Email Stage
   const [email, setEmail] = useState("");
   const [captchaValue, setCaptchaValue] = useState(null);
   const [captchaError, setCaptchaError] = useState(false);
-  const [stage, setStage] = useState("email");
+
+  // OTP Stage
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [countdown, setCountdown] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [canResend, setCanResend] = useState(true);
 
+  // --------------------------------------------------------------------------
+  // Email Submit Handler
+  // --------------------------------------------------------------------------
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate CAPTCHA
     if (!captchaValue) {
       setCaptchaError(true);
       toast.error("Please complete the CAPTCHA verification");
       return;
     }
+
     setLoading(true);
+
     try {
       const data = await forgotPassword(email);
+
       if (data.message.success) {
         toast.success(data.message.success[0]);
         setStage("otp");
@@ -40,12 +58,16 @@ export default function ForgotPasswordPage() {
         toast.error(data.message.error[0]);
       }
     } catch (error) {
-      toast.error("An unexpected error occurred.");
+      const errorMsg = error.message || "An unexpected error occurred.";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
+  // --------------------------------------------------------------------------
+  // OTP Input Handlers
+  // --------------------------------------------------------------------------
   const handleOtpChange = (index, value) => {
     if (!/^\d*$/.test(value)) return; // Only digits
 
@@ -65,38 +87,52 @@ export default function ForgotPasswordPage() {
     }
   };
 
+  // --------------------------------------------------------------------------
+  // OTP Submit Handler
+  // --------------------------------------------------------------------------
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
     const enteredOtp = otp.join("");
+
+    // Validate OTP length
     if (enteredOtp.length !== 6) {
       toast.error("Please enter the complete 6-digit OTP");
       return;
     }
 
     setLoading(true);
+
     try {
       const data = await verifyOtp(enteredOtp);
+
       if (data.message.success) {
         toast.success(data.message.success[0]);
-        // Store in sessionStorage – disappears when tab closes
+        // Store in sessionStorage (disappears when tab closes)
         sessionStorage.setItem("reset_otp", enteredOtp);
         router.push("/Password-Reset");
       } else {
         toast.error(data.message.error[0]);
       }
     } catch (error) {
-      toast.error("An unexpected error occurred during OTP verification.");
+      const errorMsg =
+        error.message ||
+        "An unexpected error occurred during OTP verification.";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
+  // --------------------------------------------------------------------------
+  // Resend OTP Handler
+  // --------------------------------------------------------------------------
   const handleResend = async () => {
     if (!canResend) return;
     setLoading(true);
 
     try {
       const data = await forgotPassword(email);
+
       if (data.message.success) {
         toast.success(data.message.success[0]);
         setCountdown(60);
@@ -105,13 +141,16 @@ export default function ForgotPasswordPage() {
         toast.error(data.message.error[0]);
       }
     } catch (error) {
-      toast.error("An unexpected error occurred.");
+      const errorMsg = error.message || "An unexpected error occurred.";
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
-  // Countdown timer
+  // --------------------------------------------------------------------------
+  // Countdown Timer Effect
+  // --------------------------------------------------------------------------
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -121,6 +160,9 @@ export default function ForgotPasswordPage() {
     }
   }, [countdown, stage]);
 
+  // --------------------------------------------------------------------------
+  // CAPTCHA Handlers
+  // --------------------------------------------------------------------------
   const onCaptchaChange = (value) => {
     setCaptchaValue(value);
     setCaptchaError(false);
@@ -131,10 +173,13 @@ export default function ForgotPasswordPage() {
     setCaptchaError(true);
   };
 
+  // --------------------------------------------------------------------------
+  // Main Render
+  // --------------------------------------------------------------------------
   return (
     <div className="min-h-screen bg-linear-to-br from-emerald-50 via-teal-50 to-green-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-10 border border-gray-100">
-        {/* Logo */}
+        {/* Logo Section */}
         <div className="text-center mb-8">
           <Image
             src="/logo-dark.png"
@@ -146,7 +191,7 @@ export default function ForgotPasswordPage() {
           <div className="h-1 w-20 bg-linear-to-r from-emerald-400 to-green-400 mx-auto rounded-full"></div>
         </div>
 
-        {/* Stage: Email Input */}
+        {/* Email Input Stage */}
         {stage === "email" && (
           <>
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
@@ -182,7 +227,7 @@ export default function ForgotPasswordPage() {
                 </div>
               </div>
 
-              {/* reCAPTCHA */}
+              {/* reCAPTCHA Section */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
                   <Shield className="h-4 w-4 text-emerald-600" />
@@ -197,6 +242,7 @@ export default function ForgotPasswordPage() {
                   size="normal"
                 />
 
+                {/* CAPTCHA Success Message */}
                 {captchaValue && (
                   <div className="mt-3 flex items-center justify-center gap-2 text-emerald-600 text-sm font-semibold">
                     <CheckCircle2 className="h-4 w-4" />
@@ -204,6 +250,7 @@ export default function ForgotPasswordPage() {
                   </div>
                 )}
 
+                {/* CAPTCHA Error Message */}
                 {captchaError && !captchaValue && (
                   <div className="mt-3 flex items-center justify-center gap-2 text-red-600 text-sm font-semibold">
                     <svg
@@ -228,10 +275,11 @@ export default function ForgotPasswordPage() {
                 </p>
               </div>
 
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-linear-to-r from-emerald-500 to-green-500 text-white font-semibold py-3.5 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50"
+                className="cursor-pointer w-full bg-linear-to-r from-emerald-500 to-green-500 text-white font-semibold py-3.5 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Sending..." : "Send OTP"}
               </button>
@@ -239,7 +287,7 @@ export default function ForgotPasswordPage() {
           </>
         )}
 
-        {/* Stage: OTP Verification */}
+        {/* OTP Verification Stage */}
         {stage === "otp" && (
           <>
             <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
@@ -251,7 +299,7 @@ export default function ForgotPasswordPage() {
             </p>
 
             <form onSubmit={handleOtpSubmit} className="space-y-8">
-              {/* OTP Inputs */}
+              {/* OTP Input Fields */}
               <div className="flex justify-center gap-3">
                 {otp.map((digit, index) => (
                   <input
@@ -268,7 +316,7 @@ export default function ForgotPasswordPage() {
                 ))}
               </div>
 
-              {/* Countdown & Resend */}
+              {/* Countdown & Resend Section */}
               <div className="text-center">
                 {countdown > 0 ? (
                   <p className="text-sm text-gray-600">
@@ -284,7 +332,7 @@ export default function ForgotPasswordPage() {
                       type="button"
                       onClick={handleResend}
                       disabled={!canResend || loading}
-                      className="text-emerald-600 font-semibold hover:text-emerald-700 hover:underline transition-colors disabled:opacity-50"
+                      className="cursor-pointer text-emerald-600 font-semibold hover:text-emerald-700 hover:underline transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {loading ? "Resending..." : "Resend Code"}
                     </button>
@@ -292,17 +340,19 @@ export default function ForgotPasswordPage() {
                 )}
               </div>
 
+              {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-linear-to-r from-emerald-500 to-green-500 text-white font-semibold py-3.5 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200"
+                disabled={loading}
+                className="cursor-pointer w-full bg-linear-to-r from-emerald-500 to-green-500 text-white font-semibold py-3.5 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Verify OTP
+                {loading ? "Verifying..." : "Verify OTP"}
               </button>
             </form>
           </>
         )}
 
-        {/* Bottom Links */}
+        {/* Bottom Links Section */}
         <div className="mt-8 text-center text-sm text-gray-600 space-y-2">
           <p>
             {stage === "email"
@@ -310,7 +360,7 @@ export default function ForgotPasswordPage() {
               : "Already have an account?"}{" "}
             <Link
               href="/login"
-              className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors"
+              className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors cursor-pointer"
             >
               {stage === "email" ? "Log In" : "Login Now"}
             </Link>

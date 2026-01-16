@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowDownLeft, ArrowUpRight, Filter, Search } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getUserDashboard } from "../../utils/api";
 import TransactionHistorySkeleton from "./TransactionHistorySkeleton";
@@ -264,25 +265,14 @@ export default function TransactionHistory() {
               Latest Transactions
             </h2>
 
+            {/* View More */}
             <div className="flex flex-col gap-2 sm:flex-row md:gap-2">
-              {/* Search Input */}
-              <div className="relative w-full sm:w-auto">
-                <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-                  size={18}
-                />
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="pl-10 pr-4 py-2 w-full sm:w-48 md:w-60 bg-white border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-transparent"
-                />
-              </div>
-
-              {/* Filter Button */}
-              <button className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-white transition-colors w-full sm:w-auto">
-                <Filter className="text-gray-600" size={18} />
-                <span className="font-medium">Filter</span>
-              </button>
+              <Link
+                href="/dashboard/transactions"
+                className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-white transition-colors w-full sm:w-auto"
+              >
+                <span className="font-medium">View More</span>
+              </Link>
             </div>
           </div>
         )}

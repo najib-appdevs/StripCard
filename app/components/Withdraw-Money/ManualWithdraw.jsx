@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { submitFinalWithdraw } from "../../utils/api";
 
-export default function ManualConfirmed() {
+export default function ManualWithdraw() {
   const router = useRouter();
 
   const [withdrawData, setWithdrawData] = useState(null);

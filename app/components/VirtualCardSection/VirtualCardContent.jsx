@@ -1,6 +1,6 @@
 import CardCarousel from "./CardCarousel";
 
-export default function RightSideContent() {
+function VirtualCardContent() {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-5 ">
       <CardCarousel />
@@ -28,3 +28,5 @@ export default function RightSideContent() {
     </div>
   );
 }
+
+export default VirtualCardContent;

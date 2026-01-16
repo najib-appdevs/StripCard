@@ -137,7 +137,7 @@ export default function WithdrawMoney({
           })
         );
 
-        router.push("/dashboard/ManualConfirm");
+        router.push("/dashboard/ManualWithdraw");
       } else if (response?.message?.error) {
         const errorMsg = response.message.error[0] || "Withdrawal failed";
         toast.error(errorMsg);

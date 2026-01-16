@@ -7,14 +7,23 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { verifyGoogle2FA } from "../../utils/api";
 
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
 function GoogleTwoFactorAuth() {
+  const router = useRouter();
+  const inputRefs = useRef([]);
+
+  // --------------------------------------------------------------------------
+  // State Management
+  // --------------------------------------------------------------------------
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-  const inputRefs = useRef([]);
-  const router = useRouter();
 
-  /* Token check (session + local storage) */
+  // --------------------------------------------------------------------------
+  // Check Authentication Token
+  // --------------------------------------------------------------------------
   useEffect(() => {
     const token =
       sessionStorage.getItem("auth_token") ||
@@ -28,6 +37,9 @@ function GoogleTwoFactorAuth() {
     setIsCheckingAuth(false);
   }, [router]);
 
+  // --------------------------------------------------------------------------
+  // OTP Input Handlers
+  // --------------------------------------------------------------------------
   const handleChange = (index, value) => {
     if (value.length > 1) value = value[0];
     if (!/^\d*$/.test(value)) return;
@@ -36,6 +48,7 @@ function GoogleTwoFactorAuth() {
     newOtp[index] = value;
     setOtp(newOtp);
 
+    // Auto-focus next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -62,9 +75,13 @@ function GoogleTwoFactorAuth() {
     inputRefs.current[lastIndex]?.focus();
   };
 
+  // --------------------------------------------------------------------------
+  // Submit Handler
+  // --------------------------------------------------------------------------
   const handleAuthorize = async () => {
     const code = otp.join("");
 
+    // Validate OTP length
     if (code.length !== 6) {
       toast.error("Please enter a complete 6-digit code");
       return;
@@ -75,32 +92,37 @@ function GoogleTwoFactorAuth() {
     try {
       const response = await verifyGoogle2FA(code);
 
+      // Handle success response
       if (response?.message?.success?.length) {
         toast.success(response.message.success[0]);
         router.push("/dashboard");
         return;
       }
 
+      // Handle error response
       if (response?.message?.error?.length) {
         toast.error(response.message.error[0]);
         return;
       }
 
+      // Fallback for unexpected response
       toast.error("Unexpected response from server");
     } catch (err) {
       const errorMessage =
         err?.response?.data?.message?.error?.[0] ||
-        err?.response?.data?.message?.[0];
+        err?.response?.data?.message?.[0] ||
+        err?.message ||
+        "Verification failed. Please try again.";
 
-      if (errorMessage) {
-        toast.error(errorMessage);
-      }
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  /* Auth checking loader */
+  // --------------------------------------------------------------------------
+  // Loading State
+  // --------------------------------------------------------------------------
   if (isCheckingAuth) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-emerald-50 via-teal-50 to-green-50">
@@ -109,9 +131,13 @@ function GoogleTwoFactorAuth() {
     );
   }
 
+  // --------------------------------------------------------------------------
+  // Main Render
+  // --------------------------------------------------------------------------
   return (
     <div className="min-h-screen bg-linear-to-br from-emerald-50 via-teal-50 to-green-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+        {/* Logo Section */}
         <div className="text-center mb-8">
           <div
             className="inline-flex items-center justify-center cursor-pointer"
@@ -127,6 +153,7 @@ function GoogleTwoFactorAuth() {
           </div>
         </div>
 
+        {/* Header Section */}
         <div className="text-center mb-8">
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">
             Authorize Google Two Factor
@@ -136,6 +163,7 @@ function GoogleTwoFactorAuth() {
           </p>
         </div>
 
+        {/* OTP Input Section */}
         <div className="mb-8">
           <div className="flex justify-center gap-3">
             {otp.map((digit, index) => (
@@ -156,6 +184,7 @@ function GoogleTwoFactorAuth() {
           </div>
         </div>
 
+        {/* Submit Button */}
         <button
           onClick={handleAuthorize}
           disabled={isSubmitting || otp.join("").length !== 6}
@@ -168,6 +197,7 @@ function GoogleTwoFactorAuth() {
           {isSubmitting ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
+              Verifying...
             </>
           ) : (
             "Authorize"

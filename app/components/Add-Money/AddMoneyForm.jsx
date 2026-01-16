@@ -3,6 +3,7 @@
 
 import { Listbox } from "@headlessui/react";
 import { ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getAddMoneyInformation, submitAddMoney } from "../../utils/api";
@@ -12,6 +13,8 @@ import AddMoneyFormSkeleton from "./AddMoneyFormSkeleton";
 // MAIN COMPONENT
 // ============================================================================
 export default function AddMoneyForm({ onFormUpdate }) {
+  const router = useRouter();
+
   // --------------------------------------------------------------------------
   // State Management
   // --------------------------------------------------------------------------
@@ -176,25 +179,9 @@ export default function AddMoneyForm({ onFormUpdate }) {
       return;
     }
 
-    // Validate minimum limit
-    if (Number(amount) < selectedGateway.min_limit) {
-      toast.error(
-        `Minimum amount is ${selectedGateway.min_limit} ${selectedGateway.currency_code}`
-      );
-      return;
-    }
-
-    // Validate maximum limit
-    if (Number(amount) > selectedGateway.max_limit) {
-      toast.error(
-        `Maximum amount is ${selectedGateway.max_limit} ${selectedGateway.currency_code}`
-      );
-      return;
-    }
-
     // Validate gateway alias
     if (!selectedGateway.alias) {
-      toast.error("Gateway alias missing – please try again");
+      toast.error("Please select a payment gateway");
       return;
     }
 
@@ -219,12 +206,52 @@ export default function AddMoneyForm({ onFormUpdate }) {
         response.message?.success?.[0] || "Add money request submitted!"
       );
 
-      // Handle automatic payment redirect
-      if (response.data?.gateway_type === "AUTOMATIC" && response.data?.url) {
-        toast.success("Redirecting to payment page...");
-        window.location.href = response.data.url;
-      } else {
-        toast.success("Manual payment initiated — please complete payment");
+      // Handle Automatic Gateway Redirect
+      if (response.data?.gateway_type === "AUTOMATIC") {
+        if (Array.isArray(response.data?.url)) {
+          // PayPal-style HATEOAS links
+          const approveLink = response.data.url.find(
+            (link) => link.rel === "approve"
+          );
+
+          if (approveLink?.href) {
+            window.location.href = approveLink.href;
+          } else {
+            toast.error(
+              "Payment approval link not available. Please try again."
+            );
+          }
+        } else if (
+          typeof response.data?.url === "string" &&
+          response.data.url
+        ) {
+          // Standard automatic gateway with plain URL
+          window.location.href = response.data.url;
+        } else {
+          toast.error("Gateway response is not valid");
+        }
+      }
+      // Handle Manual Gateway - Redirect to Manual Payment Page
+      else {
+        // Prepare manual payment data
+        const manualPaymentData = {
+          trx: response.data?.payment_informations?.trx || "",
+          gateway_currency_name: response.data?.gateway_currency_name || "",
+          details: response.data?.details || "",
+          input_fields: response.data?.input_fields || [],
+          payment_informations: response.data?.payment_informations || {},
+          submit_url: response.data?.url || "",
+          method: response.data?.method?.toUpperCase() || "POST",
+        };
+
+        // Save to sessionStorage for manual payment page
+        sessionStorage.setItem(
+          "pendingManualPayment",
+          JSON.stringify(manualPaymentData)
+        );
+
+        // Navigate to manual payment form
+        router.push("/dashboard/ManualPayment");
       }
     } catch (err) {
       const errorMsg = err.message || "Failed to process request";
