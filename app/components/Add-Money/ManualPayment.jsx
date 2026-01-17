@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { submitManualPaymentProof } from "../../utils/api";
 import PaymentInformation from "./PaymentInformation";
 
 // ============================================================================
@@ -61,6 +62,8 @@ export default function ManualPaymentPage() {
 
     try {
       const formData = new FormData();
+
+      // Required field
       formData.append("track", trx);
 
       // Add all dynamic fields
@@ -73,29 +76,33 @@ export default function ManualPaymentPage() {
         }
       });
 
-      const res = await fetch(submit_url, {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await res.json();
+      // Call the API function
+      const result = await submitManualPaymentProof({ track: trx, formData });
 
       // Handle success response
       if (result?.message?.success) {
         toast.success(
           result.message.success[0] || "Payment proof submitted successfully!"
         );
-        localStorage.removeItem("pendingManualPayment");
+        sessionStorage.removeItem("pendingManualPayment");
         router.push("/dashboard");
-      } else {
-        // Handle error response
-        toast.error(
-          result?.message?.error?.[0] || "Failed to submit payment details"
-        );
+        return;
       }
+
+      // Handle error response
+      if (result?.message?.error) {
+        const errorMsg =
+          result.message.error[0] || "Failed to submit payment details";
+        toast.error(errorMsg);
+        return;
+      }
+
+      // Fallback
+      toast.error("Unexpected response from server");
     } catch (err) {
-      const errorMsg = err.message || "Network error or server is unreachable";
-      toast.error(errorMsg);
+      toast.error(
+        err.message || "Submission failed. Please re-upload the payment proof"
+      );
     } finally {
       setLoading(false);
     }
@@ -130,110 +137,110 @@ export default function ManualPaymentPage() {
   // Main Render
   // --------------------------------------------------------------------------
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 ">
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-xl p-8 md:p-10">
-        {/* Header Section */}
-        <div className="text-center mb-10">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-            Manual Payment Via {gateway_currency_name || "Manual Gateway"}
-          </h1>
+    <div className="min-h-screen bg-gray-50">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* LEFT – Manual Payment Form */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10">
+          {/* Header Section */}
+          <div className="text-center mb-5">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
+              Manual Payment Via {gateway_currency_name || "Manual Gateway"}
+            </h1>
 
-          {details && (
-            <div
-              className="text-gray-600 text-base prose max-w-none leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: details }}
-            />
-          )}
-        </div>
+            {details && (
+              <div
+                className="text-gray-600 text-base prose max-w-none leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: details }}
+              />
+            )}
+          </div>
 
-        {/* Payment Information Component */}
-        <PaymentInformation
-          paymentInformations={payment_informations}
-          gatewayCurrencyName={gateway_currency_name}
-          trx={trx}
-          className="mb-10"
-        />
+          {/* Payment Form */}
+          <form onSubmit={handleSubmit} className="space-y-7">
+            {/* Dynamic Form Fields */}
+            {input_fields.length > 0 ? (
+              input_fields.map((field) => (
+                <div key={field.name} className="space-y-2">
+                  <label className="block text-gray-700 font-medium">
+                    {field.label}
+                    {field.required && (
+                      <span className="text-red-500 ml-1">*</span>
+                    )}
+                  </label>
 
-        {/* Payment Form */}
-        <form onSubmit={handleSubmit} className="space-y-7">
-          {/* Dynamic Form Fields */}
-          {input_fields.length > 0 ? (
-            input_fields.map((field) => (
-              <div key={field.name} className="space-y-2">
-                <label className="block text-gray-700 font-medium">
-                  {field.label}
-                  {field.required && (
-                    <span className="text-red-500 ml-1">*</span>
+                  {/* File Input */}
+                  {field.type === "file" ? (
+                    <input
+                      type="file"
+                      accept={
+                        field.validation?.mimes
+                          ?.map((m) => `.${m}`)
+                          .join(",") || "image/*"
+                      }
+                      onChange={handleFileChange}
+                      required={field.required}
+                      className="cursor-pointer block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-emerald-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition file:cursor-pointer"
+                    />
+                  ) : (
+                    <input
+                      type={field.type}
+                      name={field.name}
+                      maxLength={field.validation?.max}
+                      required={field.required}
+                      onChange={(e) =>
+                        handleInputChange(field.name, e.target.value)
+                      }
+                      placeholder={`Enter ${field.label.toLowerCase()}`}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition text-gray-800"
+                    />
                   )}
-                </label>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-gray-500 py-6">
+                No additional information required for this gateway
+              </p>
+            )}
 
-                {/* File Input */}
-                {field.type === "file" ? (
-                  <input
-                    type="file"
-                    accept={
-                      field.validation?.mimes?.map((m) => `.${m}`).join(",") ||
-                      "image/*"
-                    }
-                    onChange={handleFileChange}
-                    required={field.required}
-                    className="cursor-pointer block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-emerald-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 transition file:cursor-pointer"
-                  />
-                ) : (
-                  /* Text/Number Input */
-                  <input
-                    type={field.type}
-                    name={field.name}
-                    maxLength={field.validation?.max}
-                    required={field.required}
-                    onChange={(e) =>
-                      handleInputChange(field.name, e.target.value)
-                    }
-                    placeholder={`Enter ${field.label.toLowerCase()}`}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition text-gray-800"
-                  />
-                )}
-              </div>
-            ))
-          ) : (
-            /* No Fields Message */
-            <p className="text-center text-gray-500 py-6">
-              No additional information required for this gateway
-            </p>
-          )}
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading || input_fields.length === 0}
-            className={`
-              cursor-pointer w-full mt-10 py-4 px-6 rounded-xl font-semibold text-white text-lg transition-all
-              ${
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading || input_fields.length === 0}
+              className={`cursor-pointer w-full mt-10 py-4 px-6 rounded-xl font-semibold text-white text-lg transition-all ${
                 loading || input_fields.length === 0
                   ? "btn-primary cursor-not-allowed"
                   : "btn-primary"
-              }
-            `}
-          >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                </svg>
-                Submitting...
-              </span>
-            ) : (
-              "Confirm Payment"
-            )}
-          </button>
-        </form>
+              }`}
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                  </svg>
+                  Submitting...
+                </span>
+              ) : (
+                "Confirm Payment"
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* RIGHT – Payment Information */}
+        <div>
+          <PaymentInformation
+            paymentInformations={payment_informations}
+            gatewayCurrencyName={gateway_currency_name}
+            trx={trx}
+          />
+        </div>
       </div>
     </div>
   );

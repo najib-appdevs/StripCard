@@ -581,3 +581,27 @@ export const getUserTransactions = async (page = 1, limit = 12) => {
     };
   }
 };
+
+export const submitManualPaymentProof = async ({ track, formData }) => {
+  try {
+    const { data } = await api.post(
+      "/user/add-money/manual/payment/confirmed",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: {
+        error: ["An unexpected error occurred while submitting payment proof."],
+      },
+    };
+  }
+};

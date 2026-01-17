@@ -77,12 +77,12 @@ export default function PaymentInformation({
     <div
       className={`bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-sm ${className}`}
     >
-      <h3 className="text-lg font-semibold text-gray-800 mb-5 border-b border-gray-200 pb-3">
-        Payment Details
+      <h3 className="text-lg font-semibold text-center text-gray-800 mb-5 border-b border-gray-200 pb-3">
+        Payment Information
       </h3>
 
       <div className="space-y-4 text-sm">
-        <div className="flex justify-between">
+        {/* <div className="flex justify-between">
           <span className="text-gray-600">Transaction ID</span>
           <span className="font-medium text-gray-900">{trx}</span>
         </div>
@@ -92,7 +92,7 @@ export default function PaymentInformation({
           <span className="font-medium text-gray-900">
             {gatewayCurrencyName}
           </span>
-        </div>
+        </div> */}
 
         <div className="flex justify-between">
           <span className="text-gray-600">Entered Amount</span>
