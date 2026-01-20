@@ -1,11 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getWithdrawInfo } from "../../utils/api";
 import WithdrawMoneyLogSkeleton from "./WithdrawMoneyLogSkeleton";
 
 const WithdrawMoneyLog = () => {
-  const [search, setSearch] = useState("");
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,8 +39,8 @@ const WithdrawMoneyLog = () => {
               tx.status === "Pending"
                 ? "Pending"
                 : tx.status === "Success"
-                ? "Success"
-                : "Rejected", // or handle other statuses
+                  ? "Success"
+                  : "Rejected", // or handle other statuses
           }));
 
           setLogs(formattedLogs);
@@ -57,14 +57,6 @@ const WithdrawMoneyLog = () => {
 
     fetchWithdrawLogs();
   }, []);
-
-  // Optional: client-side search/filter
-  const filteredLogs = logs.filter(
-    (log) =>
-      log.trxId?.toLowerCase().includes(search.toLowerCase()) ||
-      log.willGet?.toLowerCase().includes(search.toLowerCase()) ||
-      log.withdrawBy?.toLowerCase().includes(search.toLowerCase())
-  );
 
   if (loading) {
     return <WithdrawMoneyLogSkeleton />;
@@ -87,19 +79,14 @@ const WithdrawMoneyLog = () => {
             Withdraw Money Log
           </h2>
 
-          <div className="flex items-center gap-3">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Ex: TRX ID, Amount"
-              className="w-44 rounded-lg bg-gray-800 px-3 py-1.5 text-sm text-white
-                         placeholder-gray-400 border border-gray-700
-                         focus:outline-none focus:ring-2 focus:ring-emerald-400"
-            />
-            <button className="cursor-pointer text-sm font-medium text-emerald-400 hover:text-emerald-300">
-              View More
-            </button>
+          {/* View More Button - Desktop */}
+          <div className="hidden md:flex flex-col gap-2 sm:flex-row md:gap-2">
+            <Link
+              href="/dashboard/transactions"
+              className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-white rounded-lg hover:text-gray-300 transition-colors w-full sm:w-auto"
+            >
+              <span className="font-medium">View More</span>
+            </Link>
           </div>
         </div>
 
@@ -119,13 +106,12 @@ const WithdrawMoneyLog = () => {
 
           {/* Rows */}
           <div className="divide-y min-w-[1000px]">
-            {filteredLogs.length === 0 ? (
+            {logs.length === 0 ? (
               <div className="px-6 py-10 text-center text-gray-500">
                 No withdrawal transactions found
-                {search && " matching your search"}
               </div>
             ) : (
-              filteredLogs.map((log, index) => (
+              logs.map((log, index) => (
                 <div
                   key={log.trxId || index}
                   className="grid grid-cols-1 md:grid-cols-8 gap-3 px-6 py-4 text-sm"
@@ -143,8 +129,8 @@ const WithdrawMoneyLog = () => {
                           log.status === "Success"
                             ? "bg-green-500"
                             : log.status === "Pending"
-                            ? "bg-yellow-500"
-                            : "bg-red-500"
+                              ? "bg-yellow-500"
+                              : "bg-red-500"
                         }`}
                     />
                     <span
@@ -152,8 +138,8 @@ const WithdrawMoneyLog = () => {
                         log.status === "Success"
                           ? "text-green-600"
                           : log.status === "Pending"
-                          ? "text-yellow-600"
-                          : "text-red-600"
+                            ? "text-yellow-600"
+                            : "text-red-600"
                       }
                     >
                       {log.status}
@@ -185,9 +171,12 @@ const WithdrawMoneyLog = () => {
 
         {/* Mobile View More */}
         <div className="md:hidden px-6 py-4">
-          <button className="cursor-pointer w-full rounded-xl border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-            View More
-          </button>
+          <Link
+            href="/dashboard/transactions"
+            className="cursor-pointer flex items-center justify-center gap-2 w-full rounded-xl border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <span className="font-medium">View More</span>
+          </Link>
         </div>
       </div>
     </div>

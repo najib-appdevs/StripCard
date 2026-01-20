@@ -3,15 +3,15 @@
 
 import {
   ArrowDownCircle,
-  FileText,
+  CreditCard,
   Gift,
-  LayoutDashboard,
+  Home,
   Lock,
-  LogOut,
   PlusCircle,
+  Receipt,
   Send,
   ShieldCheck,
-  User,
+  UserCircle,
   X,
 } from "lucide-react";
 import Link from "next/link";
@@ -20,7 +20,7 @@ import { usePathname } from "next/navigation";
 const navigationGroups = [
   {
     title: "Main",
-    items: [{ icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" }],
+    items: [{ icon: Home, label: "Dashboard", href: "/dashboard" }],
   },
   {
     title: "Money Management",
@@ -41,9 +41,14 @@ const navigationGroups = [
   {
     title: "Services",
     items: [
+      {
+        icon: CreditCard,
+        label: "Virtual Card",
+        href: "/dashboard/Virtual-Card",
+      },
       { icon: Gift, label: "Gift Card", href: "/dashboard/gift-card" },
       {
-        icon: FileText,
+        icon: Receipt,
         label: "Transactions",
         href: "/dashboard/transactions",
       },
@@ -52,10 +57,9 @@ const navigationGroups = [
   {
     title: "Account",
     items: [
-      { icon: User, label: "My Profile", href: "/dashboard/profile" },
+      { icon: UserCircle, label: "My Profile", href: "/dashboard/profile" },
       { icon: ShieldCheck, label: "KYC Verification", href: "/dashboard/kyc" },
       { icon: Lock, label: "2FA Security", href: "/dashboard/2fa" },
-      // { icon: LogOut, label: "Logout", href: "/logout" },
     ],
   },
 ];
@@ -80,20 +84,23 @@ export default function Sidebar({ isOpen, onClose }) {
           background-clip: text;
         }
 
-        .gradient-icon :global(svg) {
-          stroke: url(#gradient);
+        .gradient-icon {
+          background: linear-gradient(
+            76.84deg,
+            #0ebe98 -2.66%,
+            #50c631 105.87%
+          );
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          display: inline-flex;
+        }
+
+        .gradient-icon svg {
+          stroke: #0ebe98;
+          stroke-width: 2;
         }
       `}</style>
-
-      {/* SVG gradient definition */}
-      <svg width="0" height="0" style={{ position: "absolute" }}>
-        <defs>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="-2.66%" stopColor="#0EBE98" />
-            <stop offset="105.87%" stopColor="#50C631" />
-          </linearGradient>
-        </defs>
-      </svg>
 
       {/* Overlay for mobile */}
       {isOpen && (
@@ -157,7 +164,8 @@ export default function Sidebar({ isOpen, onClose }) {
                       <span className={active ? "gradient-icon" : ""}>
                         <Icon
                           size={20}
-                          style={active ? { stroke: "url(#gradient)" } : {}}
+                          className={active ? "" : "text-gray-600"}
+                          strokeWidth={2}
                         />
                       </span>
                       <span

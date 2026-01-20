@@ -1,13 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getTransferMoneyInfo } from "../../utils/api";
 import TransferLogSkeleton from "./TransferLogSkeleton";
 
 const TransferMoneyLog = () => {
-  const [search, setSearch] = useState("");
   const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(true); // ← Added loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchLogs = async () => {
@@ -21,19 +21,12 @@ const TransferMoneyLog = () => {
       } catch (error) {
         console.error("Failed to fetch transfer logs:", error);
       } finally {
-        setLoading(false); // ← Always stop loading
+        setLoading(false);
       }
     };
 
     fetchLogs();
   }, []);
-
-  /* ----------------------------
-     SEARCH FILTER - Only by Transaction ID (trx)
-  -----------------------------*/
-  const filteredLogs = logs.filter((log) =>
-    log.trx.toLowerCase().includes(search.toLowerCase())
-  );
 
   // Helper function for desired date format: 05-01-26 12:37:13 PM
   const formatDate = (dateString) => {
@@ -60,17 +53,14 @@ const TransferMoneyLog = () => {
             Transfer Money Log
           </h2>
 
-          <div className="flex items-center gap-3">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Ex: TRX ID, Amount"
-              className="w-44 rounded-lg bg-gray-800 px-3 py-1.5 text-sm text-white placeholder-gray-400 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-            />
-            <button className="cursor-pointer text-sm font-medium text-emerald-400 hover:text-emerald-300">
-              View More
-            </button>
+          {/* View More Button - Desktop */}
+          <div className="hidden md:flex flex-col gap-2 sm:flex-row md:gap-2">
+            <Link
+              href="/dashboard/transactions"
+              className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-white rounded-lg hover:text-gray-300 transition-colors w-full sm:w-auto"
+            >
+              <span className="font-medium">View More</span>
+            </Link>
           </div>
         </div>
 
@@ -90,9 +80,9 @@ const TransferMoneyLog = () => {
           {/* Loading / Content / No Data */}
           {loading ? (
             <TransferLogSkeleton />
-          ) : filteredLogs.length > 0 ? (
+          ) : logs.length > 0 ? (
             <div className="divide-y min-w-[900px]">
-              {filteredLogs.map((log, index) => (
+              {logs.map((log, index) => (
                 <div
                   key={index}
                   className="grid grid-cols-1 md:grid-cols-7 gap-3 px-6 py-4 text-sm"
@@ -107,8 +97,8 @@ const TransferMoneyLog = () => {
                         log.status === "Success"
                           ? "bg-green-500"
                           : log.status === "Pending"
-                          ? "bg-yellow-500"
-                          : "bg-red-500"
+                            ? "bg-yellow-500"
+                            : "bg-red-500"
                       }`}
                     />
                     <span
@@ -116,8 +106,8 @@ const TransferMoneyLog = () => {
                         log.status === "Success"
                           ? "text-green-600"
                           : log.status === "Pending"
-                          ? "text-yellow-600"
-                          : "text-red-600"
+                            ? "text-yellow-600"
+                            : "text-red-600"
                       }
                     >
                       {log.status}
@@ -139,20 +129,19 @@ const TransferMoneyLog = () => {
           ) : (
             <div className="px-6 py-12 text-center text-gray-500">
               <p className="text-lg font-medium">No data found</p>
-              <p className="mt-1 text-sm">
-                {search.trim()
-                  ? "Try a different Transaction ID"
-                  : "No transfer records available yet"}
-              </p>
+              <p className="mt-1 text-sm">No transfer records available yet</p>
             </div>
           )}
         </div>
 
         {/* Mobile View More */}
         <div className="md:hidden px-6 py-4">
-          <button className="cursor-pointer w-full rounded-xl border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
-            View More
-          </button>
+          <Link
+            href="/dashboard/transactions"
+            className="cursor-pointer flex items-center justify-center gap-2 w-full rounded-xl border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <span className="font-medium">View More</span>
+          </Link>
         </div>
       </div>
     </div>

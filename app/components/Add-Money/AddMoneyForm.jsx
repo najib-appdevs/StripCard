@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getAddMoneyInformation, submitAddMoney } from "../../utils/api";
-import AddMoneyFormSkeleton from "./AddMoneyFormSkeleton";
 
 // ============================================================================
 // MAIN COMPONENT
@@ -27,12 +26,12 @@ export default function AddMoneyForm({ onFormUpdate }) {
   const [amount, setAmount] = useState("");
 
   // Wallet Information
-  const [walletCurrency, setWalletCurrency] = useState("");
-  const [balance, setBalance] = useState(0);
+  const [walletCurrency, setWalletCurrency] = useState("USD");
+  const [balance, setBalance] = useState(null);
 
   // Charge Information
-  const [fixedCharge, setFixedCharge] = useState(0);
-  const [percentCharge, setPercentCharge] = useState(0);
+  const [fixedCharge, setFixedCharge] = useState(null);
+  const [percentCharge, setPercentCharge] = useState(null);
   const [chargeCurrency, setChargeCurrency] = useState("");
 
   // --------------------------------------------------------------------------
@@ -117,7 +116,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
         if (options.length > 0) {
           const defaultGateway =
             options.find(
-              (opt) => opt.currency_code === data.userWallet?.currency
+              (opt) => opt.currency_code === data.userWallet?.currency,
             ) || options[0];
 
           setSelectedGateway(defaultGateway);
@@ -127,7 +126,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
         }
 
         // Set wallet currency & balance
-        setWalletCurrency(data.userWallet?.currency || "N/A");
+        setWalletCurrency(data.userWallet?.currency || "USD");
         setBalance(data.userWallet?.balance || 0);
 
         setLoading(false);
@@ -157,7 +156,9 @@ export default function AddMoneyForm({ onFormUpdate }) {
   // Helper Functions
   // --------------------------------------------------------------------------
   const formatCharge = () => {
-    if (!selectedGateway) return "—";
+    if (!selectedGateway || fixedCharge === null || percentCharge === null) {
+      return "--";
+    }
     const fixed = fixedCharge.toFixed(4);
     const percent = percentCharge.toFixed(4);
     return `${fixed} ${chargeCurrency} + ${percent}%`;
@@ -203,7 +204,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
 
       // Show success message
       toast.success(
-        response.message?.success?.[0] || "Add money request submitted!"
+        response.message?.success?.[0] || "Add money request submitted!",
       );
 
       // Handle Automatic Gateway Redirect
@@ -211,14 +212,14 @@ export default function AddMoneyForm({ onFormUpdate }) {
         if (Array.isArray(response.data?.url)) {
           // PayPal-style HATEOAS links
           const approveLink = response.data.url.find(
-            (link) => link.rel === "approve"
+            (link) => link.rel === "approve",
           );
 
           if (approveLink?.href) {
             window.location.href = approveLink.href;
           } else {
             toast.error(
-              "Payment approval link not available. Please try again."
+              "Payment approval link not available. Please try again.",
             );
           }
         } else if (
@@ -247,7 +248,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
         // Save to sessionStorage for manual payment page
         sessionStorage.setItem(
           "pendingManualPayment",
-          JSON.stringify(manualPaymentData)
+          JSON.stringify(manualPaymentData),
         );
 
         // Navigate to manual payment form
@@ -260,13 +261,6 @@ export default function AddMoneyForm({ onFormUpdate }) {
       setSubmitLoading(false);
     }
   };
-
-  // --------------------------------------------------------------------------
-  // Loading State
-  // --------------------------------------------------------------------------
-  if (loading) {
-    return <AddMoneyFormSkeleton />;
-  }
 
   // --------------------------------------------------------------------------
   // Main Render
@@ -289,10 +283,14 @@ export default function AddMoneyForm({ onFormUpdate }) {
               Payment Gateway <span className="text-red-500">*</span>
             </label>
 
-            <Listbox value={selectedGateway} onChange={setSelectedGateway}>
+            <Listbox
+              value={selectedGateway}
+              onChange={setSelectedGateway}
+              disabled={loading || gatewayOptions.length === 0}
+            >
               {({ open }) => (
                 <div className="relative">
-                  <Listbox.Button className="cursor-pointer relative w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2.5 text-left text-sm text-gray-900 hover:bg-white focus:border-emerald-500 focus:outline-none focus:ring-emerald-200">
+                  <Listbox.Button className="cursor-pointer relative w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2.5 text-left text-sm text-gray-900 hover:bg-white focus:border-emerald-500 focus:outline-none focus:ring-emerald-200 disabled:opacity-50 disabled:cursor-not-allowed">
                     <span className="block truncate">
                       {selectedGateway
                         ? selectedGateway.name
@@ -317,8 +315,8 @@ export default function AddMoneyForm({ onFormUpdate }) {
                             active
                               ? "bg-emerald-50 text-emerald-600"
                               : selected
-                              ? "bg-gray-100 font-medium text-gray-900"
-                              : "text-gray-700"
+                                ? "bg-gray-100 font-medium text-gray-900"
+                                : "text-gray-700"
                           }`
                         }
                       >
@@ -352,7 +350,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
                     <div className="relative min-w-24">
                       <Listbox.Button className="cursor-pointer flex h-full w-full items-center justify-center px-4 py-2.5 text-sm text-gray-900 focus:outline-none">
                         <span className="mr-2 font-medium">
-                          {walletCurrency || "N/A"}
+                          {walletCurrency}
                         </span>
                         <ChevronDown
                           className={`h-5 w-5 text-gray-400 transition-transform ${
@@ -373,7 +371,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
                           }
                         >
                           <span className="block font-medium">
-                            {walletCurrency || "N/A"}
+                            {walletCurrency}
                           </span>
                         </Listbox.Option>
                       </Listbox.Options>
@@ -389,7 +387,9 @@ export default function AddMoneyForm({ onFormUpdate }) {
             <p className="flex justify-between text-gray-600">
               <span>Available Balance</span>
               <span className="font-medium text-gray-800">
-                {Number(balance).toFixed(4)} {walletCurrency || "N/A"}
+                {balance !== null
+                  ? `${Number(balance).toFixed(4)} ${walletCurrency}`
+                  : "--"}
               </span>
             </p>
             <p className="flex justify-between text-gray-600">
