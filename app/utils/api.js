@@ -281,7 +281,7 @@ export const getAllGiftCards = async (page = 2) => {
 export const searchGiftCardsByCountry = async (iso2, page = 1) => {
   try {
     const { data } = await api.get(
-      `/user/gift-card/search?country=${iso2.toUpperCase()}&page=${page}`
+      `/user/gift-card/search?country=${iso2.toUpperCase()}&page=${page}`,
     );
     return data;
   } catch (error) {
@@ -300,7 +300,7 @@ export const searchGiftCardsByCountry = async (iso2, page = 1) => {
 export const getGiftCardDetails = async (productId) => {
   try {
     const { data } = await api.get(
-      `/user/gift-card/details?product_id=${productId}`
+      `/user/gift-card/details?product_id=${productId}`,
     );
     return data;
   } catch (error) {
@@ -462,7 +462,7 @@ export const submitFinalWithdraw = async (data) => {
 
     const response = await api.post(
       "/user/withdraw/manual/confirmed",
-      formData
+      formData,
     );
     return response.data;
   } catch (error) {
@@ -482,7 +482,7 @@ export const getGoogle2FASetup = async () => {
     const { data } = await api.get("/user/security/google-2fa");
     return data;
   } catch (error) {
-    "Error fetching 2FA setup:", error;
+    ("Error fetching 2FA setup:", error);
 
     if (error.response?.data) {
       return error.response.data;
@@ -500,7 +500,7 @@ export const google2FAUpdateStatus = async () => {
     const { data } = await api.post("/user/security/google-2fa/status/update");
     return data;
   } catch (error) {
-    "Error enabling Google 2FA:", error;
+    ("Error enabling Google 2FA:", error);
     if (error.response?.data) {
       return error.response.data;
     }
@@ -567,7 +567,7 @@ export const submitAddMoney = async ({ amount, currency }) => {
 export const getUserTransactions = async (page = 1, limit = 12) => {
   try {
     const response = await api.get(
-      `/user/transactions?page=${page}&limit=${limit}`
+      `/user/transactions?page=${page}&limit=${limit}`,
     );
     return response.data;
   } catch (error) {
@@ -591,7 +591,7 @@ export const submitManualPaymentProof = async ({ track, formData }) => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return data;
   } catch (error) {
@@ -602,6 +602,84 @@ export const submitManualPaymentProof = async ({ track, formData }) => {
       message: {
         error: ["An unexpected error occurred while submitting payment proof."],
       },
+    };
+  }
+};
+// --------------------------- Virtual Card APIs----------------------------------
+
+// ────────────────────────────────────────────────────────────────
+// New function for Strowallet Virtual Card endpoint
+// ────────────────────────────────────────────────────────────────
+export const getStrowalletCards = async () => {
+  try {
+    const { data } = await api.get("/user/strowallet-card");
+    return data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to fetch virtual cards. Please try again."] },
+    };
+  }
+};
+
+// GET /user/strowallet-card/create/info
+export const getStrowalletCreateInfo = async () => {
+  try {
+    const { data } = await api.get("/user/strowallet-card/create/info");
+    return data;
+  } catch (error) {
+    console.error("Strowallet create info error:", error);
+    if (error.response) return error.response.data;
+    return { message: { error: ["Failed to load create info"] } };
+  }
+};
+
+// GET /user/strowallet-card/update/customer/status
+export const updateStrowalletCustomerStatus = async () => {
+  try {
+    const { data } = await api.get(
+      "/user/strowallet-card/update/customer/status",
+    );
+    return data;
+  } catch (error) {
+    console.error("Strowallet customer status update error:", error);
+    if (error.response) return error.response.data;
+    return { message: { error: ["Failed to update customer status"] } };
+  }
+};
+
+// POST /user/strowallet-card/update/customer
+export const updateStrowalletCustomer = async (formData) => {
+  try {
+    const { data } = await api.post("/user/strowallet-card/update/customer", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+  } catch (error) {
+    console.error("Update customer error:", error);
+    if (error.response) return error.response.data;
+    return { message: { error: ["Update failed"] } };
+  }
+};
+
+
+export const createStrowalletCustomer = async (formData) => {
+  try {
+    const { data } = await api.post("/user/strowallet-card/create/customer", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  } catch (error) {
+    console.log("Create customer error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to create customer. Please try again."] },
     };
   }
 };

@@ -83,3 +83,30 @@ body {
   animation: shimmer 1.5s infinite;
 }
 
+/* Country dropdown color config */
+/* Country list container */
+.react-tel-input .country-list {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+/* Each country row */
+.react-tel-input .country-list .country {
+  color: #111827 !important;
+}
+
+/* Country name text */
+.react-tel-input .country-list .country-name {
+  color: #111827 !important;
+}
+
+/* Dial code text */
+.react-tel-input .country-list .dial-code {
+  color: #6b7280 !important;
+}
+
+/* Hover & selected state */
+.react-tel-input .country-list .country:hover,
+.react-tel-input .country-list .country.highlight {
+  background-color: #f3f4f6 !important;
+}
