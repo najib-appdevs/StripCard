@@ -636,26 +636,41 @@ export const getStrowalletCreateInfo = async () => {
   }
 };
 
-// GET /user/strowallet-card/update/customer/status
-export const updateStrowalletCustomerStatus = async () => {
+export const getStrowalletCharges = async () => {
   try {
-    const { data } = await api.get(
-      "/user/strowallet-card/update/customer/status",
-    );
+    const { data } = await api.get("/user/strowallet-card/charges");
     return data;
   } catch (error) {
-    console.error("Strowallet customer status update error:", error);
+    console.error("Strowallet create info error:", error);
     if (error.response) return error.response.data;
-    return { message: { error: ["Failed to update customer status"] } };
+    return { message: { error: ["Failed to load create info"] } };
   }
 };
+
+// GET /user/strowallet-card/update/customer/status
+// export const updateStrowalletCustomerStatus = async () => {
+//   try {
+//     const { data } = await api.get(
+//       "/user/strowallet-card/update/customer/status",
+//     );
+//     return data;
+//   } catch (error) {
+//     console.error("Strowallet customer status update error:", error);
+//     if (error.response) return error.response.data;
+//     return { message: { error: ["Failed to update customer status"] } };
+//   }
+// };
 
 // POST /user/strowallet-card/update/customer
 export const updateStrowalletCustomer = async (formData) => {
   try {
-    const { data } = await api.post("/user/strowallet-card/update/customer", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const { data } = await api.post(
+      "/user/strowallet-card/update/customer",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      },
+    );
     return data;
   } catch (error) {
     console.error("Update customer error:", error);
@@ -664,14 +679,17 @@ export const updateStrowalletCustomer = async (formData) => {
   }
 };
 
-
 export const createStrowalletCustomer = async (formData) => {
   try {
-    const { data } = await api.post("/user/strowallet-card/create/customer", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
+    const { data } = await api.post(
+      "/user/strowallet-card/create/customer",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       },
-    });
+    );
     return data;
   } catch (error) {
     console.log("Create customer error:", error);
@@ -681,5 +699,39 @@ export const createStrowalletCustomer = async (formData) => {
     return {
       message: { error: ["Failed to create customer. Please try again."] },
     };
+  }
+};
+
+export const createStrowalletCard = async (payload) => {
+  try {
+    const { data } = await api.post("/user/strowallet-card/create", payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  } catch (error) {
+    console.log("Create virtual card error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to create virtual card. Please try again."] },
+    };
+  }
+};
+
+// ────────────────────────────────────────────────
+// NEW: API function for card details
+// ────────────────────────────────────────────────
+export const getStrowalletCardDetails = async (cardId) => {
+  try {
+    const { data } = await api.get(
+      `/user/strowallet-card/details?card_id=${cardId}`,
+    );
+    return data;
+  } catch (error) {
+    if (error.response?.data) return error.response.data;
+    return { message: { error: ["Failed to fetch card details."] } };
   }
 };
