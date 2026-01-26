@@ -735,3 +735,33 @@ export const getStrowalletCardDetails = async (cardId) => {
     return { message: { error: ["Failed to fetch card details."] } };
   }
 };
+
+export const getStrowalletCardTransactions = async (cardId) => {
+  try {
+    const { data } = await api.get(
+      `/user/strowallet-card/transaction?card_id=${cardId}`,
+    );
+    return data;
+  } catch (error) {
+    if (error.response?.data) return error.response.data;
+    return { message: { error: ["Failed to fetch card transactions."] } };
+  }
+};
+
+// ────────────────────────────────────────────────
+// NEW: Fund API function (add this to your api file)
+// ────────────────────────────────────────────────
+export const fundStrowalletCard = async (payload) => {
+  try {
+    const { data } = await api.post("/user/strowallet-card/fund", payload);
+    return data;
+  } catch (error) {
+    console.log("Fund virtual card error:", error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to fund card. Please try again."] },
+    };
+  }
+};
