@@ -372,7 +372,7 @@ export default function FundVirtualCard() {
               <button
                 type="submit"
                 disabled={submitting || !isFormValid}
-                className={`mt-4 w-full rounded-lg py-3.5 font-medium text-white flex items-center justify-center gap-2 transition-colors btn-primary`}
+                className={`mt-4 w-full rounded-lg py-3.5 font-medium text-white flex items-center justify-center gap-2 transition-colors btn-primary cursor-pointer`}
               >
                 {submitting ? "Processing..." : "Fund Card"}
               </button>

@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
-import { getStrowalletCards } from "../../utils/api";
+import { getCardyFieCards } from "../../utils/api";
 
-export default function Strowallet() {
+export default function CardyFie() {
   const router = useRouter();
   const [cardsData, setCardsData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +16,7 @@ export default function Strowallet() {
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const res = await getStrowalletCards();
+        const res = await getCardyFieCards();
 
         if (res?.message?.error) {
           setError(res.message.error[0] || "Failed to load virtual cards");
@@ -28,7 +28,7 @@ export default function Strowallet() {
         }
       } catch (err) {
         setError("Something went wrong. Please try again later.");
-        console.error("Strowallet fetch error:", err);
+        console.error("CardyFie fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -66,10 +66,8 @@ export default function Strowallet() {
   // ────────────────────────────────────────────────
   // Formatting Helpers
   // ────────────────────────────────────────────────
-  const formatCardNumber = (num) => {
-    if (!num) return "•••• •••• •••• ••••";
-    const cleaned = num.replace(/\D/g, "");
-    return cleaned.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+  const formatCardNumber = (masked) => {
+    return masked || "•••• •••• •••• ••••";
   };
 
   const formatDate = (isoString) => {
@@ -86,8 +84,7 @@ export default function Strowallet() {
 
   const formatAmount = (str) => {
     if (!str) return "—";
-
-    return str;
+    return str; // API already sends "10 USD", "3 USD" etc.
   };
 
   const getTransactionColor = (status) => {
@@ -103,7 +100,38 @@ export default function Strowallet() {
     }
   };
 
-  const handleViewDetails = (cardId, cardNumber) => {
+  const getCardStatusStyle = (status) => {
+    const s = (status || "").toUpperCase();
+    switch (s) {
+      case "ENABLED":
+        return {
+          dot: "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]",
+          label: "ENABLED",
+        };
+      case "FREEZE":
+        return {
+          dot: "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]",
+          label: "FROZEN",
+        };
+      case "PROCESSING":
+        return {
+          dot: "bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.6)]",
+          label: "PROCESSING",
+        };
+      case "CLOSED":
+        return {
+          dot: "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]",
+          label: "CLOSED",
+        };
+      default:
+        return {
+          dot: "bg-gray-400",
+          label: "UNKNOWN",
+        };
+    }
+  };
+
+  const handleViewDetails = (cardId) => {
     router.push(`/dashboard/Virtual-Card/CardDetails?card_id=${cardId}`);
   };
 
@@ -117,7 +145,7 @@ export default function Strowallet() {
 
         {card_create_action && (
           <Link
-            href="/dashboard/Virtual-Card/CreateVirtualCard"
+            href="/dashboard/Virtual-Card-CardyFie/CreateVirtualCard"
             className="inline-flex items-center gap-2 px-6 py-3 btn-primary text-white font-medium rounded-xl shadow-md transition-all duration-200"
           >
             <svg
@@ -164,8 +192,8 @@ export default function Strowallet() {
             payments.
           </p>
           {card_create_action && (
-            <Link href="/dashboard/Virtual-Card/CreateVirtualCard">
-              <button className="cursor-pointer px-8 py-3 btn-primary  text-white font-medium rounded-lg transition-colors">
+            <Link href="/dashboard/Virtual-Card-CardyFie/CreateVirtualCard">
+              <button className="cursor-pointer px-8 py-3 btn-primary text-white font-medium rounded-lg transition-colors">
                 Create First Card
               </button>
             </Link>
@@ -173,119 +201,111 @@ export default function Strowallet() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {myCards.map((card) => (
-            <div
-              key={card.id || card.card_id}
-              onClick={() => handleViewDetails(card.card_id, card.card_number)}
-              className="relative bg-linear-to-br from-slate-800 via-slate-700 to-slate-900 text-white rounded-3xl shadow-2xl overflow-hidden h-72 transform transition-all duration-300 hover:scale-[1.03] hover:shadow-3xl cursor-pointer group"
-            >
-              {/* Background pattern */}
-              <div className="absolute inset-0 opacity-10 pointer-events-none">
-                <div
-                  className="w-full h-full"
-                  style={{
-                    backgroundImage:
-                      "radial-gradient(circle, white 1.5px, transparent 1.5px)",
-                    backgroundSize: "28px 28px",
-                  }}
-                />
-              </div>
+          {myCards.map((card) => {
+            const statusStyle = getCardStatusStyle(card.status);
 
-              {/* Glossy overlay */}
-              <div className="absolute inset-0 bg-linear-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
-
-              {/* Status Indicator */}
-              <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20">
-                <div className="flex items-center gap-1.5 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
+            return (
+              <div
+                key={card.id || card.ulid}
+                onClick={() => handleViewDetails(card.id)}
+                className="relative bg-linear-to-br from-slate-800 via-slate-700 to-slate-900 text-white rounded-3xl shadow-2xl overflow-hidden h-72 transform transition-all duration-300 hover:scale-[1.03] hover:shadow-3xl cursor-pointer group"
+              >
+                {/* Background pattern */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
                   <div
-                    className={`w-2 h-2 rounded-full ${
-                      card.card_status?.toLowerCase() === "active"
-                        ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]"
-                        : card.card_status?.toLowerCase() === "pending"
-                          ? "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]"
-                          : "bg-red-400 shadow-[0_0_8px_rgba(248,113,113,0.6)]"
-                    }`}
+                    className="w-full h-full"
+                    style={{
+                      backgroundImage:
+                        "radial-gradient(circle, white 1.5px, transparent 1.5px)",
+                      backgroundSize: "28px 28px",
+                    }}
                   />
-                  <span className="text-[10px] font-medium uppercase tracking-wide text-white/90">
-                    {card.card_status || "Unknown"}
-                  </span>
                 </div>
-              </div>
 
-              <div className="relative h-full p-6 flex flex-col justify-between z-10">
-                <div className="flex justify-between items-start">
-                  <div className="text-xl font-bold tracking-wide">
-                    {card.site_title ||
-                      card_basic_info?.site_title ||
-                      "StripCard"}
-                  </div>
-                  <div className="w-12 h-12 rounded-full overflow-hidden">
-                    <Image
-                      src={
-                        card.site_logo ||
-                        card_basic_info?.site_logo ||
-                        "/card-user.webp"
-                      }
-                      alt="Card Issuer"
-                      width={48}
-                      height={48}
-                      className="object-cover"
+                {/* Glossy overlay */}
+                <div className="absolute inset-0 bg-linear-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
+
+                {/* Status Indicator */}
+                <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20">
+                  <div className="flex items-center gap-1.5 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                    <div
+                      className={`w-2 h-2 rounded-full ${statusStyle.dot}`}
                     />
+                    <span className="text-[10px] font-medium uppercase tracking-wide text-white/90">
+                      {statusStyle.label}
+                    </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-10 relative">
-                    <Image
-                      src="/chip.png"
-                      alt="EMV Chip"
-                      fill
-                      className="object-contain"
-                    />
+                <div className="relative h-full p-6 flex flex-col justify-between z-10">
+                  <div className="flex justify-between items-start">
+                    <div className="text-xl font-bold tracking-wide">
+                      {card_basic_info?.site_title || "StripCard"}
+                    </div>
+                    <div className="w-12 h-12 rounded-full overflow-hidden">
+                      <Image
+                        src={card_basic_info?.site_logo || "/card-user.webp"}
+                        alt="Card Issuer"
+                        width={48}
+                        height={48}
+                        className="object-cover"
+                      />
+                    </div>
                   </div>
-                  <div className="w-9 h-9 relative">
-                    <Image
-                      src="/waves.png"
-                      alt="Contactless"
-                      fill
-                      className="object-contain opacity-90"
-                    />
+
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-10 relative">
+                      <Image
+                        src="/chip.png"
+                        alt="EMV Chip"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
+                    <div className="w-9 h-9 relative">
+                      <Image
+                        src="/waves.png"
+                        alt="Contactless"
+                        fill
+                        className="object-contain opacity-90"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div className="text-xl tracking-[0.25em] font-mono font-semibold">
-                  {formatCardNumber(card.card_number)}
-                </div>
+                  <div className="text-xl tracking-[0.25em] font-mono font-semibold">
+                    {formatCardNumber(card.masked_pan)}
+                  </div>
 
-                <div className="flex items-center gap-2">
-                  <p className="text-xs text-white/70 uppercase tracking-wider">
-                    Expires
-                  </p>
-                  <p className="text-base font-medium">
-                    {card.expiry || "••/••"}
-                  </p>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-base font-medium uppercase">
-                      {card.name ||
-                        `${user?.firstname || ""} ${user?.lastname || ""}`.trim() ||
-                        "USER NAME"}
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-white/70 uppercase tracking-wider">
+                      Expires
+                    </p>
+                    <p className="text-base font-medium">
+                      {card.card_exp_time || "••/••"}
                     </p>
                   </div>
-                  <div className="w-16 h-10 relative">
-                    <Image
-                      src="/Visa-Logo.png"
-                      alt="Visa"
-                      fill
-                      className="object-contain"
-                    />
+
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-base font-medium uppercase">
+                        {card.name ||
+                          `${user?.firstname || ""} ${user?.lastname || ""}`.trim() ||
+                          "USER NAME"}
+                      </p>
+                    </div>
+                    <div className="w-16 h-10 relative">
+                      <Image
+                        src="/Visa-Logo.png"
+                        alt="Visa"
+                        fill
+                        className="object-contain"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -296,7 +316,7 @@ export default function Strowallet() {
             Transaction History
           </h2>
           <p className="text-sm text-gray-500 mt-1">
-            All activity related to your virtual cards (Strowallet)
+            All activity related to your virtual cards (CardyFie)
           </p>
         </div>
 
@@ -328,7 +348,7 @@ export default function Strowallet() {
                     Total Charge
                   </th>
                   <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    card Amount
+                    Card Amount
                   </th>
                   <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Current Balance

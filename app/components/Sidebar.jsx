@@ -114,7 +114,7 @@ export default function Sidebar({ isOpen, onClose }) {
       <aside
         className={`fixed lg:static inset-y-0 left-0 z-50 w-64 overflow-y-auto transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } bg-white`}
+        } bg-white dark:bg-gray-900`}
       >
         {/* Logo */}
         <div className="p-6 flex items-center justify-between">
@@ -129,10 +129,10 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* Close button for mobile */}
           <button
             onClick={onClose}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             aria-label="Close menu"
           >
-            <X size={20} className="text-gray-600" />
+            <X size={20} className="text-gray-600 dark:text-gray-400" />
           </button>
         </div>
 
@@ -158,13 +158,13 @@ export default function Sidebar({ isOpen, onClose }) {
                       href={item.href}
                       onClick={onClose}
                       className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                        active ? "bg-blue-50" : "text-black hover:bg-gray-100"
+                        active ? "bg-blue-50 dark:bg-gray-800" : "text-black dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                       }`}
                     >
                       <span className={active ? "gradient-icon" : ""}>
                         <Icon
                           size={20}
-                          className={active ? "" : "text-gray-600"}
+                          className={active ? "" : "text-gray-600 dark:text-gray-400"}
                           strokeWidth={2}
                         />
                       </span>

@@ -765,3 +765,119 @@ export const fundStrowalletCard = async (payload) => {
     };
   }
 };
+
+export const setStrowalletCardAsDefault = async (cardId) => {
+  try {
+    const { data } = await api.post(
+      "/user/strowallet-card/make-remove/default",
+      { card_id: cardId },
+    );
+    return data;
+  } catch (error) {
+    console.error("Set default card error:", error);
+    if (error.response?.data) return error.response.data;
+    return {
+      message: { error: ["Failed to update default card status."] },
+    };
+  }
+};
+
+// ---------------------------Sudo Virtual Card APIs----------------------------------
+
+export const getSudoCards = async () => {
+  try {
+    const { data } = await api.get("/user/my-card/sudo");
+    return data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to fetch virtual cards. Please try again."] },
+    };
+  }
+};
+
+// ---------------------------CardyFie Virtual Card APIs----------------------------------
+export const getCardyFieCards = async () => {
+  try {
+    const { data } = await api.get("/user/cardyfie-card");
+    return data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to fetch virtual cards. Please try again."] },
+    };
+  }
+};
+
+// GET /user/cardyfie-card/create/info
+export const getCardyfieCreateInfo = async () => {
+  try {
+    const { data } = await api.get("/user/cardyfie-card/create/info");
+    return data;
+  } catch (error) {
+    console.error("Cardyfie create info error:", error);
+    if (error.response) return error.response.data;
+    return { message: { error: ["Failed to load create info"] } };
+  }
+};
+
+export const createCardyFieCustomer = async (formData) => {
+  try {
+    const { data } = await api.post(
+      "/user/cardyfie-card/create/customer",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
+    return data;
+  } catch (error) {
+    console.log("Create customer error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to create customer. Please try again."] },
+    };
+  }
+};
+
+// GET /user/cardyfie-card/edit/customer/page
+export const getCardyfieCustomerEditInfo = async () => {
+  try {
+    const { data } = await api.get("/user/cardyfie-card/edit/customer/page");
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch customer edit info:", error);
+    if (error.response) return error.response.data;
+    return { message: { error: ["Failed to load customer edit information"] } };
+  }
+};
+
+// POST /user/strowallet-card/update/customer  (multipart/form-data)   // BIG NOTE ISSUE strowallet API FOR CardyFie FOR UPDATE CUSTOMER SAME API END POINT
+export const updateCardyFieCustomer = async (formData) => {
+  try {
+    const { data } = await api.post(
+      "/user/strowallet-card/update/customer",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    console.error("Update customer error:", error);
+    if (error.response) return error.response.data;
+    return {
+      message: { error: ["Failed to update customer. Please try again."] },
+    };
+  }
+};

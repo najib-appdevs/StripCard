@@ -25,7 +25,8 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "app/components/Virtual-Card-CardyFie/CreateVirtualCard.jsx"
   ],
   "exclude": ["node_modules"]
 }

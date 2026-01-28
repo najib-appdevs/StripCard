@@ -1,4 +1,4 @@
-import CreateVirtualCard from "../../../components/Virtual-Card/CreateVirtualCard";
+import CreateVirtualCard from "../../../components/Virtual-Card-Sudo/CreateVirtualCard";
 
 export const metadata = {
   title: "Create Virtual Card",

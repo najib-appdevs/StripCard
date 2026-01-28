@@ -14,7 +14,7 @@ export default function DarkModeToggle() {
       document.documentElement.classList.toggle("dark", dark);
     } else {
       const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
+        "(prefers-color-scheme: dark)",
       ).matches;
       setIsDark(prefersDark);
       document.documentElement.classList.toggle("dark", prefersDark);
@@ -41,7 +41,7 @@ export default function DarkModeToggle() {
         className="absolute left-1.5 z-10 flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300"
         style={{ background: isDark ? "transparent" : "#012C20" }}
       >
-        <Moon
+        <Sun
           size={14}
           style={{ color: isDark ? inactiveColor : "#FFFFFF" }}
           className="transition-colors duration-300"
@@ -52,7 +52,7 @@ export default function DarkModeToggle() {
         className="absolute right-1.5 z-10 flex items-center justify-center w-5 h-5 rounded-full transition-all duration-300"
         style={{ background: isDark ? "#012C20" : "transparent" }}
       >
-        <Sun
+        <Moon
           size={14}
           style={{ color: isDark ? "#FFFFFF" : inactiveColor }}
           className="transition-colors duration-300"

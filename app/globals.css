@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (.dark &);
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -49,7 +51,7 @@ body {
   /* Primary button background - Main gradient used for most call-to-action buttons */
   /* Gradient: from #0EBE98 (teal-green) to #50C631 (bright green) at ~77deg angle */
   .btn-primary {
-    @apply bg-gradient-to-r; /* Tailwind base for gradient (direction can be adjusted) */
+    @apply bg-linear-to-r; /* Tailwind base for gradient (direction can be adjusted) */
     background-image: linear-gradient(
       76.84deg,
       #0ebe98 -2.66%,

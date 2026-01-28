@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import {
   getStrowalletCardDetails,
   getStrowalletCardTransactions,
+  setStrowalletCardAsDefault,
 } from "../../utils/api";
 import Loader from "../Loader";
 
@@ -15,6 +16,7 @@ import {
   StarIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
 
 export default function VirtualCardDetails() {
   const searchParams = useSearchParams();
@@ -25,6 +27,7 @@ export default function VirtualCardDetails() {
   const [cardDetails, setCardDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // Transactions modal states
   const [showTransactionsModal, setShowTransactionsModal] = useState(false);
@@ -62,6 +65,7 @@ export default function VirtualCardDetails() {
   }, [cardId]);
 
   const card = cardDetails?.data?.myCards || {};
+  const isDefault = !!card.is_default;
 
   const formatCardNumber = (num) => {
     if (!num) return "•••• •••• •••• ••••";
@@ -69,18 +73,69 @@ export default function VirtualCardDetails() {
     return cleaned.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
   };
 
-  const handleBack = () => {
-    router.push("/dashboard/Virtual-Card");
-  };
-
   const handleFund = () => {
-    if (!cardId) {
-      return;
-    }
-
+    if (!cardId) return;
     router.push(`/dashboard/Virtual-Card/FundVirtualCard?card_id=${cardId}`);
   };
-  const handleMakeDefault = () => alert("Make default – coming soon");
+
+  const handleDefaultAction = () => {
+    if (!cardId) {
+      toast.error("No card selected", {
+        duration: 3000,
+        position: "top-center",
+      });
+      return;
+    }
+    setShowConfirmModal(true);
+  };
+
+  const confirmDefaultAction = async () => {
+    setShowConfirmModal(false);
+
+    const actionText = isDefault
+      ? "Removing default status..."
+      : "Setting as default...";
+    const loadingToast = toast.loading(actionText, {
+      position: "top-center",
+    });
+
+    try {
+      const res = await setStrowalletCardAsDefault(cardId);
+
+      if (res?.message?.error) {
+        throw new Error(
+          res.message.error[0] || "Failed to update default status",
+        );
+      }
+
+      const successMsg =
+        res?.message?.success?.[0] || "Status Updated Successfully";
+
+      toast.success(successMsg, {
+        id: loadingToast,
+        duration: 4000,
+        position: "top-center",
+      });
+
+      // Refresh card details → is_default will update
+      try {
+        const updated = await getStrowalletCardDetails(cardId);
+        setCardDetails(updated);
+      } catch (refreshErr) {
+        console.warn(
+          "Failed to refresh card details after default action",
+          refreshErr,
+        );
+      }
+    } catch (err) {
+      console.error("Default action failed:", err);
+      toast.error(err.message || "Failed to update default status", {
+        id: loadingToast,
+        duration: 5000,
+        position: "top-center",
+      });
+    }
+  };
 
   const handleTransactions = async () => {
     setShowTransactionsModal(true);
@@ -104,14 +159,12 @@ export default function VirtualCardDetails() {
     }
   };
 
-  const closeModal = () => {
+  const closeTransactionsModal = () => {
     setShowTransactionsModal(false);
   };
 
   return (
     <>
-      {/* Back button & Title */}
-
       <h1 className="text-3xl font-bold text-gray-900 mb-10">
         Virtual Card Details
       </h1>
@@ -134,7 +187,6 @@ export default function VirtualCardDetails() {
           <div className="lg:col-span-5 xl:col-span-5 space-y-8">
             {/* Card Visual */}
             <div className="relative bg-linear-to-br from-slate-800 via-slate-700 to-slate-900 text-white rounded-3xl shadow-2xl overflow-hidden h-72 md:h-80 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl mx-auto max-w-md lg:max-w-full">
-              {/* Background pattern */}
               <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <div
                   className="w-full h-full"
@@ -237,7 +289,7 @@ export default function VirtualCardDetails() {
             <div className="flex flex-wrap justify-center sm:justify-start gap-4">
               <button
                 onClick={handleFund}
-                className="group flex-1 min-w-[130px] flex items-center justify-center gap-2.5 py-3.5 px-5 bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-indigo-300 hover:bg-indigo-50/60 transition-all duration-200"
+                className="cursor-pointer group flex-1 min-w-[130px] flex items-center justify-center gap-2.5 py-3.5 px-5 bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-indigo-300 hover:bg-indigo-50/60 transition-all duration-200"
               >
                 <BanknotesIcon className="w-5 h-5 text-indigo-600 group-hover:text-indigo-700" />
                 <span className="font-medium text-gray-800 group-hover:text-indigo-700">
@@ -246,18 +298,18 @@ export default function VirtualCardDetails() {
               </button>
 
               <button
-                onClick={handleMakeDefault}
-                className="group flex-1 min-w-[130px] flex items-center justify-center gap-2.5 py-3.5 px-5 bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-amber-300 hover:bg-amber-50/60 transition-all"
+                onClick={handleDefaultAction}
+                className="cursor-pointer group flex-1 min-w-[130px] flex items-center justify-center gap-2.5 py-3.5 px-5 bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-amber-300 hover:bg-amber-50/60 transition-all duration-200"
               >
                 <StarIcon className="w-5 h-5 text-amber-500 group-hover:text-amber-600" />
                 <span className="font-medium text-gray-800 group-hover:text-amber-700">
-                  Make Default
+                  {isDefault ? "Remove Default" : "Make Default"}
                 </span>
               </button>
 
               <button
                 onClick={handleTransactions}
-                className="group flex-1 min-w-[130px] flex items-center justify-center gap-2.5 py-3.5 px-5 bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-emerald-300 hover:bg-emerald-50/60 transition-all"
+                className="cursor-pointer group flex-1 min-w-[130px] flex items-center justify-center gap-2.5 py-3.5 px-5 bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-emerald-300 hover:bg-emerald-50/60 transition-all"
               >
                 <ReceiptPercentIcon className="w-5 h-5 text-emerald-600 group-hover:text-emerald-700" />
                 <span className="font-medium text-gray-800 group-hover:text-emerald-700">
@@ -325,7 +377,6 @@ export default function VirtualCardDetails() {
                           : "—"}
                       </td>
                     </tr>
-
                     <tr className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-semibold text-gray-700 bg-gray-50/50">
                         Card Type
@@ -336,7 +387,6 @@ export default function VirtualCardDetails() {
                         </span>
                       </td>
                     </tr>
-
                     <tr className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-semibold text-gray-700 bg-gray-50/50">
                         Card Id
@@ -345,7 +395,6 @@ export default function VirtualCardDetails() {
                         {card.card_id || "—"}
                       </td>
                     </tr>
-
                     <tr className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-semibold text-gray-700 bg-gray-50/50">
                         Customer Id
@@ -354,7 +403,6 @@ export default function VirtualCardDetails() {
                         {card.card_user_id || "—"}
                       </td>
                     </tr>
-
                     <tr className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-semibold text-gray-700 bg-gray-50/50">
                         Card Number
@@ -365,7 +413,6 @@ export default function VirtualCardDetails() {
                           : "•••• •••• •••• ••••"}
                       </td>
                     </tr>
-
                     <tr className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-semibold text-gray-700 bg-gray-50/50">
                         CVV
@@ -374,7 +421,6 @@ export default function VirtualCardDetails() {
                         {card.cvv || "•••"}
                       </td>
                     </tr>
-
                     <tr className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-semibold text-gray-700 bg-gray-50/50">
                         Expiration
@@ -383,7 +429,6 @@ export default function VirtualCardDetails() {
                         {card.expiry || "••/••"}
                       </td>
                     </tr>
-
                     <tr className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-semibold text-gray-700 bg-gray-50/50">
                         City
@@ -392,7 +437,6 @@ export default function VirtualCardDetails() {
                         {card.city || "—"}
                       </td>
                     </tr>
-
                     <tr className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-semibold text-gray-700 bg-gray-50/50">
                         State
@@ -401,7 +445,6 @@ export default function VirtualCardDetails() {
                         {card.state || "—"}
                       </td>
                     </tr>
-
                     <tr className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-semibold text-gray-700 bg-gray-50/50">
                         Zip Code
@@ -410,7 +453,6 @@ export default function VirtualCardDetails() {
                         {card.zip_code || "—"}
                       </td>
                     </tr>
-
                     <tr className="hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-6 font-semibold text-gray-700 bg-gray-50/50">
                         Status
@@ -447,24 +489,76 @@ export default function VirtualCardDetails() {
         </div>
       )}
 
+      {/* Confirmation Modal - dynamic content */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-amber-50 px-6 py-5 border-b border-amber-100">
+              <h3 className="text-xl font-semibold text-amber-900 flex items-center gap-3">
+                <StarIcon className="w-6 h-6 text-amber-600" />
+                {isDefault ? "Remove as Default Card?" : "Set as Default Card?"}
+              </h3>
+            </div>
+
+            <div className="p-6 text-gray-700">
+              {isDefault ? (
+                <>
+                  <p>
+                    Do you want to <strong>remove default status</strong> from
+                    this card?
+                  </p>
+                  <p className="mt-3 text-sm text-gray-500">
+                    You can set another card as default later.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p>
+                    Do you want to make this card your{" "}
+                    <strong>default card</strong>?
+                  </p>
+                  <p className="mt-3 text-sm text-gray-500">
+                    {card.site_title || "This card"} will be used as the primary
+                    card for transactions where possible.
+                  </p>
+                </>
+              )}
+            </div>
+
+            <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="px-5 py-2.5 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDefaultAction}
+                className="px-6 py-2.5 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-colors shadow-sm cursor-pointer"
+              >
+                {isDefault ? "Remove Default" : "Set as Default"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Transactions Modal */}
       {showTransactionsModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            {/* Modal Header */}
             <div className="bg-gray-50 px-6 py-4 border-b flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900">
                 Virtual Card Transactions
               </h2>
               <button
-                onClick={closeModal}
+                onClick={closeTransactionsModal}
                 className="text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
               >
                 <XMarkIcon className="w-7 h-7 cursor-pointer" />
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-6 overflow-y-auto flex-1">
               {loadingTransactions ? (
                 <div className="flex justify-center items-center py-16">
@@ -506,9 +600,7 @@ export default function VirtualCardDetails() {
                             }`}
                           >
                             {tx.amount
-                              ? `${tx.amount > 0 ? "+" : ""}${tx.amount} ${
-                                  tx.currency || "USD"
-                                }`
+                              ? `${tx.amount > 0 ? "+" : ""}${tx.amount} ${tx.currency || "USD"}`
                               : "—"}
                           </p>
                         </div>
@@ -524,10 +616,9 @@ export default function VirtualCardDetails() {
               )}
             </div>
 
-            {/* Modal Footer */}
             <div className="bg-gray-50 px-6 py-4 border-t flex justify-end">
               <button
-                onClick={closeModal}
+                onClick={closeTransactionsModal}
                 className="px-6 py-2.5 btn-primary text-white font-medium rounded-lg cursor-pointer"
               >
                 Close

@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
-import { getStrowalletCards } from "../../utils/api";
+import { getSudoCards } from "../../utils/api";
 
-export default function Strowallet() {
+export default function Sudo() {
   const router = useRouter();
   const [cardsData, setCardsData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -16,7 +16,7 @@ export default function Strowallet() {
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const res = await getStrowalletCards();
+        const res = await getSudoCards();
 
         if (res?.message?.error) {
           setError(res.message.error[0] || "Failed to load virtual cards");
@@ -28,7 +28,7 @@ export default function Strowallet() {
         }
       } catch (err) {
         setError("Something went wrong. Please try again later.");
-        console.error("Strowallet fetch error:", err);
+        console.error("Sudo fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -164,7 +164,7 @@ export default function Strowallet() {
             payments.
           </p>
           {card_create_action && (
-            <Link href="/dashboard/Virtual-Card/CreateVirtualCard">
+            <Link href="/dashboard/Virtual-Card-Sudo/CreateVirtualCard">
               <button className="cursor-pointer px-8 py-3 btn-primary  text-white font-medium rounded-lg transition-colors">
                 Create First Card
               </button>
@@ -296,7 +296,7 @@ export default function Strowallet() {
             Transaction History
           </h2>
           <p className="text-sm text-gray-500 mt-1">
-            All activity related to your virtual cards (Strowallet)
+            All activity related to your virtual cards (Sudo)
           </p>
         </div>
 

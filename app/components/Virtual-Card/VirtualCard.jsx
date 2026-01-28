@@ -1,6 +1,8 @@
 "use client";
 
 import { useDashboard } from "../../context/DashboardContext";
+import CardyFie from "../Virtual-Card-CardyFie/CardyFie";
+import Sudo from "../Virtual-Card-Sudo/Sudo";
 import Strowallet from "./Strowallet";
 
 export default function VirtualCard() {
@@ -19,9 +21,14 @@ export default function VirtualCard() {
     );
   }
 
+  if (activeVirtualSystem === "sudo") {
+    // render Sudo component
+    return <Sudo />;
+  }
+
   if (activeVirtualSystem === "cardyfie") {
-    // render Cardyfie component
-    return <div>Cardyfie Virtual Card UI</div>;
+    // render CardyFie component
+    return <CardyFie />;
   }
 
   return <div>Unsupported system: {activeVirtualSystem}</div>;
