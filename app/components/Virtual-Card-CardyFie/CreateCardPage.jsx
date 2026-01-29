@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
+import { getCardyFieCards, getUserDashboard } from "../../utils/api";
 
 function CreateCardPage() {
+  // ============================================================================
+  // CONSTANTS & OPTIONS
+  // ============================================================================
   const cardTierOptions = [
     { value: "universal", label: "Universal" },
     { value: "platinum", label: "Platinum" },
@@ -12,26 +16,145 @@ function CreateCardPage() {
     { value: "mastercard", label: "Mastercard" },
   ];
 
-  const cardCurrencyOptions = [
-    { value: "usd", label: "USD" },
-    { value: "eur", label: "EUR" },
-    { value: "gbp", label: "GBP" },
-  ];
-
-  const fromWalletOptions = [
-    { value: "usd", label: "United States Dollar (0.0000 USD)" },
-    { value: "eur", label: "Euro (0.0000 EUR)" },
-    { value: "gbp", label: "British Pound (0.0000 GBP)" },
-  ];
-
+  // ============================================================================
+  // STATE MANAGEMENT
+  // ============================================================================
   const [formData, setFormData] = useState({
     cardHolderName: "",
     cardTier: cardTierOptions[0],
     cardType: cardTypeOptions[0],
-    cardCurrency: cardCurrencyOptions[0],
-    fromWallet: fromWalletOptions[0],
+    cardCurrency: null,
+    fromWallet: null,
   });
 
+  const [currencyOptions, setCurrencyOptions] = useState([]);
+  const [cardCharge, setCardCharge] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // ============================================================================
+  // DATA FETCHING
+  // ============================================================================
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        // 1. Dashboard – get base_curr + wallets
+        const dashRes = await getUserDashboard();
+        if (!dashRes?.data) {
+          throw new Error(
+            dashRes?.message?.error?.[0] || "Failed to load dashboard",
+          );
+        }
+
+        const dashData = dashRes.data;
+
+        // Fixed Card Currency – only base_curr
+        let baseCurrencyOption = null;
+        if (dashData.base_curr) {
+          const baseCode = dashData.base_curr.toLowerCase();
+          const baseUpper = dashData.base_curr.toUpperCase();
+
+          // Try to get symbol & name from matching wallet if available
+          const matchingWallet = dashData.userWallet?.find(
+            (w) => w.currency.code.toUpperCase() === baseUpper,
+          );
+
+          baseCurrencyOption = {
+            value: baseCode,
+            label: baseUpper,
+            symbol: matchingWallet?.currency.symbol || "$",
+            code: baseUpper,
+          };
+
+          setFormData((prev) => ({
+            ...prev,
+            cardCurrency: baseCurrencyOption,
+          }));
+        }
+
+        // 2. From Wallet options (multiple possible)
+        if (dashData.userWallet?.length > 0) {
+          const walletOptions = dashData.userWallet.map((w) => {
+            const curr = w.currency;
+            const balanceFormatted = Number(w.balance || 0).toFixed(4);
+            return {
+              value: curr.code.toLowerCase(),
+              label: `${curr.name} (${balanceFormatted} ${curr.code})`,
+              symbol: curr.symbol || "$",
+              balance: Number(w.balance || 0),
+              code: curr.code.toUpperCase(),
+            };
+          });
+
+          setCurrencyOptions(walletOptions);
+
+          // Auto-select first wallet
+          setFormData((prev) => ({
+            ...prev,
+            fromWallet: walletOptions[0] || prev.fromWallet,
+          }));
+        }
+
+        // 3. Card fees
+        const cardRes = await getCardyFieCards();
+        if (cardRes?.data?.cardCharge) {
+          setCardCharge(cardRes.data.cardCharge);
+        }
+      } catch (err) {
+        setError(err.message || "Error loading data");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // ============================================================================
+  // HELPER FUNCTIONS
+  // ============================================================================
+  const getIssueFee = () => {
+    if (!cardCharge) return 0;
+    const tier = formData.cardTier?.value || "universal";
+    return tier === "platinum"
+      ? cardCharge.platinum_card_issues_fee || 0
+      : cardCharge.universal_card_issues_fee || 0;
+  };
+
+  // ============================================================================
+  // COMPUTED VALUES
+  // ============================================================================
+  const issueFee = getIssueFee();
+  const chargeTierLabel = formData.cardTier?.label || "Universal";
+  const selectedWallet = formData.fromWallet;
+  const currencyCode = selectedWallet?.code || "";
+  const displayBalance = (selectedWallet?.balance || 0).toFixed(4);
+
+  // ============================================================================
+  // LOADING & ERROR STATES
+  // ============================================================================
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen text-slate-600">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error || !formData.cardCurrency) {
+    return (
+      <div className="text-red-600 text-center min-h-screen pt-20 px-4">
+        {error || "Cannot load card settings"}
+      </div>
+    );
+  }
+
+  // ============================================================================
+  // CUSTOM STYLES
+  // ============================================================================
   const customSelectStyles = {
     control: (base, state) => ({
       ...base,
@@ -49,19 +172,22 @@ function CreateCardPage() {
     }),
     option: (base, state) => ({
       ...base,
-      backgroundColor: state.isSelected
-        ? "#34d399"
-        : state.isFocused
-          ? "#ecfdf5"
-          : "#ffffff",
-      color: state.isSelected ? "#ffffff" : "#1f2937",
+
+      backgroundColor: state.isFocused
+        ? "#ecfdf5" // only on hover
+        : "#ffffff", // normal & selected both white
+
+      color: "#1f2937",
+
       padding: "12px 16px",
       cursor: "pointer",
       transition: "all 0.15s ease",
+
       "&:active": {
-        backgroundColor: "#059669",
+        backgroundColor: "#ecfdf5",
       },
     }),
+
     menu: (base) => ({
       ...base,
       borderRadius: "10px",
@@ -82,22 +208,33 @@ function CreateCardPage() {
     }),
   };
 
+  // ============================================================================
+  // EVENT HANDLERS
+  // ============================================================================
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    console.log("Submitting:", {
+      card_holder_name: formData.cardHolderName,
+      tier: formData.cardTier.value,
+      type: formData.cardType.value,
+      currency: formData.cardCurrency.value,
+      from_wallet: formData.fromWallet.value,
+    });
+    // → Add POST logic here
   };
 
-  const cardTypeLabel = formData.cardType?.label || "—";
-
+  // ============================================================================
+  // RENDER
+  // ============================================================================
   return (
-    <div className=" flex items-center justify-center">
-      {/* Main Layout */}
-      <div className="form-container w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Form Section */}
+    <div className="flex items-center justify-center">
+      <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* ====================================================================
+            FORM SECTION
+            ==================================================================== */}
         <div className="bg-white rounded-3xl shadow-2xl shadow-indigo-100/50 p-10 border border-slate-100">
-          {/* Header */}
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-slate-800 label-text mb-2">
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">
               Create Virtual Card
             </h1>
             <p className="text-slate-500 text-sm">
@@ -105,11 +242,9 @@ function CreateCardPage() {
             </p>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Card Holder */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2 label-text">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Card Holder&apos;s Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -120,129 +255,120 @@ function CreateCardPage() {
                 }
                 placeholder="Enter Card Holder's Name"
                 required
-                className="w-full px-4 py-3.5 border-[1.5px] text-gray-700 border-slate-200 rounded-xl focus:outline-none focus:border-emerald-400 focus:ring-3 focus:ring-emerald-100"
+                className="w-full text-gray-600 px-4 py-3.5 border-[1.5px] border-slate-200 rounded-xl focus:outline-none focus:border-emerald-400 focus:ring-3 focus:ring-emerald-100 transition"
               />
             </div>
 
-            {/* Card Tier */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2 label-text">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Card Tier <span className="text-red-500">*</span>
               </label>
               <Select
                 options={cardTierOptions}
                 value={formData.cardTier}
-                onChange={(option) =>
-                  setFormData({ ...formData, cardTier: option })
-                }
+                onChange={(opt) => setFormData({ ...formData, cardTier: opt })}
                 styles={customSelectStyles}
-                placeholder="Select card tier"
               />
             </div>
 
-            {/* Card Type */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2 label-text">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Card Type <span className="text-red-500">*</span>
               </label>
               <Select
                 options={cardTypeOptions}
                 value={formData.cardType}
-                onChange={(option) =>
-                  setFormData({ ...formData, cardType: option })
-                }
+                onChange={(opt) => setFormData({ ...formData, cardType: opt })}
                 styles={customSelectStyles}
-                placeholder="Select card type"
               />
             </div>
 
-            {/* Card Currency */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2 label-text">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
                 Card Currency <span className="text-red-500">*</span>
               </label>
               <Select
-                options={cardCurrencyOptions}
+                options={formData.cardCurrency ? [formData.cardCurrency] : []}
                 value={formData.cardCurrency}
-                onChange={(option) =>
-                  setFormData({ ...formData, cardCurrency: option })
+                onChange={(opt) =>
+                  setFormData({ ...formData, cardCurrency: opt })
                 }
                 styles={customSelectStyles}
-                placeholder="Select currency"
+                isSearchable={false}
               />
             </div>
 
-            {/* From Wallet */}
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2 label-text">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
                 From Wallet <span className="text-red-500">*</span>
               </label>
               <Select
-                options={fromWalletOptions}
+                options={currencyOptions}
                 value={formData.fromWallet}
-                onChange={(option) =>
-                  setFormData({ ...formData, fromWallet: option })
+                onChange={(opt) =>
+                  setFormData({ ...formData, fromWallet: opt })
                 }
                 styles={customSelectStyles}
-                placeholder="Select wallet"
               />
             </div>
 
-            {/* Balance */}
             <div className="flex items-center gap-3">
               <p className="text-sm font-medium text-slate-600">
                 Available Balance
               </p>
-              <p className="text-sm font-bold text-slate-800 label-text">
-                0.0000 USD
+              <p className="text-sm font-bold text-slate-800">
+                {displayBalance} {currencyCode}
               </p>
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
-              className="w-full btn-primary text-white font-semibold py-4 rounded-xl shadow-lg text-lg cursor-pointer"
+              className="w-full btn-primary text-white font-semibold py-4 rounded-xl shadow-lg text-lg transition-all duration-200 cursor-pointer"
             >
               Confirm
             </button>
           </form>
         </div>
 
-        {/* Preview Section */}
+        {/* ====================================================================
+            PREVIEW SECTION
+            ==================================================================== */}
         <div className="bg-white rounded-3xl shadow-2xl shadow-indigo-100/50 p-10 border border-slate-100 h-fit">
-          <h2 className="text-2xl font-bold text-slate-800 label-text mb-6 text-center">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 text-center">
             Preview
           </h2>
 
           <div className="space-y-5">
-            {/* Item */}
             <div className="flex justify-between items-center border-b pb-3">
               <span className="text-slate-600 font-medium">Card Type</span>
               <span className="font-semibold text-slate-800">
-                {cardTypeLabel}
+                {formData.cardType?.label || "—"}
               </span>
             </div>
 
             <div className="flex justify-between items-center border-b pb-3">
               <span className="text-slate-600 font-medium">Exchange Rate</span>
               <span className="font-semibold text-slate-800">
-                1 USD = 1.0000 USD
+                1 {currencyCode} = 1.0000 {currencyCode}
               </span>
             </div>
 
-            <div className="flex justify-between items-center border-b pb-3">
+            <div className="flex justify-between items-center pb-3">
               <span className="text-slate-600 font-medium">
-                Total Charge <span className="text-blue-500">(Universal)</span>
+                Total Charge{" "}
+                <span className="text-blue-500">({chargeTierLabel})</span>
               </span>
-              <span className="font-semibold text-slate-800">3.0000 USD</span>
+              <span className="font-semibold text-slate-800">
+                {issueFee.toFixed(4)} {currencyCode}
+              </span>
             </div>
 
-            <div className="flex justify-between items-center pt-3">
+            <div className="flex justify-between items-center pt-4 border-t border-slate-200">
               <span className="text-lg font-semibold text-slate-700">
                 Total Payable Amount
               </span>
               <span className="text-xl font-bold text-emerald-600">
-                3.0000 USD
+                {issueFee.toFixed(4)} {currencyCode}
               </span>
             </div>
           </div>
