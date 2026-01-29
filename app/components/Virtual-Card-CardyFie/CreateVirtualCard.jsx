@@ -1,10 +1,11 @@
-// CreateVirtualCard.jsx
 "use client";
 
-import { useRouter } from "next/navigation"; // ← added this import
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getCardyfieCreateInfo } from "../../utils/api";
 import CreateCardCustomer from "./CreateCardCustomer";
+// import CreateCardPage from "./CreateCardPage";
+import CreateCardPage from "../../components/Virtual-Card-CardyFie/CreateCardPage";
 import CreateVirtualCardSkeleton from "./CreateVirtualCardSkeleton";
 
 export default function CreateVirtualCard() {
@@ -13,6 +14,7 @@ export default function CreateVirtualCard() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [customerStatus, setCustomerStatus] = useState(null);
   const [pendingText, setPendingText] = useState(null);
+  const [cardCreateAllowed, setCardCreateAllowed] = useState(false);
 
   const router = useRouter();
 
@@ -30,6 +32,11 @@ export default function CreateVirtualCard() {
           const status = data.customer_exist?.status || "UNKNOWN";
           setCustomerStatus(status);
           setPendingText(data.customer_pending_text || "");
+
+          // NEW: check if we can proceed to card creation
+          if (status === "APPROVED" && data.card_create_status === true) {
+            setCardCreateAllowed(true);
+          }
         }
       })
       .catch((err) => {
@@ -63,15 +70,24 @@ export default function CreateVirtualCard() {
   }
 
   // ────────────────────────────────────────────────
-  // 1. Customer does NOT exist → show creation form
+  // Priority order:
+  // 1. Approved + card_create_status true → show card creation
+  // 2. Customer does NOT exist → show creation form
+  // 3. Customer exists but not approved → show status + message
   // ────────────────────────────────────────────────
+
+  // 1. Ready to create virtual card
+  if (cardCreateAllowed) {
+    return <CreateCardPage />; // card creation component
+    // or: return <div>Create Card Page goes here</div>;
+  }
+
+  // 2. No customer yet → show form to create customer profile
   if (showCreateForm) {
     return <CreateCardCustomer />;
   }
 
-  // ────────────────────────────────────────────────
-  // 2. Customer EXISTS → show status, pending text & update button
-  // ────────────────────────────────────────────────
+  // 3. Customer exists → show status & instructions
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 overflow-hidden">

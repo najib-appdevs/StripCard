@@ -20,7 +20,8 @@
     "react-dom": "19.2.0",
     "react-google-recaptcha": "^3.1.0",
     "react-hot-toast": "^2.6.0",
-    "react-phone-input-2": "^2.15.1"
+    "react-phone-input-2": "^2.15.1",
+    "react-select": "^5.10.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
