@@ -927,16 +927,30 @@ export const getCardyFieCardTransactions = async (cardId) => {
 
 export const setCardyFieDefault = async (cardId) => {
   try {
-    const { data } = await api.post(
-      "/user/cardyfie-card/make-remove/default",
-      { card_id: cardId },
-    );
+    const { data } = await api.post("/user/cardyfie-card/make-remove/default", {
+      card_id: cardId,
+    });
     return data;
   } catch (error) {
     console.error("Set default card error:", error);
     if (error.response?.data) return error.response.data;
     return {
       message: { error: ["Failed to update default card status."] },
+    };
+  }
+};
+
+export const DepositCardyFie = async (payload) => {
+  try {
+    const { data } = await api.post("/user/cardyfie-card/deposit", payload);
+    return data;
+  } catch (error) {
+    console.log("Fund virtual card error:", error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to fund card. Please try again."] },
     };
   }
 };

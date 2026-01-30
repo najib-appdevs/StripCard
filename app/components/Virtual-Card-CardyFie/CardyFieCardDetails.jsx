@@ -7,7 +7,7 @@ import {
   getCardyFieCardDetails,
   getCardyFieCardTransactions,
   setCardyFieDefault,
-} from "../../utils/api"; // ← adjust path if needed
+} from "../../utils/api";
 import Loader from "../Loader";
 
 import {
@@ -74,11 +74,20 @@ export default function CardyFieCardDetails() {
     return masked;
   };
 
-  const handleFund = () => {
+  const handleDeposit = () => {
     if (!cardId) return;
-    // Adjust route name according to your app structure
-    router.push(`/dashboard/Virtual-Card/FundVirtualCard?card_id=${cardId}`);
-    // or → router.push(`/dashboard/CardyFie/Fund?card_id=${cardId}`);
+    router.push(
+      `/dashboard/Virtual-Card-CardyFie/CardyFieDeposit?card_id=${cardId}`,
+    );
+  };
+  const handleWithdraw = () => {
+    if (!cardId) return;
+    router.push(
+      `/dashboard/Virtual-Card-CardyFie/CardyFieWithdraw?card_id=${cardId}`,
+    );
+  };
+  const handleClose = () => {
+    console.log("Close");
   };
 
   const handleDefaultAction = () => {
@@ -186,7 +195,7 @@ export default function CardyFieCardDetails() {
           {/* LEFT COLUMN */}
           <div className="lg:col-span-5 xl:col-span-5 space-y-8">
             {/* Card Visual */}
-            <div className="relative bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 text-white rounded-3xl shadow-2xl overflow-hidden h-72 md:h-80 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl mx-auto max-w-md lg:max-w-full">
+            <div className="relative bg-linear-to-br from-slate-800 via-slate-700 to-slate-900 text-white rounded-3xl shadow-2xl overflow-hidden h-72 md:h-80 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-3xl mx-auto max-w-md lg:max-w-full">
               <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <div
                   className="w-full h-full"
@@ -198,7 +207,7 @@ export default function CardyFieCardDetails() {
                 />
               </div>
 
-              <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-linear-to-br from-white/20 via-transparent to-transparent pointer-events-none" />
 
               <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20">
                 <div className="flex items-center gap-1.5 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
@@ -282,36 +291,65 @@ export default function CardyFieCardDetails() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap justify-center sm:justify-start gap-4">
-              <button
-                onClick={handleFund}
-                className="cursor-pointer group flex-1 min-w-[130px] flex items-center justify-center gap-2.5 py-3.5 px-5 bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-indigo-300 hover:bg-indigo-50/60 transition-all duration-200"
-              >
-                <BanknotesIcon className="w-5 h-5 text-indigo-600 group-hover:text-indigo-700" />
-                <span className="font-medium text-gray-800 group-hover:text-indigo-700">
-                  Fund
-                </span>
-              </button>
+            <div className="space-y-2.5">
+              {/* First Row - 2 Buttons */}
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  onClick={handleDefaultAction}
+                  className="cursor-pointer group flex flex-col items-center justify-center gap-1.5 py-3 px-3
+             bg-white border-2 border-gray-200 rounded-xl shadow-sm
+             hover:shadow-md hover:border-amber-400 hover:bg-amber-50/50
+             transition-all duration-200"
+                >
+                  <StarIcon className="w-5 h-5 text-amber-500 group-hover:text-amber-600 transition-colors" />
+                  <span className="font-semibold text-xs text-gray-800 group-hover:text-amber-600 transition-colors">
+                    {isDefault ? "Remove Default" : "Make Default"}
+                  </span>
+                </button>
 
-              <button
-                onClick={handleDefaultAction}
-                className="cursor-pointer group flex-1 min-w-[130px] flex items-center justify-center gap-2.5 py-3.5 px-5 bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-amber-300 hover:bg-amber-50/60 transition-all duration-200"
-              >
-                <StarIcon className="w-5 h-5 text-amber-500 group-hover:text-amber-600" />
-                <span className="font-medium text-gray-800 group-hover:text-amber-700">
-                  {isDefault ? "Remove Default" : "Make Default"}
-                </span>
-              </button>
+                <button
+                  onClick={handleDeposit}
+                  className="cursor-pointer group flex flex-col items-center justify-center gap-1.5 py-3 px-3 bg-white border-2 border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-emerald-400 hover:bg-emerald-50/50 transition-all duration-200"
+                >
+                  <BanknotesIcon className="w-5 h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+                  <span className="font-semibold text-xs text-gray-800 group-hover:text-emerald-700 transition-colors">
+                    Deposit
+                  </span>
+                </button>
+              </div>
 
-              <button
-                onClick={handleTransactions}
-                className="cursor-pointer group flex-1 min-w-[130px] flex items-center justify-center gap-2.5 py-3.5 px-5 bg-white border border-gray-300 rounded-xl shadow-sm hover:shadow-md hover:border-emerald-300 hover:bg-emerald-50/60 transition-all"
-              >
-                <ReceiptPercentIcon className="w-5 h-5 text-emerald-600 group-hover:text-emerald-700" />
-                <span className="font-medium text-gray-800 group-hover:text-emerald-700">
-                  Transactions
-                </span>
-              </button>
+              {/* Second Row - 3 Buttons */}
+              <div className="grid grid-cols-3 gap-2.5">
+                <button
+                  onClick={handleWithdraw}
+                  className="cursor-pointer group flex flex-col items-center justify-center gap-1.5 py-3 px-2 bg-white border-2 border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-indigo-400 hover:bg-indigo-50/50 transition-all duration-200"
+                >
+                  <BanknotesIcon className="w-5 h-5 text-indigo-600 group-hover:text-indigo-700 transition-colors" />
+                  <span className="font-semibold text-xs text-gray-800 group-hover:text-indigo-700 transition-colors">
+                    Withdraw
+                  </span>
+                </button>
+
+                <button
+                  onClick={handleTransactions}
+                  className="cursor-pointer group flex flex-col items-center justify-center gap-1.5 py-3 px-2 bg-white border-2 border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-400 hover:bg-blue-50/50 transition-all duration-200"
+                >
+                  <ReceiptPercentIcon className="w-5 h-5 text-blue-600 group-hover:text-blue-700 transition-colors" />
+                  <span className="font-semibold text-xs text-gray-800 group-hover:text-blue-700 transition-colors">
+                    Transactions
+                  </span>
+                </button>
+
+                <button
+                  onClick={handleClose}
+                  className="cursor-pointer group flex flex-col items-center justify-center gap-1.5 py-3 px-2 bg-white border-2 border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-red-400 hover:bg-red-50/50 transition-all duration-200"
+                >
+                  <XMarkIcon className="w-5 h-5 text-red-600 group-hover:text-red-700 transition-colors" />
+                  <span className="font-semibold text-xs text-gray-800 group-hover:text-red-700 transition-colors">
+                    Close
+                  </span>
+                </button>
+              </div>
             </div>
 
             {/* Billing Address – dynamic from API "address" field */}
@@ -484,9 +522,6 @@ export default function CardyFieCardDetails() {
                 </table>
               </div>
             </div>
-
-            {/* Optional: you can keep this if you later get back-details or notes */}
-            {/* {card.some_back_details_field && (...)} */}
           </div>
         </div>
       )}
@@ -578,44 +613,113 @@ export default function CardyFieCardDetails() {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {transactions.map((tx, index) => (
                     <div
                       key={index}
-                      className="border border-gray-200 rounded-xl p-4 hover:shadow-sm transition-shadow"
+                      className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-all bg-white"
                     >
-                      <div className="flex justify-between items-start mb-2">
+                      {/* Main row: Date / Type / Amount */}
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-4">
                         <div>
                           <p className="text-sm text-gray-500">
-                            {tx.created_at || "—"}
+                            {tx.created_at
+                              ? new Date(tx.created_at).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  },
+                                ) +
+                                " • " +
+                                new Date(tx.created_at).toLocaleTimeString(
+                                  "en-US",
+                                  {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                  },
+                                )
+                              : "—"}
                           </p>
-                          <p className="font-medium text-gray-900 mt-0.5">
-                            {tx.trx_type || "Transaction"}
+                          <p className="font-semibold text-gray-900 mt-1 text-base">
+                            {tx.trx_type || "Unknown Transaction"}
                           </p>
                         </div>
+
                         <div className="text-right">
                           <p
-                            className={`font-bold text-lg ${
+                            className={`font-bold text-xl ${
                               tx.amount_type === "CREDIT"
                                 ? "text-emerald-600"
-                                : "text-red-600"
+                                : tx.amount_type === "DEBIT"
+                                  ? "text-red-600"
+                                  : "text-gray-900"
                             }`}
                           >
-                            {tx.enter_amount
-                              ? `${
-                                  tx.amount_type === "CREDIT" ? "+" : "-"
-                                }${Number(tx.enter_amount).toFixed(2)} ${
-                                  tx.card_currency || "USD"
-                                }`
+                            {tx.enter_amount != null && tx.enter_amount !== ""
+                              ? `${tx.amount_type === "DEBIT" ? "−" : ""}${Number(tx.enter_amount).toFixed(4)} ${tx.card_currency || baseCurrency}`
                               : "—"}
                           </p>
                         </div>
                       </div>
-                      {tx.trx_id && (
-                        <p className="text-xs text-gray-500 mt-1">
-                          Trx ID: {tx.trx_id}
-                        </p>
-                      )}
+
+                      {/* Status + Trx ID + Amount Type */}
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+                        {tx.status && (
+                          <div>
+                            <span className="text-gray-500">Status:</span>{" "}
+                            <span
+                              className={`font-medium ${
+                                tx.status === "SUCCESS"
+                                  ? "text-emerald-700"
+                                  : tx.status === "FAILED" ||
+                                      tx.status === "DECLINED" ||
+                                      tx.status === "ERROR"
+                                    ? "text-red-700"
+                                    : "text-gray-700"
+                              }`}
+                            >
+                              {tx.status}
+                            </span>
+                          </div>
+                        )}
+
+                        {tx.trx_id && (
+                          <div>
+                            <span className="text-gray-500">Trx ID:</span>{" "}
+                            <span className="font-mono text-gray-800">
+                              {tx.trx_id}
+                            </span>
+                          </div>
+                        )}
+
+                        {tx.amount_type && (
+                          <div>
+                            <span className="text-gray-500">Amount Type:</span>{" "}
+                            <span
+                              className={`font-medium ${
+                                tx.amount_type === "CREDIT"
+                                  ? "text-emerald-700"
+                                  : tx.amount_type === "DEBIT"
+                                    ? "text-red-700"
+                                    : "text-gray-700"
+                              }`}
+                            >
+                              {tx.amount_type}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Small footer info (only currency if different) */}
+                      <div className="mt-3 text-xs text-gray-500 flex flex-wrap gap-x-5 gap-y-1">
+                        {tx.card_currency &&
+                          tx.card_currency !== baseCurrency && (
+                            <div>Card currency: {tx.card_currency}</div>
+                          )}
+                      </div>
                     </div>
                   ))}
                 </div>
