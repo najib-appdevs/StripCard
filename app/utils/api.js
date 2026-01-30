@@ -870,7 +870,7 @@ export const updateCardyFieCustomer = async (formData) => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return data;
   } catch (error) {
@@ -878,6 +878,65 @@ export const updateCardyFieCustomer = async (formData) => {
     if (error.response) return error.response.data;
     return {
       message: { error: ["Failed to update customer. Please try again."] },
+    };
+  }
+};
+
+export const createCardyFieCard = async (payload) => {
+  try {
+    const { data } = await api.post("/user/cardyfie-card/create", payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  } catch (error) {
+    console.log("Create virtual card error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to create virtual card. Please try again."] },
+    };
+  }
+};
+
+export const getCardyFieCardDetails = async (cardId) => {
+  try {
+    const { data } = await api.get(
+      `/user/cardyfie-card/details?card_id=${cardId}`,
+    );
+    return data;
+  } catch (error) {
+    if (error.response?.data) return error.response.data;
+    return { message: { error: ["Failed to fetch card details."] } };
+  }
+};
+
+export const getCardyFieCardTransactions = async (cardId) => {
+  try {
+    const { data } = await api.get(
+      `/user/cardyfie-card/transaction?card_id=${cardId}`,
+    );
+    return data;
+  } catch (error) {
+    if (error.response?.data) return error.response.data;
+    return { message: { error: ["Failed to fetch card transactions."] } };
+  }
+};
+
+export const setCardyFieDefault = async (cardId) => {
+  try {
+    const { data } = await api.post(
+      "/user/cardyfie-card/make-remove/default",
+      { card_id: cardId },
+    );
+    return data;
+  } catch (error) {
+    console.error("Set default card error:", error);
+    if (error.response?.data) return error.response.data;
+    return {
+      message: { error: ["Failed to update default card status."] },
     };
   }
 };

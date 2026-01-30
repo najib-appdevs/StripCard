@@ -1,6 +1,13 @@
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Select from "react-select";
-import { getCardyFieCards, getUserDashboard } from "../../utils/api";
+import {
+  createCardyFieCard,
+  getCardyFieCards,
+  getUserDashboard,
+} from "../../utils/api";
+import CreateVirtualCardSkeleton from "./CreateVirtualCardSkeleton";
 
 function CreateCardPage() {
   // ============================================================================
@@ -31,6 +38,8 @@ function CreateCardPage() {
   const [cardCharge, setCardCharge] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const router = useRouter();
 
   // ============================================================================
   // DATA FETCHING
@@ -137,17 +146,13 @@ function CreateCardPage() {
   // LOADING & ERROR STATES
   // ============================================================================
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen text-slate-600">
-        Loading...
-      </div>
-    );
+    return <CreateVirtualCardSkeleton />;
   }
 
   if (error || !formData.cardCurrency) {
     return (
       <div className="text-red-600 text-center min-h-screen pt-20 px-4">
-        {error || "Cannot load card settings"}
+        {error || "Cannot Load the Page"}
       </div>
     );
   }
@@ -211,16 +216,63 @@ function CreateCardPage() {
   // ============================================================================
   // EVENT HANDLERS
   // ============================================================================
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting:", {
-      card_holder_name: formData.cardHolderName,
-      tier: formData.cardTier.value,
-      type: formData.cardType.value,
+
+    if (!formData.cardHolderName.trim()) {
+      toast.error("Card holder's name is required");
+      return;
+    }
+
+    if (!formData.fromWallet) {
+      toast.error("Please select a wallet");
+      return;
+    }
+
+    // Balance check
+    if (selectedWallet?.balance < issueFee) {
+      toast.error(`Your Wallet Balance Is Insufficient`);
+      return;
+    }
+
+    setSubmitting(true);
+
+    const payload = {
+      name_on_card: formData.cardHolderName.trim(),
+      card_tier: formData.cardTier.value,
+      card_type: formData.cardType.value,
       currency: formData.cardCurrency.value,
-      from_wallet: formData.fromWallet.value,
-    });
-    // → Add POST logic here
+      from_currency: formData.fromWallet.value,
+    };
+
+    try {
+      const response = await createCardyFieCard(payload);
+
+      // Success case
+      if (response?.message?.success) {
+        toast.success(response?.message?.success?.[0]);
+        router.push("/dashboard/Virtual-Card-CardyFie");
+      }
+      // Error case
+      else if (response?.message?.error?.length > 0) {
+        toast.error(response.message.error[0]);
+      } else if (response?.message) {
+        // Fallback
+        toast.error(response.message);
+      } else {
+        toast.error("Failed to Create Virtual Card");
+      }
+    } catch (err) {
+      // Network Error
+      const serverMsg = err.response?.data?.message?.error?.[0];
+      if (serverMsg) {
+        toast.error(serverMsg);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // ============================================================================
@@ -323,9 +375,10 @@ function CreateCardPage() {
 
             <button
               type="submit"
-              className="w-full btn-primary text-white font-semibold py-4 rounded-xl shadow-lg text-lg transition-all duration-200 cursor-pointer"
+              disabled={submitting}
+              className={`w-full text-white font-semibold py-4 rounded-xl shadow-lg text-lg transition-all duration-200 cursor-pointer ${submitting ? "btn-primary cursor-not-allowed" : "btn-primary hover:opacity-90"}`}
             >
-              Confirm
+              {submitting ? "Creating card..." : "Confirm"}
             </button>
           </form>
         </div>

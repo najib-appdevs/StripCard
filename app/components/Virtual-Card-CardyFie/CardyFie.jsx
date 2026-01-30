@@ -131,8 +131,10 @@ export default function CardyFie() {
     }
   };
 
-  const handleViewDetails = (cardId) => {
-    router.push(`/dashboard/Virtual-Card/CardDetails?card_id=${cardId}`);
+  const handleViewDetails = (ulid) => {
+    router.push(
+      `/dashboard/Virtual-Card-CardyFie/CardyFieCardDetails?card_id=${ulid}`,
+    );
   };
 
   return (
@@ -206,8 +208,8 @@ export default function CardyFie() {
 
             return (
               <div
-                key={card.id || card.ulid}
-                onClick={() => handleViewDetails(card.id)}
+                key={card.ulid}
+                onClick={() => handleViewDetails(card.ulid)}
                 className="relative bg-linear-to-br from-slate-800 via-slate-700 to-slate-900 text-white rounded-3xl shadow-2xl overflow-hidden h-72 transform transition-all duration-300 hover:scale-[1.03] hover:shadow-3xl cursor-pointer group"
               >
                 {/* Background pattern */}
