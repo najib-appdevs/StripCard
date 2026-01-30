@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   CardFreezeUnfreeze,
+  CardyFieCardClose,
   getCardyFieCardDetails,
   getCardyFieCardTransactions,
   setCardyFieDefault,
@@ -30,6 +31,7 @@ export default function CardyFieCardDetails() {
   const [error, setError] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isFreezing, setIsFreezing] = useState(false);
+  const [showCloseConfirmModal, setShowCloseConfirmModal] = useState(false);
 
   // Transactions modal states
   const [showTransactionsModal, setShowTransactionsModal] = useState(false);
@@ -87,7 +89,67 @@ export default function CardyFieCardDetails() {
     );
   };
   const handleClose = () => {
-    console.log("Close");
+    if (!cardId) {
+      toast.error("No card selected");
+      return;
+    }
+
+    // Early exit if already closed (defensive)
+    if (card.status === "CLOSED") {
+      toast("This card is already closed");
+      return;
+    }
+
+    setShowCloseConfirmModal(true);
+  };
+
+  const confirmCloseCard = async () => {
+    setShowCloseConfirmModal(false);
+
+    const loadingToast = toast.loading("Closing card...", {
+      position: "top-center",
+    });
+
+    try {
+      const payload = {
+        card_id: cardId,
+      };
+
+      const response = await CardyFieCardClose(payload);
+
+      // Handle different response shapes
+      if (response?.message?.error?.length > 0) {
+        toast.error(response.message.error[0] || "Failed to close card", {
+          id: loadingToast,
+        });
+        return;
+      }
+
+      if (response?.message?.success?.length > 0) {
+        toast.success(
+          response.message.success[0] || "Card closed successfully",
+          {
+            id: loadingToast,
+          },
+        );
+
+        // Refresh card details
+        try {
+          const updated = await getCardyFieCardDetails(cardId);
+          setCardDetails(updated);
+        } catch (refreshErr) {
+          console.log("Refresh after close failed", refreshErr);
+          toast("Card closed, but details refresh failed");
+        }
+      } else {
+        // Fallback when response shape is unexpected
+        toast.error("Unexpected response from server", { id: loadingToast });
+      }
+    } catch (err) {
+      toast.error(err.message || "Failed to close card", {
+        id: loadingToast,
+      });
+    }
   };
 
   const handleDefaultAction = () => {
@@ -272,7 +334,11 @@ export default function CardyFieCardDetails() {
                     }`}
                   />
                   <span className="text-[10px] font-medium uppercase tracking-wide text-white/90">
-                    {card.status === "ENABLED" ? "Active" : "Inactive"}
+                    {card.status === "ENABLED"
+                      ? "Active"
+                      : card.status === "CLOSED"
+                        ? "Closed"
+                        : "Inactive"}
                   </span>
                 </div>
               </div>
@@ -371,8 +437,14 @@ export default function CardyFieCardDetails() {
                 </button>
               </div>
 
-              {/* Second Row - 3 Buttons */}
-              <div className="grid grid-cols-3 gap-2.5">
+              {/* Second Row 3 Buttons – Withdraw | Transactions | Close (conditional) */}
+              <div
+                className="grid gap-2.5"
+                style={{
+                  gridTemplateColumns:
+                    card.status === "CLOSED" ? "1fr 1fr" : "1fr 1fr 1fr",
+                }}
+              >
                 <button
                   onClick={handleWithdraw}
                   className="cursor-pointer group flex flex-col items-center justify-center gap-1.5 py-3 px-2 bg-white border-2 border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-indigo-400 hover:bg-indigo-50/50 transition-all duration-200"
@@ -393,15 +465,17 @@ export default function CardyFieCardDetails() {
                   </span>
                 </button>
 
-                <button
-                  onClick={handleClose}
-                  className="cursor-pointer group flex flex-col items-center justify-center gap-1.5 py-3 px-2 bg-white border-2 border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-red-400 hover:bg-red-50/50 transition-all duration-200"
-                >
-                  <XMarkIcon className="w-5 h-5 text-red-600 group-hover:text-red-700 transition-colors" />
-                  <span className="font-semibold text-xs text-gray-800 group-hover:text-red-700 transition-colors">
-                    Close
-                  </span>
-                </button>
+                {card.status !== "CLOSED" && (
+                  <button
+                    onClick={handleClose}
+                    className="cursor-pointer group flex flex-col items-center justify-center gap-1.5 py-3 px-2 bg-white border-2 border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:border-red-400 hover:bg-red-50/50 transition-all duration-200"
+                  >
+                    <XMarkIcon className="w-5 h-5 text-red-600 group-hover:text-red-700 transition-colors" />
+                    <span className="font-semibold text-xs text-gray-800 group-hover:text-red-700 transition-colors">
+                      Close
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
 
@@ -558,20 +632,31 @@ export default function CardyFieCardDetails() {
                         Status
                       </td>
                       <td className="py-4 px-6">
-                        <button
-                          onClick={handleToggleFreeze}
-                          disabled={isFreezing} // ← nice to have: disable while request is in progress
-                          className="cursor-pointer group inline-flex items-center justify-center gap-2 py-2.5 px-5
-                           bg-white border-2 border-gray-200 rounded-full shadow-sm
-                           hover:shadow-md hover:border-amber-400 hover:bg-amber-50/50
-                           transition-all duration-200
-                           disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          <StarIcon className="w-4 h-4 text-amber-500 group-hover:text-amber-600 transition-colors" />
-                          <span className="font-semibold text-sm text-gray-800 group-hover:text-amber-600 transition-colors whitespace-nowrap">
-                            {card?.status === "ENABLED" ? "Freeze" : "Unfreeze"}
+                        {card.status === "CLOSED" ? (
+                          <span
+                            className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-semibold uppercase tracking-wide
+                       bg-red-100 text-red-800 border border-red-200"
+                          >
+                            {card.status}
                           </span>
-                        </button>
+                        ) : (
+                          <button
+                            onClick={handleToggleFreeze}
+                            disabled={isFreezing}
+                            className="cursor-pointer group inline-flex items-center justify-center gap-2 py-2.5 px-5
+                               bg-white border-2 border-gray-200 rounded-full shadow-sm
+                               hover:shadow-md hover:border-amber-400 hover:bg-amber-50/50
+                               transition-all duration-200
+                               disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            <StarIcon className="w-4 h-4 text-amber-500 group-hover:text-amber-600 transition-colors" />
+                            <span className="font-semibold text-sm text-gray-800 group-hover:text-amber-600 transition-colors whitespace-nowrap">
+                              {card?.status === "ENABLED"
+                                ? "Freeze"
+                                : "Unfreeze"}
+                            </span>
+                          </button>
+                        )}
                       </td>
                     </tr>
                   </tbody>
@@ -788,6 +873,53 @@ export default function CardyFieCardDetails() {
                 className="px-6 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors cursor-pointer"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Confirm Modal */}
+      {showCloseConfirmModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="bg-red-50 px-6 py-5 border-b border-red-100">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold text-red-900 flex items-center gap-3">
+                  Close This Card?
+                </h3>
+
+                <button
+                  onClick={() => setShowCloseConfirmModal(false)}
+                  className="cursor-pointer p-2 rounded-lg transition-colors"
+                >
+                  <XMarkIcon className="w-6 h-6 text-red-600" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 text-gray-700 space-y-4">
+              <p>
+                Are you sure you want to <strong>close</strong> this card?
+              </p>
+              <p className="text-sm text-gray-500">
+                This action cannot be undone. The card will no longer be usable
+                for transactions, deposits, or withdrawals.
+              </p>
+            </div>
+
+            <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t">
+              <button
+                onClick={() => setShowCloseConfirmModal(false)}
+                className="cursor-pointer px-5 py-2.5 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmCloseCard}
+                className="cursor-pointer px-6 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors shadow-sm"
+              >
+                Close Card
               </button>
             </div>
           </div>
