@@ -111,7 +111,7 @@ export default function CardyFie() {
       case "FREEZE":
         return {
           dot: "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]",
-          label: "FROZEN",
+          label: "FREEZE",
         };
       case "PROCESSING":
         return {

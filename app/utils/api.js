@@ -954,3 +954,54 @@ export const DepositCardyFie = async (payload) => {
     };
   }
 };
+
+export const WithdrawCardyFie = async (payload) => {
+  try {
+    const { data } = await api.post("/user/cardyfie-card/withdraw", payload);
+    return data;
+  } catch (error) {
+    console.log("Fund virtual card error:", error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to fund card. Please try again."] },
+    };
+  }
+};
+
+export const CardFreezeUnfreeze = async (payload) => {
+  try {
+    const { data } = await api.post(
+      "/user/cardyfie-card/change/status",
+      payload,
+    );
+    return data;
+  } catch (error) {
+    console.log("Fund virtual card error:", error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to fund card. Please try again."] },
+    };
+  }
+};
+
+export const CardyFieCardClose = async (payload) => {
+  try {
+    const { data } = await api.post(
+      "/user/cardyfie-card/close",
+      payload,
+    );
+    return data;
+  } catch (error) {
+    console.log("Fund virtual card error:", error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to fund card. Please try again."] },
+    };
+  }
+};

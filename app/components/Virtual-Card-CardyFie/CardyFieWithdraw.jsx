@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
-  DepositCardyFie,
+  WithdrawCardyFie,
   getCardyFieCards,
   getUserDashboard,
 } from "../../utils/api";
@@ -122,7 +122,7 @@ export default function CardyFieWithdraw() {
     ? (numericAmount * percentCharge) / 100 + fixedCharge
     : 0;
 
-  const totalPayable = numericAmount + previewTotalCharge;
+  const totalPayable = numericAmount - previewTotalCharge;
 
   const isFormValid =
     hasAmount &&
@@ -143,13 +143,13 @@ export default function CardyFieWithdraw() {
 
     const payload = {
       card_id: cardId,
-      deposit_amount: numericAmount,
+      withdraw_amount: numericAmount,
       currency: currency,
       from_currency: fromWallet,
     };
 
     try {
-      const response = await DepositCardyFie(payload);
+      const response = await WithdrawCardyFie(payload);
 
       if (response?.message?.success?.length > 0) {
         toast.success(response.message.success[0]);
@@ -309,7 +309,7 @@ export default function CardyFieWithdraw() {
                 type="submit"
                 className={`mt-4 w-full rounded-lg py-3.5 font-medium text-white flex items-center justify-center gap-2 transition-colors btn-primary cursor-pointer`}
               >
-                {submitting ? "Processing..." : "Deposit Card"}
+                {submitting ? "Processing..." : "Withdraw Card"}
               </button>
             </form>
           </div>

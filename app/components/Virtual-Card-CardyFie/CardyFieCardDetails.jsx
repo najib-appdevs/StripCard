@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
+  CardFreezeUnfreeze,
   getCardyFieCardDetails,
   getCardyFieCardTransactions,
   setCardyFieDefault,
@@ -28,6 +29,7 @@ export default function CardyFieCardDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isFreezing, setIsFreezing] = useState(false);
 
   // Transactions modal states
   const [showTransactionsModal, setShowTransactionsModal] = useState(false);
@@ -47,15 +49,13 @@ export default function CardyFieCardDetails() {
         const res = await getCardyFieCardDetails(cardId);
 
         if (res?.message?.error) {
-          throw new Error(
-            res.message.error[0] || "Failed to load card details",
-          );
+          toast.error(res.message.error[0] || "Failed to load card details");
         }
 
         setCardDetails(res);
       } catch (err) {
         setError(err.message || "Failed to load card details");
-        console.error(err);
+        toast.error(err);
       } finally {
         setLoading(false);
       }
@@ -115,9 +115,7 @@ export default function CardyFieCardDetails() {
       const res = await setCardyFieDefault(cardId);
 
       if (res?.message?.error) {
-        throw new Error(
-          res.message.error[0] || "Failed to update default status",
-        );
+        toast.error(res.message.error[0] || "Failed to update default status");
       }
 
       const successMsg =
@@ -134,15 +132,70 @@ export default function CardyFieCardDetails() {
         const updated = await getCardyFieCardDetails(cardId);
         setCardDetails(updated);
       } catch (refreshErr) {
-        console.warn("Refresh after default action failed", refreshErr);
+        console.log("Refresh after default action failed", refreshErr);
       }
     } catch (err) {
-      console.error("Default action failed:", err);
+      toast.error("Default action failed:", err);
       toast.error(err.message || "Failed to update default status", {
         id: loadingToast,
         duration: 5000,
         position: "top-center",
       });
+    }
+  };
+
+  const handleToggleFreeze = async () => {
+    if (!cardId) {
+      toast.error("No card selected");
+      return;
+    }
+
+    const newStatus = card.status === "ENABLED" ? "FREEZE" : "ENABLED";
+    const actionText =
+      newStatus === "FREEZE" ? "Freezing card..." : "Unfreezing card...";
+
+    const loadingToast = toast.loading(actionText, {
+      position: "top-center",
+    });
+
+    setIsFreezing(true);
+
+    try {
+      const payload = {
+        card_id: cardId,
+        status: newStatus,
+      };
+
+      const res = await CardFreezeUnfreeze(payload);
+
+      if (res?.message?.error) {
+        toast.error(res.message.error[0] || "Failed to update card status");
+      }
+
+      const successMsg = res?.message?.success?.[0] || "Card status updated";
+
+      toast.success(successMsg, {
+        id: loadingToast,
+        duration: 4000,
+        position: "top-center",
+      });
+
+      // Refresh card details
+      try {
+        const updated = await getCardyFieCardDetails(cardId);
+        setCardDetails(updated);
+      } catch (refreshErr) {
+        console.log("Refresh after freeze/unfreeze failed", refreshErr);
+      }
+    } catch (err) {
+      toast.error("Freeze/Unfreeze failed:", err);
+      toast.error(err.message || "Failed to update card status", {
+        id: loadingToast,
+        duration: 5000,
+        position: "top-center",
+      });
+    } finally {
+      setIsFreezing(false);
     }
   };
 
@@ -156,13 +209,13 @@ export default function CardyFieCardDetails() {
       const res = await getCardyFieCardTransactions(cardId);
 
       if (res?.message?.error) {
-        throw new Error(res.message.error[0] || "Failed to load transactions");
+        toast.error(res.message.error[0] || "Failed to load transactions");
       }
 
       setTransactions(res?.data?.card_transactions || []);
     } catch (err) {
       setTransactionsError(err.message || "Failed to load transactions");
-      console.error(err);
+      toast.error(err);
     } finally {
       setLoadingTransactions(false);
     }
@@ -505,17 +558,20 @@ export default function CardyFieCardDetails() {
                         Status
                       </td>
                       <td className="py-4 px-6">
-                        <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${
-                            card.status === "ENABLED"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
+                        <button
+                          onClick={handleToggleFreeze}
+                          disabled={isFreezing} // ← nice to have: disable while request is in progress
+                          className="cursor-pointer group inline-flex items-center justify-center gap-2 py-2.5 px-5
+                           bg-white border-2 border-gray-200 rounded-full shadow-sm
+                           hover:shadow-md hover:border-amber-400 hover:bg-amber-50/50
+                           transition-all duration-200
+                           disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          {card.status === "ENABLED"
-                            ? "Enabled"
-                            : card.status || "Unknown"}
-                        </span>
+                          <StarIcon className="w-4 h-4 text-amber-500 group-hover:text-amber-600 transition-colors" />
+                          <span className="font-semibold text-sm text-gray-800 group-hover:text-amber-600 transition-colors whitespace-nowrap">
+                            {card?.status === "ENABLED" ? "Freeze" : "Unfreeze"}
+                          </span>
+                        </button>
                       </td>
                     </tr>
                   </tbody>
