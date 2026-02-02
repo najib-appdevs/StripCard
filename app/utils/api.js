@@ -782,22 +782,6 @@ export const setStrowalletCardAsDefault = async (cardId) => {
   }
 };
 
-// ---------------------------Sudo Virtual Card APIs----------------------------------
-
-export const getSudoCards = async () => {
-  try {
-    const { data } = await api.get("/user/my-card/sudo");
-    return data;
-  } catch (error) {
-    if (error.response?.data) {
-      return error.response.data;
-    }
-    return {
-      message: { error: ["Failed to fetch virtual cards. Please try again."] },
-    };
-  }
-};
-
 // ---------------------------CardyFie Virtual Card APIs----------------------------------
 export const getCardyFieCards = async () => {
   try {
@@ -990,10 +974,7 @@ export const CardFreezeUnfreeze = async (payload) => {
 
 export const CardyFieCardClose = async (payload) => {
   try {
-    const { data } = await api.post(
-      "/user/cardyfie-card/close",
-      payload,
-    );
+    const { data } = await api.post("/user/cardyfie-card/close", payload);
     return data;
   } catch (error) {
     console.log("Fund virtual card error:", error);
@@ -1002,6 +983,56 @@ export const CardyFieCardClose = async (payload) => {
     }
     return {
       message: { error: ["Failed to fund card. Please try again."] },
+    };
+  }
+};
+
+// ---------------------------Stripe Virtual Card APIs----------------------------------
+
+export const getStripeCards = async () => {
+  try {
+    const { data } = await api.get("/user/my-card/stripe");
+    return data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to fetch virtual cards. Please try again."] },
+    };
+  }
+};
+// ---------------------------Sudo Virtual Card APIs----------------------------------
+
+export const getSudoCards = async () => {
+  try {
+    const { data } = await api.get("/user/my-card/sudo");
+    return data;
+  } catch (error) {
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to fetch virtual cards. Please try again."] },
+    };
+  }
+};
+
+export const createSudoCards = async (payload) => {
+  try {
+    const { data } = await api.post("/user/my-card/sudo/create", payload, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  } catch (error) {
+    console.log("Create virtual card error:", error);
+    if (error.response) {
+      return error.response.data;
+    }
+    return {
+      message: { error: ["Failed to create virtual card. Please try again."] },
     };
   }
 };
