@@ -51,10 +51,10 @@ export default function Navbar({ onMenuClick }) {
 
           {/* Welcome Message */}
           <div className="pl-4">
-            <h1 className="text-base sm:text-lg font-semibold text-black">
+            <h1 className="text-base sm:text-lg font-semibold text-gray-950 dark:text-gray-200">
               Welcome Back
             </h1>
-            <p className="text-xs sm:text-sm text-gray-600 mt-0.5">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-200 mt-0.5">
               {userName}
             </p>
           </div>

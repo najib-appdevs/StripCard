@@ -137,10 +137,8 @@ export default function DashboardLayoutClient({ children }) {
   // Show loader while checking auth/fetching
   if (isLoading || !dashboardData) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <Loader />
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader />
       </div>
     );
   }
@@ -164,7 +162,7 @@ export default function DashboardLayoutClient({ children }) {
 
   return (
     <DashboardProvider value={contextValue}>
-      <div className="flex h-screen bg-gray-50 overflow-hidden">
+      <div className="flex h-screen bg-gray-50 dark:bg-gray-900/60 overflow-hidden">
         {/* Sidebar */}
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

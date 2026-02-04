@@ -47,7 +47,7 @@ export default function PaymentInformation() {
 
     if (!savedData) {
       toast.error(
-        "No pending withdrawal found. Please start a new withdrawal."
+        "No pending withdrawal found. Please start a new withdrawal.",
       );
       router.push("/dashboard/withdraw-money");
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -85,16 +85,20 @@ export default function PaymentInformation() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-600 text-lg">Loading payment information...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <p className="text-gray-600 dark:text-gray-300 text-lg">
+          Loading payment information...
+        </p>
       </div>
     );
   }
 
   if (!summary) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-red-600 text-lg">Unable to load payment details</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <p className="text-red-600 dark:text-red-400 text-lg">
+          Unable to load payment details
+        </p>
       </div>
     );
   }
@@ -102,72 +106,70 @@ export default function PaymentInformation() {
   /* -------------------- UI -------------------- */
 
   return (
-    <div className="flex items-center justify-center bg-gray-50">
-      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-3xl">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">
-            Payment Information
-          </h1>
-          <p className="text-gray-600">
-            Please review the details of your withdrawal request below.
-          </p>
-        </div>
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-gray-950/40 p-8 w-full max-w-3xl">
+      <div className="text-center mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+          Payment Information
+        </h1>
+        <p className="text-gray-600 dark:text-gray-300">
+          Please review the details of your withdrawal request below.
+        </p>
+      </div>
 
-        <div className="space-y-6 bg-gray-50 p-6 rounded-xl mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-gray-600 font-medium mb-1">
-                Enter Amount
-              </label>
-              <p className="text-xl font-semibold text-gray-900">
-                {formatMoney(summary.request_amount)}
-              </p>
-            </div>
+      <div className="space-y-6 bg-gray-50 dark:bg-gray-800/60 p-6 rounded-xl mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-gray-600 dark:text-gray-300 font-medium mb-1">
+              Enter Amount
+            </label>
+            <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              {formatMoney(summary.request_amount)}
+            </p>
+          </div>
 
-            <div>
-              <label className="block text-gray-600 font-medium mb-1">
-                Exchange Rate
-              </label>
-              <p className="text-xl font-semibold text-gray-900">
-                {formatExchangeRate(summary.exchange_rate)}
-              </p>
-            </div>
+          <div>
+            <label className="block text-gray-600 dark:text-gray-300 font-medium mb-1">
+              Exchange Rate
+            </label>
+            <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              {formatExchangeRate(summary.exchange_rate)}
+            </p>
+          </div>
 
-            <div>
-              <label className="block text-gray-600 font-medium mb-1">
-                Fees & Charges
-              </label>
-              <p className="text-xl font-semibold text-red-600">
-                {formatMoney(summary.total_charge)}
-              </p>
-            </div>
+          <div>
+            <label className="block text-gray-600 dark:text-gray-300 font-medium mb-1">
+              Fees & Charges
+            </label>
+            <p className="text-xl font-semibold text-red-600 dark:text-red-400">
+              {formatMoney(summary.total_charge)}
+            </p>
+          </div>
 
-            <div>
-              <label className="block text-gray-600 font-medium mb-1">
-                Conversion Amount
-              </label>
-              <p className="text-xl font-semibold text-gray-900">
-                {formatMoney(summary.conversion_amount)}
-              </p>
-            </div>
+          <div>
+            <label className="block text-gray-600 dark:text-gray-300 font-medium mb-1">
+              Conversion Amount
+            </label>
+            <p className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+              {formatMoney(summary.conversion_amount)}
+            </p>
+          </div>
 
-            <div>
-              <label className="block text-gray-600 font-medium mb-1">
-                Will Get
-              </label>
-              <p className="text-xl font-semibold text-emerald-600">
-                {formatMoney(summary.will_get)}
-              </p>
-            </div>
+          <div>
+            <label className="block text-gray-600 dark:text-gray-300 font-medium mb-1">
+              Will Get
+            </label>
+            <p className="text-xl font-semibold text-emerald-600 dark:text-emerald-400">
+              {formatMoney(summary.will_get)}
+            </p>
+          </div>
 
-            <div className="md:col-span-2 border-t border-gray-200 pt-4">
-              <label className="block text-gray-600 font-medium mb-1 text-lg">
-                Total Payable Amount
-              </label>
-              <p className="text-2xl font-bold text-gray-900">
-                {formatMoney(summary.payable)}
-              </p>
-            </div>
+          <div className="md:col-span-2 border-t border-gray-200 dark:border-gray-700 pt-4">
+            <label className="block text-gray-600 dark:text-gray-300 font-medium mb-1 text-lg">
+              Total Payable Amount
+            </label>
+            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {formatMoney(summary.payable)}
+            </p>
           </div>
         </div>
       </div>

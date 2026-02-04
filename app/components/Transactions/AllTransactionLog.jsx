@@ -333,25 +333,25 @@ const AllTransactionLog = () => {
   // --------------------------------------------------------------------------
   if (loading) return <TransactionLogSkeleton />;
   if (error)
-    return <div className="py-12 text-center text-red-600">{error}</div>;
+    return <div className="py-12 text-center text-red-600 dark:text-red-400">{error}</div>;
 
   return (
     <>
       {/* Header + Search */}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-bold text-gray-900">Transaction Log</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Transaction Log</h1>
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Ex: TRX ID, Add Money"
-          className="w-64 rounded-lg bg-white px-4 py-2 text-sm border border-gray-300 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-emerald-400"
+          className="w-64 rounded-lg bg-white dark:bg-gray-800 px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 dark:focus:ring-emerald-500"
         />
       </div>
 
       {/* Search result count */}
       {search.trim() && (
-        <div className="mb-4 text-sm text-gray-600">
+        <div className="mb-4 text-sm text-gray-600 dark:text-gray-300">
           Found {filteredTransactions.length} transaction
           {filteredTransactions.length !== 1 ? "s" : ""} matching &quot;{search}
           &quot;
@@ -359,8 +359,8 @@ const AllTransactionLog = () => {
       )}
 
       {/* Table */}
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-        <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
+        <div className="rounded-t-2xl bg-gray-900 dark:bg-gray-950 px-6 py-4">
           <h2 className="text-base font-semibold text-white">
             All Transactions
           </h2>
@@ -368,7 +368,7 @@ const AllTransactionLog = () => {
 
         <div className="overflow-x-auto">
           <div className="min-w-[1100px]">
-            <div className="hidden md:grid grid-cols-7 gap-4 px-6 py-3 bg-gray-50 text-sm font-semibold text-gray-600">
+            <div className="hidden md:grid grid-cols-7 gap-4 px-6 py-3 bg-gray-50 dark:bg-gray-900 text-sm font-semibold text-gray-600 dark:text-gray-300">
               <span>Transaction</span>
               <span>Status</span>
               <span>Transaction ID</span>
@@ -378,9 +378,9 @@ const AllTransactionLog = () => {
               <span>Time & Date</span>
             </div>
 
-            <div className="divide-y">
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {paginatedTx.length === 0 ? (
-                <div className="py-12 text-center text-gray-500 col-span-7">
+                <div className="py-12 text-center text-gray-500 dark:text-gray-300 col-span-7">
                   {search.trim()
                     ? "No matching transactions found"
                     : "No transactions found"}
@@ -390,11 +390,11 @@ const AllTransactionLog = () => {
                   <div
                     key={log.trx || log.id}
                     onClick={() => setSelectedTx(log)}
-                    className="grid grid-cols-1 md:grid-cols-7 gap-3 px-6 py-4 text-sm hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="grid grid-cols-1 md:grid-cols-7 gap-3 px-6 py-4 text-sm hover:bg-gray-50 dark:hover:bg-gray-800/70 transition-colors cursor-pointer"
                   >
-                    <div className="font-medium text-gray-900">
+                    <div className="font-medium text-gray-900 dark:text-gray-100">
                       {log.displayVia}
-                      <div className="text-xs text-gray-500 mt-0.5">
+                      <div className="text-xs text-gray-500 dark:text-gray-300 mt-0.5">
                         {log.displayType}
                       </div>
                     </div>
@@ -411,20 +411,20 @@ const AllTransactionLog = () => {
                       <span
                         className={
                           log.status === "Success"
-                            ? "text-green-700"
+                            ? "text-green-700 dark:text-green-400"
                             : log.status === "Pending"
-                            ? "text-yellow-700"
-                            : "text-red-700"
+                            ? "text-yellow-700 dark:text-yellow-400"
+                            : "text-red-700 dark:text-red-400"
                         }
                       >
                         {log.status}
                       </span>
                     </div>
-                    <div className="text-gray-600 font-mono">{log.trx}</div>
-                    <div className="text-gray-600">{log.displayAmount}</div>
-                    <div className="text-gray-600">{log.displayFees}</div>
-                    <div className="text-gray-600">{log.displayBalance}</div>
-                    <div className="text-gray-600">
+                    <div className="text-gray-600 dark:text-gray-300 font-mono">{log.trx}</div>
+                    <div className="text-gray-600 dark:text-gray-300">{log.displayAmount}</div>
+                    <div className="text-gray-600 dark:text-gray-300">{log.displayFees}</div>
+                    <div className="text-gray-600 dark:text-gray-300">{log.displayBalance}</div>
+                    <div className="text-gray-600 dark:text-gray-300">
                       {formatDate(log.date_time)}
                     </div>
                   </div>
@@ -441,7 +441,7 @@ const AllTransactionLog = () => {
           <button
             onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -460,8 +460,8 @@ const AllTransactionLog = () => {
                 onClick={() => setCurrentPage(page)}
                 className={`w-9 h-9 rounded-lg border text-sm font-medium cursor-pointer ${
                   currentPage === page
-                    ? "bg-emerald-600 text-white border-emerald-600"
-                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                    ? "bg-emerald-600 text-white border-emerald-600 dark:bg-emerald-700 dark:border-emerald-700 dark:hover:bg-emerald-600"
+                    : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 {page}
@@ -472,7 +472,7 @@ const AllTransactionLog = () => {
           <button
             onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
@@ -482,16 +482,16 @@ const AllTransactionLog = () => {
       {/* Modal */}
       {selectedTx && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-none p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center z-10">
-              <h2 className="text-xl font-bold text-gray-900">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center z-10">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                 Transaction Details
               </h2>
               <button
                 onClick={() => setSelectedTx(null)}
-                className="p-1 hover:bg-gray-100 rounded-full cursor-pointer"
+                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full cursor-pointer"
               >
-                <X size={24} className="text-gray-700" />
+                <X size={24} className="text-gray-700 dark:text-gray-300" />
               </button>
             </div>
 
@@ -499,10 +499,10 @@ const AllTransactionLog = () => {
               {renderModalContent()}
             </div>
 
-            <div className="sticky bottom-0 bg-gray-50 border-t px-6 py-4 text-right">
+            <div className="sticky bottom-0 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 px-6 py-4 text-right">
               <button
                 onClick={() => setSelectedTx(null)}
-                className="px-6 py-2.5 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition cursor-pointer"
+                className="px-6 py-2.5 bg-gray-800 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-900 dark:hover:bg-gray-600 transition cursor-pointer"
               >
                 Close
               </button>
@@ -520,18 +520,18 @@ const AllTransactionLog = () => {
 
 const DetailRow = ({ label, value, isStatus = false, isMono = false }) => (
   <div>
-    <dt className="text-sm font-medium text-gray-500 mb-1">{label}</dt>
+    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1">{label}</dt>
     <dd
       className={`text-base ${isMono ? "font-mono" : ""} ${
         isStatus
           ? value === "Success"
-            ? "text-green-700 font-medium"
+            ? "text-green-700 dark:text-green-400 font-medium"
             : value === "Pending"
-            ? "text-yellow-700 font-medium"
+            ? "text-yellow-700 dark:text-yellow-400 font-medium"
             : value === "Rejected" || value === "rejected"
-            ? "text-red-700 font-medium"
-            : "text-gray-900"
-          : "text-gray-900"
+            ? "text-red-700 dark:text-red-400 font-medium"
+            : "text-gray-900 dark:text-gray-100"
+          : "text-gray-900 dark:text-gray-100"
       }`}
     >
       {value || "—"}

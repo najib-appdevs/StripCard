@@ -481,7 +481,7 @@ export default function CreateVirtualCard() {
                     customer_kyc_status,
                   )}`}
                 >
-                  {customer_kyc_status || "Unknown"}
+                  {customer_kyc_status || "unreview kyc"}
                 </span>
               </div>
 

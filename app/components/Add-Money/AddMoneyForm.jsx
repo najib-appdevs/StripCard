@@ -267,9 +267,9 @@ export default function AddMoneyForm({ onFormUpdate }) {
   // --------------------------------------------------------------------------
   return (
     <div>
-      <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="w-full max-w-3xl rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
         {/* Form Header */}
-        <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
+        <div className="rounded-t-2xl bg-gray-900 dark:bg-gray-950 px-6 py-4">
           <h2 className="text-base text-center font-semibold text-white">
             Add Money
           </h2>
@@ -279,7 +279,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
         <div className="flex flex-col space-y-7 p-6">
           {/* Payment Gateway Selection */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-600">
+            <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
               Payment Gateway <span className="text-red-500">*</span>
             </label>
 
@@ -290,7 +290,7 @@ export default function AddMoneyForm({ onFormUpdate }) {
             >
               {({ open }) => (
                 <div className="relative">
-                  <Listbox.Button className="cursor-pointer relative w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2.5 text-left text-sm text-gray-900 hover:bg-white focus:border-emerald-500 focus:outline-none focus:ring-emerald-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <Listbox.Button className="cursor-pointer relative w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-2.5 text-left text-sm text-gray-900 dark:text-gray-100 hover:bg-white dark:hover:bg-gray-700 focus:border-emerald-500 dark:focus:border-emerald-500 focus:outline-none focus:ring-emerald-200 dark:focus:ring-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed">
                     <span className="block truncate">
                       {selectedGateway
                         ? selectedGateway.name
@@ -298,14 +298,14 @@ export default function AddMoneyForm({ onFormUpdate }) {
                     </span>
                     <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                       <ChevronDown
-                        className={`h-5 w-5 text-gray-400 transition-transform ${
+                        className={`h-5 w-5 text-gray-400 dark:text-gray-500 transition-transform ${
                           open ? "rotate-180" : ""
                         }`}
                       />
                     </span>
                   </Listbox.Button>
 
-                  <Listbox.Options className="absolute z-10 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-60 overflow-auto">
+                  <Listbox.Options className="absolute z-10 mt-2 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg max-h-60 overflow-auto">
                     {gatewayOptions.map((item) => (
                       <Listbox.Option
                         key={item.id}
@@ -313,10 +313,10 @@ export default function AddMoneyForm({ onFormUpdate }) {
                         className={({ active, selected }) =>
                           `cursor-pointer px-4 py-2.5 text-sm ${
                             active
-                              ? "bg-emerald-50 text-emerald-600"
+                              ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
                               : selected
-                                ? "bg-gray-100 font-medium text-gray-900"
-                                : "text-gray-700"
+                                ? "bg-gray-100 dark:bg-gray-700 font-medium text-gray-900 dark:text-gray-100"
+                                : "text-gray-700 dark:text-gray-300"
                           }`
                         }
                       >
@@ -331,42 +331,42 @@ export default function AddMoneyForm({ onFormUpdate }) {
 
           {/* Amount Input with Currency Selector */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-gray-600">
+            <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-300">
               Enter Amount <span className="text-red-500">*</span>
             </label>
 
-            <div className="relative rounded-xl border border-gray-300 bg-gray-50 focus-within:border-emerald-500 focus-within:ring-emerald-200">
+            <div className="relative rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 focus-within:border-emerald-500 dark:focus-within:border-emerald-500 focus-within:ring-emerald-200 dark:focus-within:ring-emerald-500/30">
               <div className="flex overflow-visible">
                 <input
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="Enter Amount"
-                  className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 focus:outline-none no-spinner"
+                  className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none no-spinner"
                 />
 
                 <Listbox value={walletCurrency} onChange={() => {}}>
                   {({ open }) => (
                     <div className="relative min-w-24">
-                      <Listbox.Button className="cursor-pointer flex h-full w-full items-center justify-center px-4 py-2.5 text-sm text-gray-900 focus:outline-none">
+                      <Listbox.Button className="cursor-pointer flex h-full w-full items-center justify-center px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none">
                         <span className="mr-2 font-medium">
                           {walletCurrency}
                         </span>
                         <ChevronDown
-                          className={`h-5 w-5 text-gray-400 transition-transform ${
+                          className={`h-5 w-5 text-gray-400 dark:text-gray-500 transition-transform ${
                             open ? "rotate-180" : ""
                           }`}
                         />
                       </Listbox.Button>
 
-                      <Listbox.Options className="absolute right-0 top-full z-30 mt-1 w-32 rounded-xl border border-gray-200 bg-white py-1 shadow-lg">
+                      <Listbox.Options className="absolute right-0 top-full z-30 mt-1 w-32 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-1 shadow-lg">
                         <Listbox.Option
                           value={walletCurrency}
                           className={({ active }) =>
                             `relative cursor-pointer select-none px-4 py-2 text-sm ${
                               active
-                                ? "bg-emerald-50 text-emerald-700"
-                                : "text-gray-900"
+                                ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                                : "text-gray-900 dark:text-gray-100"
                             }`
                           }
                         >
@@ -383,18 +383,18 @@ export default function AddMoneyForm({ onFormUpdate }) {
           </div>
 
           {/* Information Box */}
-          <div className="space-y-2 rounded-xl bg-gray-50 px-4 py-3 text-sm">
-            <p className="flex justify-between text-gray-600">
+          <div className="space-y-2 rounded-xl bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-sm">
+            <p className="flex justify-between text-gray-600 dark:text-gray-300">
               <span>Available Balance</span>
-              <span className="font-medium text-gray-800">
+              <span className="font-medium text-gray-800 dark:text-gray-200">
                 {balance !== null
                   ? `${Number(balance).toFixed(4)} ${walletCurrency}`
                   : "--"}
               </span>
             </p>
-            <p className="flex justify-between text-gray-600">
+            <p className="flex justify-between text-gray-600 dark:text-gray-300">
               <span>Charge</span>
-              <span className="font-medium text-gray-800">
+              <span className="font-medium text-gray-800 dark:text-gray-200">
                 {formatCharge()}
               </span>
             </p>
@@ -404,13 +404,13 @@ export default function AddMoneyForm({ onFormUpdate }) {
           <div className="flex-1" />
 
           {/* Divider */}
-          <div className="border-t border-dashed border-gray-200" />
+          <div className="border-t border-dashed border-gray-200 dark:border-gray-700" />
 
           {/* Submit Button */}
           <button
             onClick={handleConfirm}
             disabled={submitLoading}
-            className="cursor-pointer w-full rounded-xl px-4 py-4 text-base font-bold text-white transition bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="cursor-pointer w-full rounded-xl px-4 py-4 text-base font-bold text-white transition bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)] dark:bg-[linear-gradient(76.84deg,#0D9A7E_-2.66%,#3E9F28_105.87%)] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitLoading ? "Processing..." : "Confirm"}
           </button>

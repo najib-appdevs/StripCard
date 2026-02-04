@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
@@ -122,7 +123,7 @@ export default function UserMenu() {
         {/* Trigger Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-3 rounded-lg hover:bg-gray-100 px-3 py-2 transition-colors cursor-pointer"
+          className="flex items-center gap-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 px-3 py-2 transition-colors cursor-pointer"
           disabled={loading}
         >
           {/* Avatar */}
@@ -134,7 +135,7 @@ export default function UserMenu() {
             <img
               src={avatarUrl}
               alt={fullName}
-              className="w-10 h-10 rounded-full object-cover border border-gray-200"
+              className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
               onError={(e) => {
                 e.target.src = "/IMG.webp";
                 e.target.onerror = null;
@@ -143,7 +144,10 @@ export default function UserMenu() {
           )}
 
           {/* Mobile 3 dots */}
-          <MoreVertical size={20} className="sm:hidden text-gray-600" />
+          <MoreVertical
+            size={20}
+            className="sm:hidden text-gray-600 dark:text-gray-300"
+          />
         </button>
 
         {/* Dropdown Menu */}
@@ -151,18 +155,18 @@ export default function UserMenu() {
           <>
             {/* Mobile backdrop */}
             <div
-              className="fixed inset-0 z-40 sm:hidden bg-black/20 cursor-pointer"
+              className="fixed inset-0 z-40 sm:hidden bg-black/20 dark:bg-black/40 cursor-pointer"
               onClick={() => setIsOpen(false)}
             />
 
-            <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50">
+            <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-gray-900 rounded-xl shadow-2xl dark:shadow-gray-950/50 border border-gray-200 dark:border-gray-700 overflow-hidden z-50">
               {/* Header Section */}
-              <div className="px-5 py-5 bg-linear-to-r from-gray-50 to-white">
+              <div className="px-5 py-5 bg-linear-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
                 <div className="flex items-center gap-4">
                   {loading ? (
-                    <div className="w-14 h-14 rounded-full bg-gray-200 animate-pulse" />
+                    <div className="w-14 h-14 rounded-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
                   ) : (
-                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-sm">
+                    <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white dark:border-gray-800 shadow-sm">
                       <img
                         src={avatarUrl}
                         alt={fullName}
@@ -173,10 +177,12 @@ export default function UserMenu() {
                   )}
 
                   <div>
-                    <p className="font-semibold text-gray-900 text-lg">
+                    <p className="font-semibold text-gray-900 dark:text-gray-100 text-lg">
                       {loading ? "Loading..." : fullName}
                     </p>
-                    <p className="text-sm text-gray-500 mt-0.5">{email}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-0.5">
+                      {email}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -202,7 +208,7 @@ export default function UserMenu() {
                   onClick={() => router.push("/dashboard/withdraw-money")}
                 />
 
-                <hr className="my-2 border-gray-200 mx-2" />
+                <hr className="my-2 border-gray-200 dark:border-gray-700 mx-2" />
 
                 {/* Security Actions */}
                 <MenuItem
@@ -217,13 +223,13 @@ export default function UserMenu() {
                   onClick={() => router.push("/dashboard/2fa")}
                 />
 
-                <hr className="my-2 border-gray-200 mx-2" />
+                <hr className="my-2 border-gray-200 dark:border-gray-700 mx-2" />
 
                 {/* Logout Action */}
                 <MenuItem
                   icon={<LogOut size={18} />}
                   label="Logout"
-                  className="text-red-600 hover:bg-red-50 active:bg-red-100"
+                  className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 active:bg-red-100 dark:active:bg-red-950/50"
                   onClick={() => {
                     setShowLogoutModal(true);
                     setIsOpen(false);
@@ -237,12 +243,12 @@ export default function UserMenu() {
 
       {/* Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-none">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-5 p-7 relative border border-gray-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 dark:bg-black/15 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-sm mx-5 p-7 relative border border-gray-100 dark:border-gray-800">
             {/* Close Button */}
             <button
               onClick={() => setShowLogoutModal(false)}
-              className="absolute top-5 right-5 text-gray-500 hover:text-gray-800 transition-colors cursor-pointer"
+              className="absolute top-5 right-5 text-gray-500 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200 transition-colors cursor-pointer"
               disabled={isLoggingOut}
             >
               <X size={22} />
@@ -250,14 +256,14 @@ export default function UserMenu() {
 
             {/* Modal Content */}
             <div className="text-center">
-              <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-red-50 flex items-center justify-center">
-                <LogOut size={40} className="text-red-600" />
+              <div className="w-20 h-20 mx-auto mb-5 rounded-full bg-red-50 dark:bg-red-950/40 flex items-center justify-center">
+                <LogOut size={40} className="text-red-600 dark:text-red-400" />
               </div>
 
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                 {isLoggingOut ? "Logging Out..." : "Are you sure?"}
               </h3>
-              <p className="text-gray-600 mb-8">
+              <p className="text-gray-600 dark:text-gray-300 mb-8">
                 {isLoggingOut
                   ? "Please wait while we securely log you out."
                   : "You will be logged out of your account."}
@@ -268,7 +274,7 @@ export default function UserMenu() {
                 <button
                   onClick={() => setShowLogoutModal(false)}
                   disabled={isLoggingOut}
-                  className="cursor-pointer px-8 py-3 bg-gray-200 text-gray-800 rounded-xl hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                  className="cursor-pointer px-8 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
                   Cancel
                 </button>
@@ -297,14 +303,22 @@ function MenuItem({ icon, label, className = "", onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-5 py-3.5 text-base cursor-pointer hover:bg-gray-50 transition-colors ${className}`}
+      className={`w-full flex items-center gap-3 px-5 py-3.5 text-base cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${className}`}
     >
-      <span className={isDanger ? "text-red-600" : "text-gray-600"}>
+      <span
+        className={
+          isDanger
+            ? "text-red-600 dark:text-red-400"
+            : "text-gray-600 dark:text-gray-300"
+        }
+      >
         {icon}
       </span>
       <span
         className={
-          isDanger ? "text-red-600 font-semibold" : "text-gray-900 font-medium"
+          isDanger
+            ? "text-red-600 dark:text-red-400 font-semibold"
+            : "text-gray-900 dark:text-gray-100 font-medium"
         }
       >
         {label}

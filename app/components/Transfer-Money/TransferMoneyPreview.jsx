@@ -59,9 +59,9 @@ const TransferMoneyPreview = ({
   ];
 
   return (
-    <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div className="w-full max-w-3xl rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
       {/* Header */}
-      <div className="bg-gray-900 px-6 py-4 rounded-t-2xl">
+      <div className="bg-gray-900 dark:bg-gray-950 px-6 py-4 rounded-t-2xl">
         <h2 className="text-base text-center font-semibold text-white">
           Transfer Money Preview
         </h2>
@@ -73,10 +73,10 @@ const TransferMoneyPreview = ({
           {rows.map((item, index) => (
             <div
               key={index}
-              className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3"
+              className="flex items-center justify-between rounded-xl bg-gray-50 dark:bg-gray-800/60 px-4 py-3"
             >
-              <span className="text-sm text-gray-600">{item.label}</span>
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-sm text-gray-600 dark:text-gray-200">{item.label}</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 {item.value}
               </span>
             </div>

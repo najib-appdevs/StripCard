@@ -66,16 +66,16 @@ const AddMoneyLog = () => {
 
   return (
     <div className="mt-6">
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
         {/* Header */}
-        <div className="rounded-t-2xl bg-gray-900 px-6 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="rounded-t-2xl bg-gray-900 dark:bg-gray-950 px-6 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <h2 className="text-base font-semibold text-white">Add Money Log</h2>
 
           {/* View More Button - Desktop */}
           <div className="hidden md:flex flex-col gap-2 sm:flex-row md:gap-2">
             <Link
               href="/dashboard/transactions"
-              className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-white rounded-lg hover:text-gray-300 transition-colors w-full sm:w-auto"
+              className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-white dark:text-gray-100 rounded-lg hover:text-gray-300 dark:hover:text-gray-300 transition-colors w-full sm:w-auto"
             >
               <span className="font-medium">View More</span>
             </Link>
@@ -85,7 +85,7 @@ const AddMoneyLog = () => {
         {/* Scrollable Table Wrapper */}
         <div className="overflow-x-auto">
           {/* Table Header */}
-          <div className="hidden md:grid min-w-[900px] grid-cols-7 gap-4 px-6 py-3 bg-gray-50 text-sm font-semibold text-gray-600">
+          <div className="hidden md:grid min-w-[900px] grid-cols-7 gap-4 px-6 py-3 bg-gray-50 dark:bg-gray-900 text-sm font-semibold text-gray-600 dark:text-gray-300">
             <span>Add Balance via</span>
             <span>Status</span>
             <span>Transaction ID</span>
@@ -96,9 +96,9 @@ const AddMoneyLog = () => {
           </div>
 
           {/* Rows */}
-          <div className="divide-y min-w-[900px]">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700 min-w-[900px]">
             {logs.length === 0 ? (
-              <div className="px-6 py-8 text-center text-gray-500">
+              <div className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                 No transactions found
               </div>
             ) : (
@@ -107,7 +107,7 @@ const AddMoneyLog = () => {
                   key={index}
                   className="grid grid-cols-1 md:grid-cols-7 gap-3 px-6 py-4 text-sm"
                 >
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
                     Add Balance via {log.gateway}
                   </span>
 
@@ -124,21 +124,21 @@ const AddMoneyLog = () => {
                     <span
                       className={
                         log.status === "Success"
-                          ? "text-green-600"
+                          ? "text-green-600 dark:text-green-400"
                           : log.status === "Pending"
-                            ? "text-yellow-600"
-                            : "text-red-600"
+                            ? "text-yellow-600 dark:text-yellow-400"
+                            : "text-red-600 dark:text-red-400"
                       }
                     >
                       {log.status}
                     </span>
                   </span>
 
-                  <span className="text-gray-600">{log.trxId}</span>
-                  <span className="text-gray-600">{log.exchangeRate}</span>
-                  <span className="text-gray-600">{log.fees}</span>
-                  <span className="text-gray-600">{log.currentBalance}</span>
-                  <span className="text-gray-600">{log.date}</span>
+                  <span className="text-gray-600 dark:text-gray-200">{log.trxId}</span>
+                  <span className="text-gray-600 dark:text-gray-200">{log.exchangeRate}</span>
+                  <span className="text-gray-600 dark:text-gray-200">{log.fees}</span>
+                  <span className="text-gray-600 dark:text-gray-200">{log.currentBalance}</span>
+                  <span className="text-gray-600 dark:text-gray-200">{log.date}</span>
                 </div>
               ))
             )}
@@ -149,7 +149,7 @@ const AddMoneyLog = () => {
         <div className="md:hidden px-6 py-4">
           <Link
             href="/dashboard/transactions"
-            className="cursor-pointer flex items-center justify-center gap-2 w-full rounded-xl border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="cursor-pointer flex items-center justify-center gap-2 w-full rounded-xl border border-gray-300 dark:border-gray-600 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             <span className="font-medium">View More</span>
           </Link>

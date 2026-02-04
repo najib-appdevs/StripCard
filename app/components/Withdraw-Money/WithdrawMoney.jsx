@@ -154,9 +154,9 @@ export default function WithdrawMoney({
   // RENDER
   // ============================================================================
   return (
-    <div className="w-full max-w-3xl rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div className="w-full max-w-3xl rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
       {/* Header */}
-      <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
+      <div className="rounded-t-2xl bg-gray-900 dark:bg-gray-950 px-6 py-4">
         <h2 className="text-base text-center font-semibold text-white">
           Withdraw Money
         </h2>
@@ -166,7 +166,7 @@ export default function WithdrawMoney({
       <div className="p-6 space-y-7 flex flex-col min-h-[400px]">
         {/* Payment Gateway */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-600">
+          <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">
             Payment Gateway <span className="text-red-500">*</span>
           </label>
 
@@ -176,20 +176,20 @@ export default function WithdrawMoney({
           >
             {({ open }) => (
               <div className="relative">
-                <Listbox.Button className="relative w-full rounded-xl border border-gray-300 bg-gray-50 px-4 py-2.5 text-left text-sm text-gray-900 hover:bg-white focus:border-emerald-500 focus:outline-none focus:ring-emerald-200 cursor-pointer">
+                <Listbox.Button className="relative w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-2.5 text-left text-sm text-gray-900 dark:text-gray-100 hover:bg-white dark:hover:bg-gray-700 focus:border-emerald-500 focus:outline-none focus:ring-emerald-200 dark:focus:ring-emerald-500/30 cursor-pointer">
                   <span className="block truncate">
                     {selectedGatewayCurrency?.name || "Select Gateway"}
                   </span>
                   <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
                     <ChevronDown
-                      className={`h-5 w-5 text-gray-400 transition-transform ${
+                      className={`h-5 w-5 text-gray-400 dark:text-gray-500 transition-transform ${
                         open ? "rotate-180" : ""
                       }`}
                     />
                   </span>
                 </Listbox.Button>
 
-                <Listbox.Options className="absolute z-10 mt-2 w-full rounded-xl border border-gray-200 bg-white shadow-lg max-h-60 overflow-auto">
+                <Listbox.Options className="absolute z-10 mt-2 w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg max-h-60 overflow-auto">
                   {currencies.map((currency) => (
                     <Listbox.Option
                       key={currency.id}
@@ -197,10 +197,10 @@ export default function WithdrawMoney({
                       className={({ active, selected }) =>
                         `cursor-pointer px-4 py-2.5 text-sm ${
                           active
-                            ? "bg-emerald-50 text-emerald-600"
+                            ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
                             : selected
-                            ? "bg-gray-100 font-medium text-gray-900"
-                            : "text-gray-700"
+                            ? "bg-gray-100 dark:bg-gray-700 font-medium text-gray-900 dark:text-gray-100"
+                            : "text-gray-700 dark:text-gray-300"
                         }`
                       }
                     >
@@ -215,18 +215,18 @@ export default function WithdrawMoney({
 
         {/* Amount */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-600">
+          <label className="mb-2 block text-sm font-medium text-gray-600 dark:text-gray-400">
             Enter Amount <span className="text-red-500">*</span>
           </label>
 
-          <div className="relative rounded-xl border border-gray-300 bg-gray-50 focus-within:border-emerald-500 focus-within:ring-emerald-200">
+          <div className="relative rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 focus-within:border-emerald-500 focus-within:ring-emerald-200 dark:focus-within:ring-emerald-500/30">
             <div className="flex overflow-visible">
               <input
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Enter Amount"
-                className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 focus:outline-none no-spinner"
+                className="flex-1 bg-transparent px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none no-spinner"
               />
 
               <Listbox
@@ -235,18 +235,18 @@ export default function WithdrawMoney({
               >
                 {({ open }) => (
                   <div className="relative min-w-24">
-                    <Listbox.Button className="flex h-full w-full items-center justify-center px-4 py-2.5 text-sm text-gray-900 focus:outline-none cursor-pointer">
+                    <Listbox.Button className="flex h-full w-full items-center justify-center px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none cursor-pointer">
                       <span className="mr-2 font-medium">
                         {selectedCurrencyCode || baseCurrency}
                       </span>
                       <ChevronDown
-                        className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
+                        className={`h-5 w-5 text-gray-400 dark:text-gray-500 transition-transform duration-200 ${
                           open ? "rotate-180" : ""
                         }`}
                       />
                     </Listbox.Button>
 
-                    <Listbox.Options className="absolute right-0 top-full z-30 mt-1 w-32 rounded-xl border border-gray-200 bg-white py-1 shadow-lg">
+                    <Listbox.Options className="absolute right-0 top-full z-30 mt-1 w-32 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-1 shadow-lg">
                       {currencies.map((curr) => (
                         <Listbox.Option
                           key={curr.id}
@@ -254,8 +254,8 @@ export default function WithdrawMoney({
                           className={({ active }) =>
                             `relative cursor-pointer select-none px-4 py-2 text-sm ${
                               active
-                                ? "bg-emerald-50 text-emerald-700"
-                                : "text-gray-900"
+                                ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
+                                : "text-gray-900 dark:text-gray-100"
                             }`
                           }
                         >
@@ -273,16 +273,16 @@ export default function WithdrawMoney({
         </div>
 
         {/* Info Box */}
-        <div className="rounded-xl bg-gray-50 px-4 py-3 text-sm space-y-2">
-          <p className="flex justify-between text-gray-600">
+        <div className="rounded-xl bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-sm space-y-2">
+          <p className="flex justify-between text-gray-600 dark:text-gray-400">
             <span>Available Balance</span>
-            <span className="font-medium text-gray-800">
+            <span className="font-medium text-gray-800 dark:text-gray-200">
               {userBalance} {baseCurrency}
             </span>
           </p>
-          <p className="flex justify-between text-gray-600">
+          <p className="flex justify-between text-gray-600 dark:text-gray-400">
             <span>Charge</span>
-            <span className="font-medium text-gray-800">{chargeText}</span>
+            <span className="font-medium text-gray-800 dark:text-gray-200">{chargeText}</span>
           </p>
         </div>
 
@@ -290,7 +290,7 @@ export default function WithdrawMoney({
         <div className="flex-1" />
 
         {/* Divider */}
-        <div className="border-t border-dashed border-gray-200" />
+        <div className="border-t border-dashed border-gray-200 dark:border-gray-700" />
 
         {/* Action Button */}
         <div className="space-y-3">
@@ -299,10 +299,11 @@ export default function WithdrawMoney({
             disabled={submitLoading}
             className={`w-full rounded-xl px-4 py-4 text-base font-bold text-white transition cursor-pointer
               bg-[linear-gradient(76.84deg,#0EBE98_-2.66%,#50C631_105.87%)]
+              dark:bg-[linear-gradient(76.84deg,#0D9A7E_-2.66%,#3E9F28_105.87%)]
               hover:opacity-90
               ${submitLoading ? "opacity-70 cursor-wait" : ""}
               disabled:opacity-50 disabled:cursor-not-allowed
-              focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2`}
+              focus:outline-none focus:ring-2 focus:ring-emerald-400 dark:focus:ring-emerald-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900`}
           >
             {submitLoading ? "Processing..." : "Confirm"}
           </button>

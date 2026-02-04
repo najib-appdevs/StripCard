@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -177,9 +178,10 @@ function MyProfileCard() {
   /* ================= STYLES ================= */
 
   const inputClass =
-    "w-full px-4 py-3 border border-gray-300 rounded-lg placeholder:text-gray-500 text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-100 outline-none transition-all";
+    "w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg placeholder:text-gray-500 dark:placeholder:text-gray-400 text-gray-900 dark:text-gray-100 dark:bg-gray-800 focus:border-emerald-500 dark:focus:border-emerald-400 focus:ring-1 focus:ring-emerald-100 dark:focus:ring-emerald-500/30 outline-none transition-all";
 
-  const labelClass = "block text-sm font-medium text-gray-700 mb-2";
+  const labelClass =
+    "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2";
 
   /* ================= LOADING ================= */
 
@@ -189,50 +191,54 @@ function MyProfileCard() {
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-md p-6 max-w-4xl mx-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md dark:shadow-gray-950/50 p-6 max-w-4xl mx-auto">
         {/* HEADER */}
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-3">My Profile</h2>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3">
+            My Profile
+          </h2>
 
-          <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-5 py-2.5 rounded-full text-base font-medium shadow-sm">
+          <div className="inline-flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 px-5 py-2.5 rounded-full text-base font-medium shadow-sm">
             {userEmail}
           </div>
         </div>
 
         {/* PROFILE IMAGE */}
-        <div className="flex justify-center mb-8 relative">
-          <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg">
-            <img
-              src={imageFile ? URL.createObjectURL(imageFile) : profileImage}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <input
-            type="file"
-            accept="image/*"
-            ref={imageInputRef}
-            onChange={handleImageChange}
-            className="hidden"
-            id="profile-image-upload"
-          />
-          <label
-            htmlFor="profile-image-upload"
-            className="absolute bottom-0 right-0 -mr-2 -mb-2 p-2 bg-emerald-500 text-white rounded-full cursor-pointer hover:bg-emerald-600 transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-4 3 3 2-2 3 3z"
-                clipRule="evenodd"
+        <div className="flex justify-center mb-8">
+          <div className="relative inline-block">
+            <div className="w-24 h-24 rounded-full overflow-hidden shadow-lg dark:shadow-gray-900/60">
+              <img
+                src={imageFile ? URL.createObjectURL(imageFile) : profileImage}
+                alt="Profile"
+                className="w-full h-full object-cover"
               />
-            </svg>
-          </label>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              ref={imageInputRef}
+              onChange={handleImageChange}
+              className="hidden"
+              id="profile-image-upload"
+            />
+            <label
+              htmlFor="profile-image-upload"
+              className="absolute bottom-0 right-0 p-1.5 bg-emerald-500 text-white rounded-full cursor-pointer hover:bg-emerald-600 transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-4 3 3 2-2 3 3z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </label>
+          </div>
         </div>
 
         {/* FORM */}
@@ -241,7 +247,7 @@ function MyProfileCard() {
           className="grid grid-cols-1 md:grid-cols-2 gap-5"
         >
           <div>
-            <label className={labelClass}>First Name *</label>
+            <label className={labelClass}>First Name <span className="text-red-500">*</span></label>
             <input
               name="firstName"
               value={profileData.firstName}
@@ -252,7 +258,7 @@ function MyProfileCard() {
           </div>
 
           <div>
-            <label className={labelClass}>Last Name *</label>
+            <label className={labelClass}>Last Name <span className="text-red-500">*</span></label>
             <input
               name="lastName"
               value={profileData.lastName}
@@ -264,16 +270,16 @@ function MyProfileCard() {
 
           {/* COUNTRY DROPDOWN */}
           <div className="relative">
-            <label className={labelClass}>Country *</label>
+            <label className={labelClass}>Country <span className="text-red-500">*</span></label>
             <button
               type="button"
               onClick={() => setIsCountryOpen(!isCountryOpen)}
-              className={`${inputClass} flex justify-between items-center bg-white cursor-pointer`}
+              className={`${inputClass} flex justify-between items-center bg-white dark:bg-gray-800 cursor-pointer`}
             >
               <span>{profileData.country || "Select country"}</span>
               <span>
                 <svg
-                  className={`w-5 h-5 text-gray-500 transition-transform ${
+                  className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform ${
                     isCountryOpen ? "rotate-180" : ""
                   }`}
                   fill="none"
@@ -291,12 +297,12 @@ function MyProfileCard() {
             </button>
 
             {isCountryOpen && (
-              <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+              <div className="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg dark:shadow-gray-950/60 max-h-60 overflow-y-auto">
                 {countries.map((country) => (
                   <div
                     key={country.id}
                     onClick={() => handleCountrySelect(country)}
-                    className="px-4 py-3 hover:bg-emerald-50 cursor-pointer text-gray-800 font-medium text-base transition-colors"
+                    className="px-4 py-3 hover:bg-emerald-50 dark:hover:bg-emerald-900/40 cursor-pointer text-gray-800 dark:text-gray-200 font-medium text-base transition-colors"
                   >
                     {country.name}
                   </div>
@@ -307,7 +313,7 @@ function MyProfileCard() {
 
           {/* PHONE */}
           <div>
-            <label className={labelClass}>Phone *</label>
+            <label className={labelClass}>Phone <span className="text-red-500">*</span></label>
             <input
               name="phone"
               value={
@@ -374,7 +380,7 @@ function MyProfileCard() {
             <button
               type="button"
               onClick={handleDeleteAccount}
-              className="px-8 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer font-semibold"
+              className="px-8 py-3 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-lg transition-colors cursor-pointer font-semibold"
             >
               Delete Account
             </button>
@@ -404,11 +410,11 @@ function MyProfileCard() {
       {/* DELETE CONFIRMATION MODAL */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-none p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 transform transition-all">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl dark:shadow-gray-950/70 max-w-md w-full p-6 transform transition-all">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 bg-red-100 dark:bg-red-950/60 rounded-full flex items-center justify-center">
                 <svg
-                  className="w-8 h-8 text-red-600"
+                  className="w-8 h-8 text-red-600 dark:text-red-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -423,11 +429,11 @@ function MyProfileCard() {
               </div>
             </div>
 
-            <h3 className="text-2xl font-semibold text-gray-900 text-center mb-3">
+            <h3 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 text-center mb-3">
               Delete Account?
             </h3>
 
-            <p className="text-gray-600 text-center mb-6">
+            <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
               Are you sure you want to delete your account? This action cannot
               be undone and all your data will be permanently removed.
             </p>
@@ -435,13 +441,13 @@ function MyProfileCard() {
             <div className="flex gap-3">
               <button
                 onClick={cancelDeleteAccount}
-                className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition-colors cursor-pointer"
+                className="flex-1 px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteAccount}
-                className="flex-1 px-6 py-3 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-colors cursor-pointer"
+                className="flex-1 px-6 py-3 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-lg font-semibold transition-colors cursor-pointer"
               >
                 Yes, Delete
               </button>

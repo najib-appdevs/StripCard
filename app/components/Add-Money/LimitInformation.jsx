@@ -35,7 +35,7 @@ const LimitInformation = ({
   // 🔹 Helper for display
   const show = (value) =>
     isLoading ? (
-      <span className="animate-pulse text-gray-400">--</span>
+      <span className="animate-pulse text-gray-400 dark:text-gray-500">--</span>
     ) : (
       `${value} ${walletCurrency}`
     );
@@ -69,9 +69,9 @@ const LimitInformation = ({
 
   return (
     <div>
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
         {/* Header */}
-        <div className="rounded-t-2xl bg-gray-900 px-6 py-4">
+        <div className="rounded-t-2xl bg-gray-900 dark:bg-gray-950 px-6 py-4">
           <h2 className="text-base text-center font-semibold text-white">
             Limit Information
           </h2>
@@ -81,15 +81,15 @@ const LimitInformation = ({
         <div className="p-6 space-y-4">
           {limits.map((item, index) => (
             <div key={index} className="flex items-start justify-between gap-4">
-              <span className="text-sm text-gray-500">{item.label}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-300">{item.label}</span>
 
               <span
                 className={`text-sm font-medium text-right ${
                   item.highlight === "success"
-                    ? "text-green-600"
+                    ? "text-green-600 dark:text-green-400"
                     : item.highlight === "info"
-                    ? "text-blue-600"
-                    : "text-gray-800"
+                    ? "text-blue-600 dark:text-blue-400"
+                    : "text-gray-800 dark:text-gray-200"
                 }`}
               >
                 {item.value}

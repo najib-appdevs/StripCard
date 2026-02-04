@@ -7,9 +7,9 @@ export default function PaymentInformation({
   if (!paymentInformations || Object.keys(paymentInformations).length === 0) {
     return (
       <div
-        className={`bg-gray-50 p-5 rounded-xl border border-gray-200 ${className}`}
+        className={`bg-gray-50 dark:bg-gray-800/60 p-5 rounded-xl border border-gray-200 dark:border-gray-700 ${className}`}
       >
-        <p className="text-gray-500 text-center">
+        <p className="text-gray-500 dark:text-gray-300 text-center">
           No payment information available
         </p>
       </div>
@@ -75,63 +75,63 @@ export default function PaymentInformation({
   // ────────────────────────────────────────────────
   return (
     <div
-      className={`bg-gray-50 p-6 rounded-2xl border border-gray-200 shadow-sm ${className}`}
+      className={`bg-gray-50 dark:bg-gray-800/60 p-6 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm ${className}`}
     >
-      <h3 className="text-lg font-semibold text-center text-gray-800 mb-5 border-b border-gray-200 pb-3">
+      <h3 className="text-lg font-semibold text-center text-gray-800 dark:text-gray-100 mb-5 border-b border-gray-200 dark:border-gray-700 pb-3">
         Payment Information
       </h3>
 
       <div className="space-y-4 text-sm">
         {/* <div className="flex justify-between">
-          <span className="text-gray-600">Transaction ID</span>
-          <span className="font-medium text-gray-900">{trx}</span>
+          <span className="text-gray-600 dark:text-gray-300">Transaction ID</span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">{trx}</span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-600">Gateway</span>
-          <span className="font-medium text-gray-900">
+          <span className="text-gray-600 dark:text-gray-300">Gateway</span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">
             {gatewayCurrencyName}
           </span>
         </div> */}
 
         <div className="flex justify-between">
-          <span className="text-gray-600">Entered Amount</span>
-          <span className="font-medium text-gray-900">
+          <span className="text-gray-600 dark:text-gray-300">Entered Amount</span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">
             {formatAmount(request_amount)} {extractCurrency(request_amount)}
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-600">Exchange Rate</span>
-          <span className="font-medium text-gray-900">{exchange_rate}</span>
+          <span className="text-gray-600 dark:text-gray-300">Exchange Rate</span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">{exchange_rate}</span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-600">Fees & Charges</span>
-          <span className="font-medium text-red-600">
+          <span className="text-gray-600 dark:text-gray-300">Fees & Charges</span>
+          <span className="font-medium text-red-600 dark:text-red-400">
             {formatAmount(total_charge)} {extractCurrency(total_charge)}
           </span>
         </div>
 
         <div className="flex justify-between pt-2">
-          <span className="text-gray-700 font-medium">Conversion Amount</span>
-          <span className="font-bold text-emerald-700 text-base">
+          <span className="text-gray-700 dark:text-gray-200 font-medium">Conversion Amount</span>
+          <span className="font-bold text-emerald-700 dark:text-emerald-400 text-base">
             {conversionAmount} {conversionCurrency}
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-700 font-medium">You Will Get</span>
-          <span className="font-bold text-emerald-600 text-lg">
+          <span className="text-gray-700 dark:text-gray-200 font-medium">You Will Get</span>
+          <span className="font-bold text-emerald-600 dark:text-emerald-400 text-lg">
             {formatAmount(will_get)} {extractCurrency(will_get)}
           </span>
         </div>
 
-        <div className="flex justify-between pt-3 border-t border-gray-200">
-          <span className="text-gray-700 font-medium">
+        <div className="flex justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
+          <span className="text-gray-700 dark:text-gray-200 font-medium">
             Total Payable Amount
           </span>
-          <span className="font-bold text-emerald-600 text-lg">
+          <span className="font-bold text-emerald-600 dark:text-emerald-400 text-lg">
             {formatAmount(payable_amount)} {extractCurrency(payable_amount)}
           </span>
         </div>

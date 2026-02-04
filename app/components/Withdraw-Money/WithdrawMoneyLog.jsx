@@ -64,17 +64,17 @@ const WithdrawMoneyLog = () => {
 
   if (error) {
     return (
-      <div className="mt-6 rounded-2xl border border-gray-200 bg-white shadow-sm min-h-[300px] flex items-center justify-center">
-        <p className="text-red-600">{error}</p>
+      <div className="mt-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm min-h-[300px] flex items-center justify-center">
+        <p className="text-red-600 dark:text-red-400">{error}</p>
       </div>
     );
   }
 
   return (
     <div className="mt-6">
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
         {/* Header */}
-        <div className="rounded-t-2xl bg-gray-900 px-6 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="rounded-t-2xl bg-gray-900 dark:bg-gray-950 px-6 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <h2 className="text-base font-semibold text-white">
             Withdraw Money Log
           </h2>
@@ -83,7 +83,7 @@ const WithdrawMoneyLog = () => {
           <div className="hidden md:flex flex-col gap-2 sm:flex-row md:gap-2">
             <Link
               href="/dashboard/transactions"
-              className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-white rounded-lg hover:text-gray-300 transition-colors w-full sm:w-auto"
+              className="cursor-pointer flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-white dark:text-gray-100 rounded-lg hover:text-gray-300 dark:hover:text-gray-300 transition-colors w-full sm:w-auto"
             >
               <span className="font-medium">View More</span>
             </Link>
@@ -93,7 +93,7 @@ const WithdrawMoneyLog = () => {
         {/* Scrollable Table Wrapper */}
         <div className="overflow-x-auto">
           {/* Table Header - Desktop */}
-          <div className="hidden md:grid min-w-[1000px] grid-cols-8 gap-4 px-6 py-3 bg-gray-50 text-sm font-semibold text-gray-600">
+          <div className="hidden md:grid min-w-[1000px] grid-cols-8 gap-4 px-6 py-3 bg-gray-50 dark:bg-gray-900 text-sm font-semibold text-gray-600 dark:text-gray-300">
             <span>Withdraw Money by</span>
             <span>Status</span>
             <span>Transaction ID</span>
@@ -105,9 +105,9 @@ const WithdrawMoneyLog = () => {
           </div>
 
           {/* Rows */}
-          <div className="divide-y min-w-[1000px]">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700 min-w-[1000px]">
             {logs.length === 0 ? (
-              <div className="px-6 py-10 text-center text-gray-500">
+              <div className="px-6 py-10 text-center text-gray-500 dark:text-gray-400">
                 No withdrawal transactions found
               </div>
             ) : (
@@ -117,7 +117,7 @@ const WithdrawMoneyLog = () => {
                   className="grid grid-cols-1 md:grid-cols-8 gap-3 px-6 py-4 text-sm"
                 >
                   {/* 1. Withdraw Money by */}
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
                     {log.withdrawBy}
                   </span>
 
@@ -136,10 +136,10 @@ const WithdrawMoneyLog = () => {
                     <span
                       className={
                         log.status === "Success"
-                          ? "text-green-600"
+                          ? "text-green-600 dark:text-green-400"
                           : log.status === "Pending"
-                            ? "text-yellow-600"
-                            : "text-red-600"
+                            ? "text-yellow-600 dark:text-yellow-400"
+                            : "text-red-600 dark:text-red-400"
                       }
                     >
                       {log.status}
@@ -147,22 +147,22 @@ const WithdrawMoneyLog = () => {
                   </span>
 
                   {/* 3. Transaction ID */}
-                  <span className="text-gray-600">{log.trxId}</span>
+                  <span className="text-gray-600 dark:text-gray-300">{log.trxId}</span>
 
                   {/* 4. Exchange Rate */}
-                  <span className="text-gray-600">{log.exchangeRate}</span>
+                  <span className="text-gray-600 dark:text-gray-300">{log.exchangeRate}</span>
 
                   {/* 5. Fees & Charges */}
-                  <span className="text-gray-600">{log.fees}</span>
+                  <span className="text-gray-600 dark:text-gray-300">{log.fees}</span>
 
                   {/* 6. Will Get */}
-                  <span className="text-gray-600">{log.willGet}</span>
+                  <span className="text-gray-600 dark:text-gray-300">{log.willGet}</span>
 
                   {/* 7. Current Balance */}
-                  <span className="text-gray-600">{log.currentBalance}</span>
+                  <span className="text-gray-600 dark:text-gray-300">{log.currentBalance}</span>
 
                   {/* 8. Time & Date */}
-                  <span className="text-gray-600">{log.date}</span>
+                  <span className="text-gray-600 dark:text-gray-300">{log.date}</span>
                 </div>
               ))
             )}
@@ -173,7 +173,7 @@ const WithdrawMoneyLog = () => {
         <div className="md:hidden px-6 py-4">
           <Link
             href="/dashboard/transactions"
-            className="cursor-pointer flex items-center justify-center gap-2 w-full rounded-xl border border-gray-300 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="cursor-pointer flex items-center justify-center gap-2 w-full rounded-xl border border-gray-300 dark:border-gray-600 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
           >
             <span className="font-medium">View More</span>
           </Link>

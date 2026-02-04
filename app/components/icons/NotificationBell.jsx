@@ -3,10 +3,15 @@ import { Bell } from "lucide-react";
 export default function NotificationBell() {
   return (
     <button
-      className="p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+      className={`
+        p-2 rounded-lg 
+        hover:bg-gray-100 dark:hover:bg-gray-800 
+        active:bg-gray-200 dark:active:bg-gray-700
+        transition-colors duration-150 cursor-pointer
+      `}
       aria-label="Notifications"
     >
-      <Bell size={20} className="text-black" />
+      <Bell size={20} className="text-gray-900 dark:text-gray-200" />
     </button>
   );
 }

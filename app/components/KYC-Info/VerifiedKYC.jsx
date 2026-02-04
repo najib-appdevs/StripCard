@@ -8,10 +8,10 @@ import { getKycInputFields, submitKyc } from "../../utils/api";
 import KycSkeleton from "./KycSkeleton";
 
 const KYC_STATUS_MAP = {
-  0: { label: "Unverified", color: "text-red-600" },
-  1: { label: "Verified", color: "text-green-600" },
-  2: { label: "Pending", color: "text-yellow-600" },
-  3: { label: "Rejected", color: "text-red-700" },
+  0: { label: "Unverified", color: "text-red-600 dark:text-red-400" },
+  1: { label: "Verified", color: "text-green-600 dark:text-green-400" },
+  2: { label: "Pending", color: "text-yellow-600 dark:text-yellow-400" },
+  3: { label: "Rejected", color: "text-red-700 dark:text-red-300" },
 };
 
 function classNames(...classes) {
@@ -64,9 +64,7 @@ export default function VerifiedKYC() {
         toast.error(errorMsg);
       } else {
         // This is your "Server Error" case
-        toast.error("Server Error", {
-          duration: 5000,
-        });
+        toast.error("Server Error", { duration: 5000 });
       }
     } catch (err) {
       toast.error("Something went wrong. Please check your connection", {
@@ -83,7 +81,7 @@ export default function VerifiedKYC() {
 
   if (!kycData) {
     return (
-      <p className="text-red-600 text-center font-medium">
+      <p className="text-red-600 dark:text-red-400 text-center font-medium">
         Failed to load KYC data.
       </p>
     );
@@ -92,10 +90,20 @@ export default function VerifiedKYC() {
   const status = KYC_STATUS_MAP[kycData.kyc_status];
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-md border border-gray-200">
+    <div
+      className="
+      max-w-2xl mx-auto 
+      p-6 
+      bg-white dark:bg-gray-800 
+      rounded-xl 
+      shadow-md dark:shadow-gray-900/40 
+      border border-gray-200 dark:border-gray-700
+      transition-colors
+    "
+    >
       {/* Header */}
-      <div className="mb-6 border-b pb-4">
-        <h2 className="text-2xl font-semibold text-gray-800">
+      <div className="mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
           KYC Verification
         </h2>
         <p className={`mt-2 text-sm font-semibold ${status.color}`}>
@@ -105,14 +113,30 @@ export default function VerifiedKYC() {
 
       {/* Success Message */}
       {success && (
-        <div className="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+        <div
+          className="
+          mb-4 p-4 
+          bg-green-50 dark:bg-green-900/30 
+          border border-green-200 dark:border-green-800/60 
+          text-green-700 dark:text-green-300 
+          rounded-lg
+        "
+        >
           {success}
         </div>
       )}
 
       {/* Error Messages */}
       {errors.length > 0 && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+        <div
+          className="
+          mb-4 p-4 
+          bg-red-50 dark:bg-red-900/30 
+          border border-red-200 dark:border-red-800/60 
+          text-red-700 dark:text-red-300 
+          rounded-lg
+        "
+        >
           <ul className="list-disc pl-5 space-y-1">
             {errors.map((err, i) => (
               <li key={i}>{err}</li>
@@ -126,9 +150,17 @@ export default function VerifiedKYC() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {kycData.input_fields.map((field, index) => (
             <div key={index}>
-              <label className="block mb-1 text-sm font-medium text-gray-700">
+              <label
+                className="
+                block mb-1 
+                text-sm font-medium 
+                text-gray-700 dark:text-gray-300
+              "
+              >
                 {field.label}
-                {field.required && <span className="text-red-500"> *</span>}
+                {field.required && (
+                  <span className="text-red-500 dark:text-red-400"> *</span>
+                )}
               </label>
 
               {field.type === "file" && (
@@ -141,7 +173,22 @@ export default function VerifiedKYC() {
                   onChange={(e) =>
                     handleChange(field.name, e.target.files?.[0] ?? null)
                   }
-                  className="w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-700 focus:ring-1 focus:ring-green-400 focus:outline-none cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                  className="
+                    w-full rounded-lg 
+                    border border-gray-300 dark:border-gray-600 
+                    bg-white dark:bg-gray-700 
+                    p-2.5 text-sm 
+                    text-gray-700 dark:text-gray-200 
+                    file:mr-4 file:py-2 file:px-4 
+                    file:rounded-lg file:border-0 
+                    file:text-sm file:font-semibold 
+                    file:bg-green-50 dark:file:bg-green-900/40 
+                    file:text-green-700 dark:file:text-green-300 
+                    hover:file:bg-green-100 dark:hover:file:bg-green-900/60
+                    focus:ring-1 focus:ring-green-400 dark:focus:ring-green-500 
+                    focus:outline-none cursor-pointer
+                    transition-colors
+                  "
                 />
               )}
 
@@ -154,10 +201,15 @@ export default function VerifiedKYC() {
                     <Listbox.Button
                       className={`
                         relative w-full cursor-pointer 
-                        rounded-lg border border-gray-300 
-                        bg-white py-2.5 pl-3 pr-10 
-                        text-left text-sm text-gray-700
-                        focus:outline-none focus:ring-1 focus:ring-green-400 focus:border-green-400
+                        rounded-lg border border-gray-300 dark:border-gray-600
+                        bg-white dark:bg-gray-700
+                        py-2.5 pl-3 pr-10 
+                        text-left text-sm 
+                        text-gray-700 dark:text-gray-200
+                        focus:outline-none focus:ring-1 
+                        focus:ring-green-400 dark:focus:ring-green-500 
+                        focus:border-green-400 dark:focus:border-green-500
+                        transition-colors
                       `}
                     >
                       <span className="block truncate">
@@ -167,7 +219,7 @@ export default function VerifiedKYC() {
                       </span>
                       <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
                         <ChevronDown
-                          className="h-5 w-5 text-gray-500"
+                          className="h-5 w-5 text-gray-500 dark:text-gray-400"
                           aria-hidden="true"
                         />
                       </span>
@@ -176,9 +228,12 @@ export default function VerifiedKYC() {
                     <Listbox.Options
                       className={`
                         absolute z-10 mt-1 max-h-60 w-full 
-                        overflow-auto rounded-lg bg-white py-1 
-                        text-base shadow-lg ring-1 ring-black/5 
+                        overflow-auto rounded-lg 
+                        bg-white dark:bg-gray-800 
+                        py-1 text-base 
+                        shadow-lg ring-1 ring-black/5 dark:ring-white/10
                         focus:outline-none sm:text-sm
+                        border border-gray-200 dark:border-gray-700
                       `}
                     >
                       {field.validation.options.map((option, i) => (
@@ -188,10 +243,12 @@ export default function VerifiedKYC() {
                           className={({ active, selected }) =>
                             classNames(
                               active
-                                ? "bg-green-50 text-green-900"
-                                : "text-gray-900",
-                              selected ? "font-semibold bg-green-100" : "",
-                              "relative cursor-pointer select-none py-2 pl-10 pr-4"
+                                ? "bg-green-50 dark:bg-green-900/40 text-green-900 dark:text-green-100"
+                                : "text-gray-900 dark:text-gray-200",
+                              selected
+                                ? "font-semibold bg-green-100 dark:bg-green-800/50"
+                                : "",
+                              "relative cursor-pointer select-none py-2 pl-10 pr-4",
                             )
                           }
                         >
@@ -200,13 +257,13 @@ export default function VerifiedKYC() {
                               <span
                                 className={classNames(
                                   selected ? "font-semibold" : "font-normal",
-                                  "block truncate"
+                                  "block truncate",
                                 )}
                               >
                                 {option.trim()}
                               </span>
                               {selected ? (
-                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-green-600">
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-green-600 dark:text-green-400">
                                   <svg
                                     className="h-5 w-5"
                                     viewBox="0 0 20 20"
@@ -234,12 +291,17 @@ export default function VerifiedKYC() {
           <button
             type="submit"
             disabled={submitting}
-            className={`w-full py-2.5 rounded-lg text-white font-semibold transition-all cursor-pointer flex items-center justify-center gap-2 btn-primary
+            className={`
+              w-full py-2.5 rounded-lg 
+              text-white font-semibold 
+              transition-all cursor-pointer 
+              flex items-center justify-center gap-2
               ${
                 submitting
-                  ? "opacity-90 cursor-wait"
-                  : "hover:opacity-90 active:opacity-80"
-              }`}
+                  ? "opacity-90 cursor-wait bg-green-600"
+                  : "bg-green-600 hover:bg-green-700 active:bg-green-800 dark:bg-green-700 dark:hover:bg-green-600 dark:active:bg-green-800"
+              }
+            `}
           >
             {submitting ? (
               <>
@@ -253,13 +315,13 @@ export default function VerifiedKYC() {
       )}
 
       {kycData.kyc_status === 2 && (
-        <p className="text-yellow-600 font-medium mt-4">
+        <p className="text-yellow-600 dark:text-yellow-400 font-medium mt-4">
           Your KYC is under review. Please wait for approval.
         </p>
       )}
 
       {kycData.kyc_status === 1 && (
-        <p className="text-green-600 font-medium mt-4">
+        <p className="text-green-600 dark:text-green-400 font-medium mt-4">
           Your KYC is verified successfully.
         </p>
       )}

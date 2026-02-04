@@ -73,17 +73,18 @@ function ChangePasswordCard() {
 
   // Reusable input class
   const inputClass =
-    "w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg placeholder:text-gray-500 text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-100 outline-none transition-all";
+    "w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-lg placeholder:text-gray-500 dark:placeholder:text-gray-400 text-gray-900 dark:text-gray-100 dark:bg-gray-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-100 dark:focus:border-emerald-400 dark:focus:ring-emerald-500/30 outline-none transition-all";
 
-  const labelClass = "block text-sm font-medium text-gray-700 mb-2";
+  const labelClass =
+    "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2";
 
   if (loading) {
     return <ChangePasswordSkeleton />;
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold text-gray-800 mb-8 text-center">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md dark:shadow-gray-950/50 p-6 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-8 text-center">
         Change Password
       </h2>
 
@@ -107,7 +108,7 @@ function ChangePasswordCard() {
             <button
               type="button"
               onClick={() => togglePasswordVisibility("current")}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition cursor-pointer"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition cursor-pointer"
               disabled={isSubmitting}
             >
               {showPasswords.current ? (
@@ -168,7 +169,7 @@ function ChangePasswordCard() {
             <button
               type="button"
               onClick={() => togglePasswordVisibility("new")}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition cursor-pointer"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition cursor-pointer"
               disabled={isSubmitting}
             >
               {showPasswords.new ? (
@@ -229,7 +230,7 @@ function ChangePasswordCard() {
             <button
               type="button"
               onClick={() => togglePasswordVisibility("confirm")}
-              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition cursor-pointer"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition cursor-pointer"
               disabled={isSubmitting}
             >
               {showPasswords.confirm ? (
