@@ -4,7 +4,7 @@ import { CheckCircle2, Eye, EyeOff, Lock, Mail, Shield } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import toast from "react-hot-toast";
 import { loginUser } from "../../utils/api.js";
@@ -19,17 +19,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
-
-  useEffect(() => {
-    const localToken = localStorage.getItem("auth_token");
-    const localUser = localStorage.getItem("user");
-    const sessionToken = sessionStorage.getItem("auth_token");
-    const sessionUser = sessionStorage.getItem("user");
-
-    if ((localToken && localUser) || (sessionToken && sessionUser)) {
-      router.push("/dashboard");
-    }
-  }, [router]);
 
   const getMessageString = (message) => {
     if (!message) return "";
@@ -92,9 +81,16 @@ export default function LoginPage() {
       if (rememberMe) {
         localStorage.setItem("auth_token", token);
         localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("email_verified", user?.email_verified);
+        localStorage.setItem("two_factor_verified", user?.two_factor_verified);
       } else {
         sessionStorage.setItem("auth_token", token);
         sessionStorage.setItem("user", JSON.stringify(user));
+        sessionStorage.setItem("email_verified", user?.email_verified);
+        sessionStorage.setItem(
+          "two_factor_verified",
+          user?.two_factor_verified,
+        );
       }
 
       // ====== 2FA Priority Check ======

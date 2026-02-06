@@ -1,73 +1,128 @@
 // "use client";
+
 // import { useRouter } from "next/navigation";
 // import { useEffect, useState } from "react";
 // import Loader from "../components/Loader";
 // import Navbar from "../components/Navbar";
 // import Sidebar from "../components/Sidebar";
+// import { DashboardProvider } from "../context/DashboardContext";
+// import { getUserDashboard } from "../utils/api";
 // import { checkAuthentication } from "../utils/auth";
 
 // export default function DashboardLayoutClient({ children }) {
 //   const [sidebarOpen, setSidebarOpen] = useState(false);
 //   const [isAuthenticated, setIsAuthenticated] = useState(false);
 //   const [isLoading, setIsLoading] = useState(true);
+//   const [dashboardData, setDashboardData] = useState(null);
 //   const router = useRouter();
 
 //   useEffect(() => {
-//     const checkAuth = () => {
+//     const checkAuthAndFetch = async () => {
 //       const isAuth = checkAuthentication();
 
 //       if (!isAuth) {
-//         router.push("/login");
-//         setIsAuthenticated(false);
-//       } else {
-//         setIsAuthenticated(true);
+//         router.replace("/login");
+//         return;
 //       }
 
-//       setIsLoading(false);
+//       // Read directly stored verification flags (they are strings in storage)
+//       const emailVerifiedStored =
+//         localStorage.getItem("email_verified") ||
+//         sessionStorage.getItem("email_verified");
+//       // console.log("Email_Verified",emailVerifiedStored);
+//       const twoFactorVerifiedStored =
+//         localStorage.getItem("two_factor_verified") ||
+//         sessionStorage.getItem("two_factor_verified");
+
+//       // If either is missing or explicitly 0 → redirect
+//       if (emailVerifiedStored === "0") {
+//         router.replace("/email-verify");
+//         return;
+//       }
+
+//       if (twoFactorVerifiedStored === "0") {
+//         router.replace("/GoogleTwoFactorAuth");
+//         return;
+//       }
+
+//       try {
+//         setIsLoading(true);
+//         const res = await getUserDashboard();
+
+//         setDashboardData(res.data);
+//         setIsAuthenticated(true);
+//       } catch (err) {
+//         if (err.response?.status === 400) {
+//           console.log("Email_Verified", emailVerifiedStored);
+//           if (emailVerifiedStored === "0") {
+//             router.replace("/email-verify");
+//             return;
+//           }
+
+//           if (twoFactorVerifiedStored === "0") {
+//             router.replace("/GoogleTwoFactorAuth");
+//             return;
+//           }
+//         }
+
+//         // Clean up
+//         localStorage.removeItem("auth_token");
+//         localStorage.removeItem("user");
+//         localStorage.removeItem("email_verified");
+//         localStorage.removeItem("two_factor_verified");
+//         sessionStorage.removeItem("auth_token");
+//         sessionStorage.removeItem("user");
+//         sessionStorage.removeItem("email_verified");
+//         sessionStorage.removeItem("two_factor_verified");
+
+//         router.replace("/login");
+//       } finally {
+//         setIsLoading(false);
+//       }
 //     };
 
-//     checkAuth();
+//     checkAuthAndFetch();
 //   }, [router]);
 
-//   // Show loader while checking authentication
+//   // Show loader while checking authentication / fetching data
 //   if (isLoading) {
 //     return (
-//       <div className="flex h-screen items-center justify-center bg-gray-50">
-//         <div className="text-center">
-//           <Loader />
-//         </div>
+//       <div className="flex items-center justify-center min-h-screen bg-gray-50">
+//         <Loader />
 //       </div>
 //     );
 //   }
 
-//   // If not authenticated, show nothing (will redirect)
-//   if (!isAuthenticated) {
-//     return (
-//       <div className="flex h-screen items-center justify-center bg-gray-50">
-//         <div className="text-center">
-//           <Loader />
-//         </div>
-//       </div>
-//     );
-//   }
+//   // Prepare context value
+//   const contextValue = {
+//     activeVirtualSystem: dashboardData?.active_virtual_system,
+//     user: dashboardData?.user,
+//     userWallet: dashboardData?.userWallet,
+//     moduleAccess: dashboardData?.module_access,
+//     transactions: dashboardData?.transactions,
+//     baseCurr: dashboardData?.base_curr,
+//     // Add more fields here if needed
+//   };
 
 //   return (
-//     <div className="flex h-screen bg-gray-50 overflow-hidden">
-//       {/* Sidebar */}
-//       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+//     <DashboardProvider value={contextValue}>
+//       <div className="flex h-screen bg-gray-50 dark:bg-gray-900/60 overflow-hidden">
+//         {/* Sidebar */}
+//         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-//       {/* Main Content */}
-//       <div className="flex-1 flex flex-col overflow-hidden">
-//         {/* Navbar */}
-//         <Navbar onMenuClick={() => setSidebarOpen(true)} />
+//         {/* Main Content */}
+//         <div className="flex-1 flex flex-col overflow-hidden">
+//           {/* Navbar */}
+//           <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
-//         {/* Page content */}
-//         <main className="flex-1 overflow-y-auto p-10">{children}</main>
+//           {/* Page content */}
+//           <main className="flex-1 overflow-y-auto p-10">{children}</main>
+//         </div>
 //       </div>
-//     </div>
+//     </DashboardProvider>
 //   );
 // }
-// ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
 
 "use client";
 
@@ -82,50 +137,82 @@ import { checkAuthentication } from "../utils/auth";
 
 export default function DashboardLayoutClient({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState(null);
+
   const router = useRouter();
 
   useEffect(() => {
     const checkAuthAndFetch = async () => {
-      const isAuth = checkAuthentication();
-
-      if (!isAuth) {
-        router.push("/login");
-        setIsAuthenticated(false);
-        setIsLoading(false);
+      /* =====================
+         Auth Token Check
+      ===================== */
+      if (!checkAuthentication()) {
+        router.replace("/login");
         return;
       }
 
-      setIsAuthenticated(true);
+      /* =====================
+         Get Stored User
+      ===================== */
+      const storedUser =
+        JSON.parse(localStorage.getItem("user")) ||
+        JSON.parse(sessionStorage.getItem("user"));
 
-      // Now fetch dashboard data after auth
+      if (!storedUser) {
+        router.replace("/login");
+        return;
+      }
+
+      /* =====================
+         Get Stored Flags
+      ===================== */
+      const emailVerified =
+        localStorage.getItem("email_verified") ||
+        sessionStorage.getItem("email_verified");
+
+      const twoFactorVerified =
+        localStorage.getItem("two_factor_verified") ||
+        sessionStorage.getItem("two_factor_verified");
+
+      /* =====================
+         Get 2FA Status (from user)
+      ===================== */
+      const twoFactorStatus = Number(storedUser.two_factor_status);
+
+      /* =====================
+         Email Check
+      ===================== */
+      if (emailVerified === "0") {
+        router.replace("/email-verify");
+        return;
+      }
+
+      /* =====================
+         2FA Check (MAIN FIX)
+      ===================== */
+      if (twoFactorStatus === 1 && twoFactorVerified === "0") {
+        router.replace("/GoogleTwoFactorAuth");
+        return;
+      }
+
+      /* =====================
+         Fetch Dashboard
+      ===================== */
       try {
+        setIsLoading(true);
+
         const res = await getUserDashboard();
 
-        if (!res?.data?.user) {
-          router.push("/login");
-          return;
-        }
-
-        const { email_verified = 0, kyc_verified = 0 } = res.data.user;
-
-        if (email_verified === 0) {
-          router.push("/email-verify");
-          return;
-        }
-
-        if (kyc_verified === 0) {
-          router.push("/GoogleTwoFactorAuth");
-          return;
-        }
-
-        // If all checks pass, store the data
         setDashboardData(res.data);
       } catch (err) {
-        console.log("Dashboard fetch error in layout:", err);
-        router.push("/login");
+        /* =====================
+           Cleanup
+        ===================== */
+        localStorage.clear();
+        sessionStorage.clear();
+
+        router.replace("/login");
       } finally {
         setIsLoading(false);
       }
@@ -134,44 +221,37 @@ export default function DashboardLayoutClient({ children }) {
     checkAuthAndFetch();
   }, [router]);
 
-  // Show loader while checking auth/fetching
-  if (isLoading || !dashboardData) {
+  /* =====================
+     Loader
+  ===================== */
+  if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <Loader />
       </div>
     );
   }
 
-  // If not authenticated, show nothing (will redirect)
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  // Extract key fields for context
+  /* =====================
+     Context
+  ===================== */
   const contextValue = {
-    activeVirtualSystem: dashboardData.active_virtual_system,
-    user: dashboardData.user,
-    userWallet: dashboardData.userWallet,
-    moduleAccess: dashboardData.module_access,
-    transactions: dashboardData.transactions,
-    baseCurr: dashboardData.base_curr,
-    // Add more if needed, e.g., pusher_credentials: dashboardData.pusher_credentials,
-    // But avoid providing the FULL res.data to prevent huge context
+    activeVirtualSystem: dashboardData?.active_virtual_system,
+    user: dashboardData?.user,
+    userWallet: dashboardData?.userWallet,
+    moduleAccess: dashboardData?.module_access,
+    transactions: dashboardData?.transactions,
+    baseCurr: dashboardData?.base_curr,
   };
 
   return (
     <DashboardProvider value={contextValue}>
       <div className="flex h-screen bg-gray-50 dark:bg-gray-900/60 overflow-hidden">
-        {/* Sidebar */}
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-        {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Navbar */}
           <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
-          {/* Page content */}
           <main className="flex-1 overflow-y-auto p-10">{children}</main>
         </div>
       </div>

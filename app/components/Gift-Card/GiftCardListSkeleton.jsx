@@ -3,11 +3,11 @@ const GiftCardListSkeleton = () => {
     <div className="animate-pulse">
       {/* Header Skeleton */}
       <div className="flex items-center justify-between mb-6">
-        <div className="h-6 w-40 bg-gray-200 rounded" />
+        <div className="h-6 w-40 bg-gray-200 dark:bg-gray-700 rounded" />
 
         <div className="flex gap-3">
-          <div className="h-10 w-52 bg-gray-200 rounded-lg" />
-          <div className="h-10 w-24 bg-gray-200 rounded-lg" />
+          <div className="h-10 w-52 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+          <div className="h-10 w-24 bg-gray-200 dark:bg-gray-700 rounded-lg" />
         </div>
       </div>
 
@@ -16,11 +16,11 @@ const GiftCardListSkeleton = () => {
         {[...Array(12)].map((_, i) => (
           <div
             key={i}
-            className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden"
+            className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm overflow-hidden"
           >
-            <div className="aspect-4/3 bg-gray-200" />
+            <div className="aspect-4/3 bg-gray-200 dark:bg-gray-700" />
             <div className="p-3">
-              <div className="h-4 w-3/4 mx-auto bg-gray-200 rounded" />
+              <div className="h-4 w-3/4 mx-auto bg-gray-200 dark:bg-gray-700 rounded" />
             </div>
           </div>
         ))}
@@ -29,7 +29,10 @@ const GiftCardListSkeleton = () => {
       {/* Pagination Skeleton */}
       <div className="flex justify-center gap-2">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="w-9 h-9 bg-gray-200 rounded-lg" />
+          <div
+            key={i}
+            className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-lg"
+          />
         ))}
       </div>
     </div>

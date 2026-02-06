@@ -68,6 +68,7 @@ export const useLogout = () => {
 
       localStorage.removeItem("auth_token");
       localStorage.removeItem("user");
+      localStorage.clear();
       sessionStorage.clear();
 
       router.push("/login");

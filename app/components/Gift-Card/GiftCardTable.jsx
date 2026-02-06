@@ -58,13 +58,13 @@ const GiftCardTable = () => {
   // ============================================
   if (giftCards.length === 0) {
     return (
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-8 text-center">
-        <p className="text-gray-600 mb-4">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm p-8 text-center">
+        <p className="text-gray-600 dark:text-gray-300 mb-4">
           No gift card transactions found yet
         </p>
         <Link
           href="/dashboard/gift-card/list"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 text-white font-semibold hover:bg-emerald-600 transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-semibold transition-colors cursor-pointer"
         >
           <svg
             className="w-5 h-5"
@@ -89,16 +89,16 @@ const GiftCardTable = () => {
   // Main Render
   // ============================================
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
       {/* ============================================ */}
       {/* Header Section */}
       {/* ============================================ */}
-      <div className="rounded-t-2xl bg-gray-900 px-6 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="rounded-t-2xl bg-gray-900 dark:bg-gray-950 px-6 py-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <h2 className="text-base font-semibold text-white">My Gift Card</h2>
 
         <Link
           href="/dashboard/gift-card/list"
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 text-white text-sm font-bold hover:bg-emerald-600 transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white text-sm font-bold transition-colors cursor-pointer"
         >
           <svg
             className="w-4 h-4"
@@ -123,20 +123,20 @@ const GiftCardTable = () => {
       <div className="overflow-x-auto hidden md:block">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-100 border-b border-gray-200">
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+            <tr className="bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Card Details
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Receiver Info
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Card Pricing
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+              <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Payment Details
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">
+              <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
                 Status
               </th>
             </tr>
@@ -145,7 +145,7 @@ const GiftCardTable = () => {
             {giftCards.map((card, index) => (
               <tr
                 key={card.trx_id || index}
-                className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors"
               >
                 {/* Card Details Column */}
                 <td className="px-6 py-4">
@@ -153,19 +153,25 @@ const GiftCardTable = () => {
                     <img
                       src={card.card_image}
                       alt={card.card_name}
-                      className="w-16 h-10 object-cover rounded border border-gray-200"
+                      className="w-16 h-10 object-cover rounded border border-gray-200 dark:border-gray-600"
                       onError={(e) =>
                         (e.target.src = "/images/placeholder-giftcard.png")
                       }
                     />
                     <div>
                       <div className="text-sm">
-                        <span className="text-gray-600">TRX ID:</span>{" "}
-                        <span className="text-gray-900">{card.trx_id}</span>
+                        <span className="text-gray-600 dark:text-gray-300">
+                          TRX ID:
+                        </span>{" "}
+                        <span className="text-gray-900 dark:text-gray-100">
+                          {card.trx_id}
+                        </span>
                       </div>
                       <div className="text-sm">
-                        <span className="text-gray-600">Card Name:</span>{" "}
-                        <span className="font-medium text-gray-900">
+                        <span className="text-gray-600 dark:text-gray-300">
+                          Card Name:
+                        </span>{" "}
+                        <span className="font-medium text-gray-900 dark:text-gray-100">
                           {card.card_name}
                         </span>
                       </div>
@@ -177,14 +183,18 @@ const GiftCardTable = () => {
                 <td className="px-6 py-4">
                   <div className="text-sm">
                     <div className="mb-1">
-                      <span className="text-gray-600">Receiver Email:</span>{" "}
-                      <span className="text-gray-900 break-all">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Receiver Email:
+                      </span>{" "}
+                      <span className="text-gray-900 dark:text-gray-100 break-all">
                         {card.receiver_email}
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Receiver Phone:</span>{" "}
-                      <span className="text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Receiver Phone:
+                      </span>{" "}
+                      <span className="text-gray-900 dark:text-gray-100">
                         {card.receiver_phone}
                       </span>
                     </div>
@@ -195,18 +205,26 @@ const GiftCardTable = () => {
                 <td className="px-6 py-4">
                   <div className="text-sm">
                     <div className="mb-1">
-                      <span className="text-gray-600">Unit Price:</span>{" "}
-                      <span className="text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Unit Price:
+                      </span>{" "}
+                      <span className="text-gray-900 dark:text-gray-100">
                         {card.card_init_price} {card.card_currency}
                       </span>
                     </div>
                     <div className="mb-1">
-                      <span className="text-gray-600">Quantity:</span>{" "}
-                      <span className="text-gray-900">{card.quantity}</span>
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Quantity:
+                      </span>{" "}
+                      <span className="text-gray-900 dark:text-gray-100">
+                        {card.quantity}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Total Price:</span>{" "}
-                      <span className="text-gray-900 font-medium">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Total Price:
+                      </span>{" "}
+                      <span className="text-gray-900 dark:text-gray-100 font-medium">
                         {card.card_total_price} {card.card_currency}
                       </span>
                     </div>
@@ -217,27 +235,35 @@ const GiftCardTable = () => {
                 <td className="px-6 py-4">
                   <div className="text-sm">
                     <div className="mb-1">
-                      <span className="text-gray-600">Exchange Rate:</span>{" "}
-                      <span className="text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Exchange Rate:
+                      </span>{" "}
+                      <span className="text-gray-900 dark:text-gray-100">
                         1 {card.card_currency} = {card.wallet_currency_rate}{" "}
                         {card.wallet_currency}
                       </span>
                     </div>
                     <div className="mb-1">
-                      <span className="text-gray-600">Payable Unit:</span>{" "}
-                      <span className="text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Payable Unit:
+                      </span>{" "}
+                      <span className="text-gray-900 dark:text-gray-100">
                         {card.payable_unit_price} {card.wallet_currency}
                       </span>
                     </div>
                     <div className="mb-1">
-                      <span className="text-gray-600">Charge:</span>{" "}
-                      <span className="text-gray-900">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Charge:
+                      </span>{" "}
+                      <span className="text-gray-900 dark:text-gray-100">
                         {card.payable_charge} {card.wallet_currency}
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Total Payable:</span>{" "}
-                      <span className="text-gray-900 font-semibold">
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Total Payable:
+                      </span>{" "}
+                      <span className="text-gray-900 dark:text-gray-100 font-semibold">
                         {card.total_payable} {card.wallet_currency}
                       </span>
                     </div>
@@ -249,17 +275,17 @@ const GiftCardTable = () => {
                   <span
                     className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
                       card.status === "1"
-                        ? "bg-green-100 text-green-800"
+                        ? "bg-green-100 text-green-800 dark:bg-green-900/60 dark:text-green-300"
                         : card.status === "0"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-red-100 text-red-700"
+                          ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300"
+                          : "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"
                     }`}
                   >
                     {card.status === "1"
                       ? "Success"
                       : card.status === "0"
-                      ? "Pending"
-                      : "Failed"}
+                        ? "Pending"
+                        : "Failed"}
                   </span>
                 </td>
               </tr>
@@ -271,34 +297,34 @@ const GiftCardTable = () => {
       {/* ============================================ */}
       {/* Mobile View */}
       {/* ============================================ */}
-      <div className="md:hidden divide-y">
+      <div className="md:hidden divide-y divide-gray-200 dark:divide-gray-700">
         {giftCards.map((card, index) => (
           <div key={card.trx_id || index} className="px-6 py-4 space-y-3">
             {/* Transaction ID */}
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-gray-600">
+              <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">
                 TRX ID
               </span>
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                 {card.trx_id}
               </span>
             </div>
 
             {/* Card Image and Name */}
-            <div className="flex items-center gap-3 pb-3 border-b border-gray-100">
+            <div className="flex items-center gap-3 pb-3 border-b border-gray-100 dark:border-gray-700">
               <img
                 src={card.card_image}
                 alt={card.card_name}
-                className="w-12 h-12 rounded-lg object-cover border border-gray-200"
+                className="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-gray-600"
                 onError={(e) =>
                   (e.target.src = "/images/placeholder-giftcard.png")
                 }
               />
               <div>
-                <div className="font-medium text-gray-900">
+                <div className="font-medium text-gray-900 dark:text-gray-100">
                   {card.card_name}
                 </div>
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-gray-600 dark:text-gray-300">
                   Qty: {card.quantity}
                 </div>
               </div>
@@ -307,39 +333,51 @@ const GiftCardTable = () => {
             {/* Card Information Grid */}
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>
-                <div className="text-xs text-gray-600">Receiver Email</div>
-                <div className="text-gray-900 text-xs break-all">
+                <div className="text-xs text-gray-600 dark:text-gray-300">
+                  Receiver Email
+                </div>
+                <div className="text-gray-900 dark:text-gray-100 text-xs break-all">
                   {card.receiver_email}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-gray-600">Phone</div>
-                <div className="text-gray-900 text-xs">
+                <div className="text-xs text-gray-600 dark:text-gray-300">
+                  Phone
+                </div>
+                <div className="text-gray-900 dark:text-gray-100 text-xs">
                   {card.receiver_phone}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-gray-600">Total Price</div>
-                <div className="text-gray-900 font-medium">
+                <div className="text-xs text-gray-600 dark:text-gray-300">
+                  Total Price
+                </div>
+                <div className="text-gray-900 dark:text-gray-100 font-medium">
                   {card.card_total_price} {card.card_currency}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-gray-600">Total Payable</div>
-                <div className="text-gray-900 font-semibold">
+                <div className="text-xs text-gray-600 dark:text-gray-300">
+                  Total Payable
+                </div>
+                <div className="text-gray-900 dark:text-gray-100 font-semibold">
                   {card.total_payable} {card.wallet_currency}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-gray-600">Rate</div>
-                <div className="text-gray-900 text-xs">
+                <div className="text-xs text-gray-600 dark:text-gray-300">
+                  Rate
+                </div>
+                <div className="text-gray-900 dark:text-gray-100 text-xs">
                   1 {card.card_currency} ≈ {card.wallet_currency_rate}{" "}
                   {card.wallet_currency}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-gray-600">Charge</div>
-                <div className="text-gray-900">
+                <div className="text-xs text-gray-600 dark:text-gray-300">
+                  Charge
+                </div>
+                <div className="text-gray-900 dark:text-gray-100">
                   {card.payable_charge} {card.wallet_currency}
                 </div>
               </div>
@@ -350,17 +388,17 @@ const GiftCardTable = () => {
               <span
                 className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
                   card.status === "1"
-                    ? "bg-green-100 text-green-800"
+                    ? "bg-green-100 text-green-800 dark:bg-green-900/60 dark:text-green-300"
                     : card.status === "0"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : "bg-red-100 text-red-700"
+                      ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-300"
+                      : "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"
                 }`}
               >
                 {card.status === "1"
                   ? "Success"
                   : card.status === "0"
-                  ? "Pending"
-                  : "Failed"}
+                    ? "Pending"
+                    : "Failed"}
               </span>
             </div>
           </div>
@@ -370,10 +408,10 @@ const GiftCardTable = () => {
       {/* ============================================ */}
       {/* Mobile Bottom Link */}
       {/* ============================================ */}
-      <div className="md:hidden px-6 py-4 border-t">
+      <div className="md:hidden px-6 py-4 border-t border-gray-200 dark:border-gray-700">
         <Link
           href="/dashboard/gift-card/list"
-          className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-500 text-white py-2 text-sm font-bold hover:bg-emerald-600 transition-colors cursor-pointer"
+          className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white py-2 text-sm font-bold transition-colors cursor-pointer"
         >
           <svg
             className="w-4 h-4"

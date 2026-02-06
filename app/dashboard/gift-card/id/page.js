@@ -77,7 +77,7 @@ export default function GiftCardDetailPage() {
           minAmount: Number(product.minRecipientDenomination) || 0,
           maxAmount: Number(product.maxRecipientDenomination) || 0,
           fixedRecipientDenominations: Array.isArray(
-            product.fixedRecipientDenominations
+            product.fixedRecipientDenominations,
           )
             ? product.fixedRecipientDenominations.map(Number)
             : [],
@@ -87,7 +87,7 @@ export default function GiftCardDetailPage() {
             minAmount: Number(product.minRecipientDenomination) || 0,
             maxAmount: Number(product.maxRecipientDenomination) || 0,
             fixedDenominations: Array.isArray(
-              product.fixedRecipientDenominations
+              product.fixedRecipientDenominations,
             )
               ? product.fixedRecipientDenominations.map(Number)
               : [],

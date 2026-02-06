@@ -19,6 +19,25 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Interceptor for handling 401 Unauthorized responses
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("jwtToken"); // sessionStorage.removeItem("jwtToken"); // Removed as per task
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("email_verified");
+      localStorage.removeItem("sms_verified");
+      localStorage.removeItem("two_factor_verified");
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("user");
+
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  },
+);
+
 export const loginUser = async (credentials) => {
   try {
     const { data } = await api.post("/user/login", credentials);

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { getAllGiftCards, searchGiftCardsByCountry } from "../../utils/api";
 import GiftCardListSkeleton from "./GiftCardListSkeleton";
 
-const GiftCardList = () => {
+const GiftCardListTwo = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -13,7 +13,6 @@ const GiftCardList = () => {
   // STATE MANAGEMENT
   // ============================================================
 
-  // Read initial country from URL (persists on reload)
   const initialCountry = searchParams.get("country") || "all";
 
   const [selectedCountry, setSelectedCountry] = useState(initialCountry);
@@ -60,7 +59,6 @@ const GiftCardList = () => {
       setLastPage(productsData.last_page || 1);
       setPaginationLinks(productsData.links || []);
 
-      // Load countries only once
       if (countries.length === 0) {
         const formattedCountries = [
           { id: 0, name: "All Countries", iso2: "all" },
@@ -83,7 +81,6 @@ const GiftCardList = () => {
   // EFFECTS
   // ============================================================
 
-  // Load on mount + when page changes in URL
   useEffect(() => {
     const countryFromUrl = searchParams.get("country")?.toLowerCase() || "all";
     const pageFromUrl = Number(searchParams.get("page")) || 1;
@@ -107,7 +104,7 @@ const GiftCardList = () => {
     } else {
       newParams.set("country", pendingCountry.toUpperCase());
     }
-    newParams.set("page", "1"); // reset to page 1 on new search
+    newParams.set("page", "1");
 
     router.push(`?${newParams.toString()}`);
     setIsOpen(false);
@@ -123,7 +120,10 @@ const GiftCardList = () => {
   };
 
   const handleCardClick = (card) => {
-    router.push(`/dashboard/gift-card/${card.productId}`);
+    const newParams = new URLSearchParams();
+    newParams.set("productId", card.productId);
+
+    router.push(`/dashboard/gift-card/ProductDetails?${newParams.toString()}`);
   };
 
   // ============================================================
@@ -348,4 +348,4 @@ const GiftCardList = () => {
   );
 };
 
-export default GiftCardList;
+export default GiftCardListTwo;

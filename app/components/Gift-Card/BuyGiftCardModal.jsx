@@ -80,7 +80,7 @@ const BuyGiftCardModal = ({ isOpen, onClose, purchaseDetails, card }) => {
 
       if (response?.message?.success) {
         toast.success(
-          response.message.success[0] || "Gift card order placed successfully!"
+          response.message.success[0] || "Gift card order placed successfully!",
         );
         onClose();
         router.push("/dashboard/gift-card"); // Redirect after success
@@ -105,12 +105,12 @@ const BuyGiftCardModal = ({ isOpen, onClose, purchaseDetails, card }) => {
   // ==========================================
   return (
     <div className="fixed inset-0 bg-black/45 backdrop-blur-none flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative max-h-screen overflow-y-auto">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-lg w-full p-6 relative max-h-screen overflow-y-auto border border-gray-200 dark:border-gray-700">
         {/* CLOSE BUTTON */}
         <button
           onClick={onClose}
           disabled={loading}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 cursor-pointer"
+          className="absolute top-4 right-4 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50 cursor-pointer"
         >
           <svg
             className="w-6 h-6"
@@ -128,78 +128,98 @@ const BuyGiftCardModal = ({ isOpen, onClose, purchaseDetails, card }) => {
         </button>
 
         {/* MODAL TITLE */}
-        <h3 className="text-2xl font-bold text-gray-900 mb-6">Buy Gift Card</h3>
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+          Buy Gift Card
+        </h3>
 
         {/* PURCHASE SUMMARY SECTION */}
         <div className="space-y-4 mb-6">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Product Name:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-gray-300">
+              Product Name:
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {purchaseDetails.productName}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Receiver Email:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-gray-300">
+              Receiver Email:
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {purchaseDetails.receiverEmail || "N/A"}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Receiver Country:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-gray-300">
+              Receiver Country:
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {purchaseDetails.country || "N/A"}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Receiver Phone:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-gray-300">
+              Receiver Phone:
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {purchaseDetails.phone || "N/A"}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">From Name:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-gray-300">From Name:</span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {purchaseDetails.fromName || "N/A"}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Unit Price:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-gray-300">
+              Unit Price:
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {purchaseDetails.amount.toFixed(4)} {recipientCurrency}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Quantity:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-gray-300">Quantity:</span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {purchaseDetails.quantity}
             </span>
           </div>
-          <div className="flex justify-between text-lg font-bold border-t pt-3">
-            <span className="text-gray-800">Total Price:</span>
-            <span className="text-emerald-600">
+          <div className="flex justify-between text-lg font-bold border-t pt-3 border-gray-200 dark:border-gray-700">
+            <span className="text-gray-800 dark:text-gray-200">
+              Total Price:
+            </span>
+            <span className="text-emerald-600 dark:text-emerald-400">
               {totalRecipientAmount.toFixed(4)} {recipientCurrency}
             </span>
           </div>
         </div>
 
         {/* CONVERSION & FEES SECTION */}
-        <div className="bg-gray-50 rounded-xl p-4 space-y-3 mb-6">
+        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 space-y-3 mb-6 border border-gray-200 dark:border-gray-700">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Exchange Rate:</span>
-            <span className="font-medium text-gray-900">
+            <span className="text-gray-600 dark:text-gray-300">
+              Exchange Rate:
+            </span>
+            <span className="font-medium text-gray-900 dark:text-gray-100">
               1 {recipientCurrency} = {exchangeRate.toFixed(4)} {walletCurrency}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Conversion Amount:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-gray-300">
+              Conversion Amount:
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {walletSymbol}
               {convertedAmount} {walletCurrency}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Total Fees & Charges:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-gray-300">
+              Total Fees & Charges:
+            </span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {walletSymbol}
               {fixedFee.toFixed(4)} + {percentFee.toFixed(4)}% = {walletSymbol}
               {totalFees} {walletCurrency}
@@ -207,31 +227,39 @@ const BuyGiftCardModal = ({ isOpen, onClose, purchaseDetails, card }) => {
           </div>
 
           {/* LIMITS SUBSECTION */}
-          <div className="border-t pt-3 space-y-2 text-sm">
+          <div className="border-t pt-3 space-y-2 text-sm border-gray-200 dark:border-gray-700">
             <div className="flex justify-between">
-              <span className="text-gray-600">Daily Limit:</span>
-              <span className="font-medium text-gray-900">
+              <span className="text-gray-600 dark:text-gray-300">
+                Daily Limit:
+              </span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">
                 {walletSymbol}
                 {dailyLimit.toFixed(4)} {walletCurrency}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Remaining Daily Limit:</span>
-              <span className="font-medium text-gray-900">
+              <span className="text-gray-600 dark:text-gray-300">
+                Remaining Daily Limit:
+              </span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">
                 {walletSymbol}
                 {remainingDaily.toFixed(4)} {walletCurrency}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Monthly Limit:</span>
-              <span className="font-medium text-gray-900">
+              <span className="text-gray-600 dark:text-gray-300">
+                Monthly Limit:
+              </span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">
                 {walletSymbol}
                 {monthlyLimit.toFixed(4)} {walletCurrency}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-600">Remaining Monthly Limit:</span>
-              <span className="font-medium text-gray-900">
+              <span className="text-gray-600 dark:text-gray-300">
+                Remaining Monthly Limit:
+              </span>
+              <span className="font-medium text-gray-900 dark:text-gray-100">
                 {walletSymbol}
                 {remainingMonthly.toFixed(4)} {walletCurrency}
               </span>
@@ -239,9 +267,11 @@ const BuyGiftCardModal = ({ isOpen, onClose, purchaseDetails, card }) => {
           </div>
 
           {/* TOTAL PAYABLE */}
-          <div className="flex justify-between text-lg font-bold pt-3 border-t">
-            <span className="text-gray-800">Total Payable Amount:</span>
-            <span className="text-emerald-600">
+          <div className="flex justify-between text-lg font-bold pt-3 border-t border-gray-200 dark:border-gray-700">
+            <span className="text-gray-800 dark:text-gray-200">
+              Total Payable Amount:
+            </span>
+            <span className="text-emerald-600 dark:text-emerald-400">
               {walletSymbol}
               {totalPayable} {walletCurrency}
             </span>
@@ -253,7 +283,7 @@ const BuyGiftCardModal = ({ isOpen, onClose, purchaseDetails, card }) => {
           <button
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 cursor-pointer"
+            className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 cursor-pointer"
           >
             Cancel
           </button>
@@ -262,8 +292,8 @@ const BuyGiftCardModal = ({ isOpen, onClose, purchaseDetails, card }) => {
             disabled={loading || !hasSufficientBalance}
             className={`flex-1 px-4 py-3 text-white font-semibold rounded-lg transition-all shadow-md hover:shadow-lg ${
               loading || !hasSufficientBalance
-                ? "btn-primary cursor-not-allowed"
-                : "btn-primary cursor-pointer"
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-linear-to-r from-emerald-500 to-green-600 dark:from-emerald-600 dark:to-green-700 hover:from-emerald-600 hover:to-green-700 dark:hover:from-emerald-700 dark:hover:to-green-800"
             }`}
           >
             {loading ? (

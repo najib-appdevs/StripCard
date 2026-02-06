@@ -61,7 +61,7 @@ export default function RegisterPage() {
 
       // Check if registration was successful based on the backend response structure
       const isSuccess = response?.message?.success?.some((msg) =>
-        msg.toLowerCase().includes("registration successful")
+        msg.toLowerCase().includes("registration successful"),
       );
 
       if (!isSuccess) {
@@ -84,7 +84,7 @@ export default function RegisterPage() {
       if (user) {
         sessionStorage.setItem("user", JSON.stringify(user));
       }
-
+      sessionStorage.setItem("email_verified", user?.email_verified);
       toast.success("Registration successful! Redirecting...");
 
       // Conditional redirect based on email_verified status

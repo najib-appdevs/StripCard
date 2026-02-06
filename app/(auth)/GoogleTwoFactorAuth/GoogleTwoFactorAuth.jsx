@@ -93,8 +93,25 @@ function GoogleTwoFactorAuth() {
       const response = await verifyGoogle2FA(code);
 
       // Handle success response
+      // After successful verification
       if (response?.message?.success?.length) {
         toast.success(response.message.success[0]);
+
+        // ────────────────────────────────────────────────
+        // Update two_factor_verified in the same storage where token is kept
+        // ────────────────────────────────────────────────
+        const token =
+          localStorage.getItem("auth_token") ||
+          sessionStorage.getItem("auth_token");
+
+        if (localStorage.getItem("auth_token")) {
+          // Remember me was checked → persistent storage
+          localStorage.setItem("two_factor_verified", "1");
+        } else if (sessionStorage.getItem("auth_token")) {
+          // Session-only
+          sessionStorage.setItem("two_factor_verified", "1");
+        }
+
         router.push("/dashboard");
         return;
       }
