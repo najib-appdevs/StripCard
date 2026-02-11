@@ -1,16 +1,11 @@
-import Link from "next/link";
+import RootHomePage from "./(Home)/Home/Page";
 
-function RootHomePage() {
+function page() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <Link
-        href="/dashboard"
-        className="px-5 py-2 btn-primary text-white rounded-md"
-      >
-        Go to Dashboard
-      </Link>
+    <div>
+      <RootHomePage />
     </div>
   );
 }
 
-export default RootHomePage;
+export default page;
