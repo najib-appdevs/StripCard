@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: {
     default: "StripCard",
-    template: "%s | StripCard",
+    template: "%s",
   },
   icons: {
     icon: "/favicon-white.png",

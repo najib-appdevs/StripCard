@@ -4,6 +4,10 @@ import TestimonialsSection from "../components/aboutPageSections/UserTestimonial
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 
+export const metadata = {
+  title: "StripCard - About",
+};
+
 export default function AboutPage() {
   return (
     <main>

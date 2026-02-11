@@ -2,6 +2,10 @@ import RecentAnnouncement from "../components/announcementPageSections/RecentAnn
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 
+export const metadata = {
+  title: "StripCard - Announcement",
+};
+
 function page() {
   return (
     <main>

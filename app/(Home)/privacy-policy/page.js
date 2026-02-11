@@ -2,6 +2,10 @@ import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import PrivacyPolicy from "../components/privacy-policy/PrivacyPolicy";
 
+export const metadata = {
+  title: "StripCard - Privacy Policy",
+};
+
 function page() {
   return (
     <main>

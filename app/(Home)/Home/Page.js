@@ -7,6 +7,10 @@ import ServiceProvide from "../components/homePageSections/ServiceProvide";
 import WhyChooseUs from "../components/homePageSections/WhyChooseUs";
 import Navbar from "../components/Navbar";
 
+export const metadata = {
+  title: "StripCard - Virtual Credit Card Solution ",
+};
+
 function RootHomePage() {
   return (
     <>

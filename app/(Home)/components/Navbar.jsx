@@ -4,12 +4,14 @@
 import { Globe, HelpCircle, Menu, Moon, Sun, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname(); // Get current route
 
   // Load dark mode preference from localStorage
   useEffect(() => {
@@ -50,6 +52,36 @@ export default function Navbar() {
     setIsMobileMenuOpen(false);
   };
 
+  // Check if link is active
+  const isActive = (path) => {
+    if (path === "/") {
+      return pathname === "/";
+    }
+    return pathname === path || pathname.startsWith(path);
+  };
+
+  // Get link classes based on active state
+  const getLinkClasses = (path) => {
+    const baseClasses =
+      "relative px-3 xl:px-4 py-2 text-sm xl:text-base font-medium transition-all duration-200 rounded-lg group";
+    const activeClasses = isActive(path)
+      ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-gray-800/50"
+      : "text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-800/50";
+
+    return `${baseClasses} ${activeClasses}`;
+  };
+
+  // Get mobile link classes based on active state
+  const getMobileLinkClasses = (path) => {
+    const baseClasses =
+      "block px-4 py-3 rounded-lg font-medium transition-all duration-200";
+    const activeClasses = isActive(path)
+      ? "bg-blue-50 dark:bg-gray-800/80 text-blue-600 dark:text-blue-400"
+      : "text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-gray-800/80 hover:text-blue-600 dark:hover:text-blue-400";
+
+    return `${baseClasses} ${activeClasses}`;
+  };
+
   return (
     <nav className="sticky top-0 z-50 w-full bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -72,33 +104,48 @@ export default function Navbar() {
 
           {/* Center: Navigation Links (Hidden on mobile and tablet) */}
           <div className="hidden lg:flex items-center space-x-1 xl:space-x-2">
-            <Link
-              href="/"
-              className="relative px-3 xl:px-4 py-2 text-sm xl:text-base font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 group"
-            >
+            <Link href="/" className={getLinkClasses("/")}>
               <span className="relative z-10">Home</span>
-              <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+              <span
+                className={`absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 transition-transform duration-300 origin-left ${
+                  isActive("/")
+                    ? "scale-x-100"
+                    : "scale-x-0 group-hover:scale-x-100"
+                }`}
+              />
             </Link>
-            <Link
-              href="/about"
-              className="relative px-3 xl:px-4 py-2 text-sm xl:text-base font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 group"
-            >
+            <Link href="/about" className={getLinkClasses("/about")}>
               <span className="relative z-10">About</span>
-              <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+              <span
+                className={`absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 transition-transform duration-300 origin-left ${
+                  isActive("/about")
+                    ? "scale-x-100"
+                    : "scale-x-0 group-hover:scale-x-100"
+                }`}
+              />
             </Link>
-            <Link
-              href="/services"
-              className="relative px-3 xl:px-4 py-2 text-sm xl:text-base font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 group"
-            >
+            <Link href="/services" className={getLinkClasses("/services")}>
               <span className="relative z-10">Services</span>
-              <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+              <span
+                className={`absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 transition-transform duration-300 origin-left ${
+                  isActive("/services")
+                    ? "scale-x-100"
+                    : "scale-x-0 group-hover:scale-x-100"
+                }`}
+              />
             </Link>
             <Link
               href="/announcement"
-              className="relative px-3 xl:px-4 py-2 text-sm xl:text-base font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 group"
+              className={getLinkClasses("/announcement")}
             >
               <span className="relative z-10">Announcement</span>
-              <span className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+              <span
+                className={`absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 transition-transform duration-300 origin-left ${
+                  isActive("/announcement")
+                    ? "scale-x-100"
+                    : "scale-x-0 group-hover:scale-x-100"
+                }`}
+              />
             </Link>
           </div>
 
@@ -170,28 +217,28 @@ export default function Navbar() {
             <Link
               href="/"
               onClick={closeMobileMenu}
-              className="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-200 font-medium hover:bg-blue-50 dark:hover:bg-gray-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200"
+              className={getMobileLinkClasses("/")}
             >
               Home
             </Link>
             <Link
               href="/about"
               onClick={closeMobileMenu}
-              className="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-200 font-medium hover:bg-blue-50 dark:hover:bg-gray-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200"
+              className={getMobileLinkClasses("/about")}
             >
               About
             </Link>
             <Link
               href="/services"
               onClick={closeMobileMenu}
-              className="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-200 font-medium hover:bg-blue-50 dark:hover:bg-gray-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200"
+              className={getMobileLinkClasses("/services")}
             >
               Services
             </Link>
             <Link
               href="/announcement"
               onClick={closeMobileMenu}
-              className="block px-4 py-3 rounded-lg text-gray-700 dark:text-gray-200 font-medium hover:bg-blue-50 dark:hover:bg-gray-800/80 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200"
+              className={getMobileLinkClasses("/announcement")}
             >
               Announcement
             </Link>
