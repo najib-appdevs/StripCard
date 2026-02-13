@@ -1055,3 +1055,17 @@ export const createSudoCards = async (payload) => {
     };
   }
 };
+
+// Get Remaining Limits
+export const getRemainingLimits = async (params) => {
+  try {
+    const { data } = await api.get("/user/get-remaining", { params });
+    return data;
+  } catch (error) {
+    console.error("Error fetching remaining limits:", error);
+    if (error.response?.data) {
+      return error.response.data;
+    }
+    return { message: { error: ["Failed to load remaining information"] } };
+  }
+};

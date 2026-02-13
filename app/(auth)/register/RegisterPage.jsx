@@ -53,19 +53,16 @@ export default function RegisterPage() {
         lastname: lastname.trim(),
         email: email.trim(),
         password,
-        agree: termsChecked ? 1 : 0, // Assuming backend expects 1/0; change to true/false if needed
-        // If backend requires captchaValue, add: recaptcha_token: captchaValue
+        agree: termsChecked ? 1 : 0,
       };
 
       const response = await registerUser(userData);
 
-      // Check if registration was successful based on the backend response structure
       const isSuccess = response?.message?.success?.some((msg) =>
         msg.toLowerCase().includes("registration successful"),
       );
 
       if (!isSuccess) {
-        // throw new Error("Registration was not successful");
         toast.error("Registration was not successful");
         console.log("Registration was not successful");
       }
@@ -74,12 +71,10 @@ export default function RegisterPage() {
       const user = response?.data?.user;
 
       if (!token) {
-        // throw new Error("No authentication token received from server");
         console.log("No authentication token received from server");
         return;
       }
 
-      // Store token and user data
       sessionStorage.setItem("auth_token", token);
       if (user) {
         sessionStorage.setItem("user", JSON.stringify(user));
@@ -87,7 +82,6 @@ export default function RegisterPage() {
       sessionStorage.setItem("email_verified", user?.email_verified);
       toast.success("Registration successful! Redirecting...");
 
-      // Conditional redirect based on email_verified status
       if (user?.email_verified === 1) {
         router.push("/dashboard");
       } else {
@@ -98,7 +92,6 @@ export default function RegisterPage() {
 
       let errorMessage = "Registration failed. Please try again.";
 
-      // Try to get meaningful error message from backend
       if (error.response?.data) {
         const backendData = error.response.data;
 
@@ -134,25 +127,38 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-emerald-50 via-teal-50 to-green-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8 border border-gray-100">
-        {/* Logo / Title */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 right-20 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 left-20 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl animate-pulse" />
+      </div>
+
+      {/* Grid Pattern Overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+      />
+
+      <div className="relative bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-lg p-8 md:p-10 border border-blue-100/50">
+        {/* Logo and Header */}
         <div className="text-center mb-8">
           <Image
             src="/logo-dark.png"
             alt="StripCard Logo"
             width={150}
             height={32}
-            className="mx-auto mb-2"
+            className="mx-auto mb-4"
           />
-          <div className="h-1 w-20 bg-linear-to-r from-emerald-400 to-green-400 mx-auto rounded-full"></div>
+          <div className="h-1 w-20 bg-gradient-to-r from-blue-600 to-indigo-600 mx-auto rounded-full"></div>
         </div>
 
-        {/* Main Heading */}
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-slate-900 mb-2">
           Create Your Account
         </h2>
-        <p className="text-center text-gray-500 text-sm mb-8">
+        <p className="text-center text-slate-600 text-sm mb-8">
           Sign up to get started with StripCard
         </p>
 
@@ -164,13 +170,13 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="firstName"
-                className="block text-sm font-semibold text-gray-700 mb-1"
+                className="block text-sm font-semibold text-slate-700 mb-2"
               >
                 First Name <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                  <User className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
                   type="text"
@@ -179,7 +185,7 @@ export default function RegisterPage() {
                   onChange={(e) => setFirstname(e.target.value)}
                   placeholder="Enter First Name"
                   required
-                  className="w-full pl-12 pr-4 py-3 border text-gray-900 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  className="w-full pl-12 pr-4 py-3 border-2 text-slate-900 border-slate-200 rounded-lg focus:outline-none focus:ring-none focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-slate-300"
                 />
               </div>
             </div>
@@ -188,13 +194,13 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="lastName"
-                className="block text-sm font-semibold text-gray-700 mb-1"
+                className="block text-sm font-semibold text-slate-700 mb-2"
               >
                 Last Name <span className="text-red-500">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                  <User className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
                   type="text"
@@ -203,7 +209,7 @@ export default function RegisterPage() {
                   onChange={(e) => setLastname(e.target.value)}
                   placeholder="Enter Last Name"
                   required
-                  className="w-full pl-12 pr-4 py-3 border text-gray-900 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  className="w-full pl-12 pr-4 py-3 border-2 text-slate-900 border-slate-200 rounded-lg focus:outline-none focus:ring-none focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-slate-300"
                 />
               </div>
             </div>
@@ -213,13 +219,13 @@ export default function RegisterPage() {
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-semibold text-gray-700 mb-1"
+              className="block text-sm font-semibold text-slate-700 mb-2"
             >
               Email Address <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Mail className="h-5 w-5 text-gray-400" />
+                <Mail className="h-5 w-5 text-slate-400" />
               </div>
               <input
                 type="email"
@@ -228,7 +234,7 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter Email Address"
                 required
-                className="w-full pl-12 pr-4 py-3 border text-gray-900 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full pl-12 pr-4 py-3 border-2 text-slate-900 border-slate-200 rounded-lg focus:outline-none focus:ring-none focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-slate-300"
               />
             </div>
           </div>
@@ -237,13 +243,13 @@ export default function RegisterPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-semibold text-gray-700 mb-1"
+              className="block text-sm font-semibold text-slate-700 mb-2"
             >
               Password <span className="text-red-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+                <Lock className="h-5 w-5 text-slate-400" />
               </div>
               <input
                 type={showPassword ? "text" : "password"}
@@ -252,12 +258,12 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Create a strong password"
                 required
-                className="w-full pl-12 pr-12 py-3 border text-gray-900 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full pl-12 pr-12 py-3 border-2 text-slate-900 border-slate-200 rounded-lg focus:outline-none focus:ring-none focus:ring-blue-500 focus:border-blue-500 transition-all hover:border-slate-300"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition-colors"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-500 hover:text-slate-700 transition-colors"
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -275,52 +281,56 @@ export default function RegisterPage() {
               id="terms"
               checked={termsChecked}
               onChange={(e) => setTermsChecked(e.target.checked)}
-              className="mt-0.5 h-5 w-5 text-emerald-600 rounded focus:ring-emerald-500 cursor-pointer"
+              className="mt-0.5 h-5 w-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
               required
             />
             <label
               htmlFor="terms"
-              className="text-sm text-gray-700 cursor-pointer"
+              className="text-sm text-slate-700 cursor-pointer"
             >
               I have agreed with{" "}
-              <a href="#" className="text-emerald-600 hover:text-emerald-700">
+              <a
+                href="#"
+                className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
+              >
                 Terms of Use
               </a>{" "}
               &{" "}
-              <a href="#" className="text-emerald-600 hover:text-emerald-700">
+              <a
+                href="#"
+                className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
+              >
                 Privacy Policy
-              </a>{" "}
+              </a>
             </label>
           </div>
 
-          {/* Enhanced reCAPTCHA Section */}
+          {/* reCAPTCHA Section */}
           <div className="space-y-3">
-            {/* Security Header */}
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-              <Shield className="h-4 w-4 text-emerald-600" />
+            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <Shield className="h-4 w-4 text-blue-600" />
               <span>Security Verification</span>
             </div>
 
-            {/* reCAPTCHA Widget - Centered */}
-            <ReCAPTCHA
-              sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" // Replace with real site key in production
-              onChange={onCaptchaChange}
-              onExpired={onCaptchaExpired}
-              theme="light"
-              size="normal"
-            />
+            <div className="flex justify-start">
+              <ReCAPTCHA
+                sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                onChange={onCaptchaChange}
+                onExpired={onCaptchaExpired}
+                theme="light"
+                size="normal"
+              />
+            </div>
 
-            {/* Success Indicator */}
             {captchaValue && (
-              <div className="mt-3 flex items-center justify-center gap-2 text-emerald-600 text-sm font-semibold">
+              <div className="flex items-center justify-center gap-2 text-green-600 text-sm font-semibold">
                 <CheckCircle2 className="h-4 w-4" />
                 <span>Verification successful</span>
               </div>
             )}
 
-            {/* Error Message */}
             {captchaError && !captchaValue && (
-              <div className="mt-3 flex items-center justify-center gap-2 text-red-600 text-sm font-semibold">
+              <div className="flex items-center justify-center gap-2 text-red-600 text-sm font-semibold">
                 <svg
                   className="h-4 w-4"
                   fill="none"
@@ -338,8 +348,7 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* Helper Text */}
-            <p className="text-xs text-gray-500 text-center">
+            <p className="text-xs text-slate-500 text-center">
               This helps us keep bots away and protect your account
             </p>
           </div>
@@ -348,19 +357,19 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading || !termsChecked}
-            className="w-full bg-linear-to-r from-emerald-500 to-green-500 text-white font-semibold py-3.5 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3.5 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 hover:scale-[1.02]"
           >
             {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
 
         {/* Bottom Links */}
-        <div className="mt-6 text-center text-sm text-gray-600 space-y-2">
+        <div className="mt-8 text-center text-sm text-slate-600 space-y-3">
           <p>
-            Don&apos;t have an account?{" "}
+            Already have an account?{" "}
             <Link
               href="/login"
-              className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors"
+              className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors"
             >
               Log In
             </Link>
@@ -370,7 +379,7 @@ export default function RegisterPage() {
             Go back to{" "}
             <Link
               href="/"
-              className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors"
+              className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors"
             >
               Home
             </Link>
