@@ -1,3 +1,5 @@
+import Footer from "../../(Home)/components/Footer";
+import Navbar from "../../(Home)/components/Navbar";
 import LoginPage from "./LoginPage";
 
 export const metadata = {
@@ -6,5 +8,11 @@ export const metadata = {
 };
 
 export default function Page() {
-  return <LoginPage />;
+  return (
+    <>
+      <Navbar />
+      <LoginPage />
+      <Footer />
+    </>
+  );
 }

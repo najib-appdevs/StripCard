@@ -135,17 +135,17 @@ function WhyChooseUs() {
   ];
 
   return (
-    <section className="relative w-full py-20 md:py-24 overflow-hidden bg-linear-to-br from-slate-50 via-white to-blue-50/30">
+    <section className="relative w-full py-20 md:py-24 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950/30">
       {/* Background Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-[500px] h-[500px] bg-linear-to-br from-blue-400/10 via-indigo-400/5 to-transparent rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute bottom-20 right-10 w-[600px] h-[600px] bg-linear-to-tl from-violet-400/10 via-purple-400/5 to-transparent rounded-full blur-3xl animate-pulse-slow [animation-delay:2s]" />
-        <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-linear-to-br from-cyan-400/8 to-transparent rounded-full blur-3xl animate-pulse-slow [animation-delay:1s]" />
+        <div className="absolute top-20 left-10 w-[500px] h-[500px] bg-gradient-to-br from-blue-400/10 via-indigo-400/5 to-transparent dark:from-blue-500/5 dark:via-indigo-500/3 dark:to-transparent rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute bottom-20 right-10 w-[600px] h-[600px] bg-gradient-to-tl from-violet-400/10 via-purple-400/5 to-transparent dark:from-violet-500/5 dark:via-purple-500/3 dark:to-transparent rounded-full blur-3xl animate-pulse-slow [animation-delay:2s]" />
+        <div className="absolute top-1/2 right-1/4 w-[400px] h-[400px] bg-gradient-to-br from-cyan-400/8 to-transparent dark:from-cyan-500/5 dark:to-transparent rounded-full blur-3xl animate-pulse-slow [animation-delay:1s]" />
       </div>
 
       {/* Grid Pattern */}
       <div
-        className="absolute inset-0 opacity-[0.02]"
+        className="absolute inset-0 opacity-[0.02] dark:opacity-[0.04]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234F46E5' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }}
@@ -154,26 +154,26 @@ function WhyChooseUs() {
       <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="max-w-3xl mb-16">
           {/* Section Badge */}
-          <div className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white/80 backdrop-blur-md shadow-xl shadow-blue-500/20 border border-white/50 hover:shadow-2xl hover:shadow-indigo-500/30 transition-all duration-300 mb-6">
+          <div className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white/80 dark:bg-gray-800/70 backdrop-blur-md shadow-xl shadow-blue-500/20 dark:shadow-blue-500/10 border border-white/50 dark:border-gray-700/50 hover:shadow-2xl hover:shadow-indigo-500/30 dark:hover:shadow-indigo-500/20 transition-all duration-300 mb-6">
             <div className="relative flex items-center justify-center">
-              <div className="absolute w-3 h-3 bg-linear-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse-slow" />
-              <div className="w-2 h-2 bg-white rounded-full" />
+              <div className="absolute w-3 h-3 bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-400 dark:to-indigo-400 rounded-full animate-pulse-slow" />
+              <div className="w-2 h-2 bg-white dark:bg-gray-900 rounded-full" />
             </div>
-            <span className="text-sm font-bold tracking-wide bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent uppercase">
+            <span className="text-sm font-bold tracking-wide bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-400 dark:to-violet-400 bg-clip-text text-transparent uppercase">
               Why Choose Us
             </span>
           </div>
 
           {/* Title */}
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-6 leading-tight">
             What Makes Us Your{" "}
-            <span className="bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
               Best Choice
             </span>
           </h2>
 
           {/* Description */}
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             Discover why we stand out with unparalleled services, innovative
             solutions, and a commitment to excellence. Our user-first approach
             ensures reliability, security, and satisfaction, making us the
@@ -186,17 +186,17 @@ function WhyChooseUs() {
           {features.map((feature, index) => (
             <div
               key={feature.id}
-              className="group relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl border border-white/50 transition-all duration-500 overflow-hidden hover:-translate-y-2 animate-fade-in-up"
+              className="group relative bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-3xl shadow-lg hover:shadow-2xl border border-white/50 dark:border-gray-700/50 transition-all duration-500 overflow-hidden hover:-translate-y-2 animate-fade-in-up"
               style={{ animationDelay: `${index * 100}ms` }}
             >
               {/* Gradient Background on Hover */}
               <div
-                className={`absolute inset-0 bg-linear-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
+                className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 transition-opacity duration-500`}
               />
 
               {/* Glowing Effect */}
               <div
-                className={`absolute inset-0 rounded-3xl bg-linear-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 blur-2xl transition-opacity duration-500`}
+                className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-10 blur-2xl dark:group-hover:opacity-15 transition-opacity duration-500`}
               />
 
               <div className="relative p-8 flex gap-6">
@@ -204,10 +204,10 @@ function WhyChooseUs() {
                 <div className="shrink-0">
                   <div className="relative">
                     <div
-                      className={`absolute inset-0 bg-linear-to-br ${feature.gradient} rounded-2xl opacity-20 blur-xl group-hover:blur-2xl group-hover:opacity-30 transition-all duration-500`}
+                      className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-2xl opacity-20 blur-xl group-hover:blur-2xl group-hover:opacity-30 dark:group-hover:opacity-40 transition-all duration-500`}
                     />
                     <div
-                      className={`relative w-16 h-16 bg-linear-to-br ${feature.gradient} rounded-2xl flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg`}
+                      className={`relative w-16 h-16 bg-gradient-to-br ${feature.gradient} rounded-2xl flex items-center justify-center text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg`}
                     >
                       {feature.icon}
                     </div>
@@ -216,23 +216,23 @@ function WhyChooseUs() {
 
                 {/* Content */}
                 <div className="flex-1 space-y-3">
-                  <h3 className="text-xl font-bold text-slate-900 group-hover:bg-linear-to-r group-hover:from-blue-600 group-hover:to-indigo-600 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-indigo-600 dark:group-hover:from-blue-400 dark:group-hover:to-indigo-400 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
 
                 {/* Corner Accent */}
                 <div
-                  className={`absolute top-0 right-0 w-24 h-24 bg-linear-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 blur-2xl transition-opacity duration-500`}
+                  className={`absolute top-0 right-0 w-24 h-24 bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 blur-2xl transition-opacity duration-500`}
                 />
               </div>
 
               {/* Bottom Border Accent */}
               <div
-                className={`absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+                className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
               />
             </div>
           ))}

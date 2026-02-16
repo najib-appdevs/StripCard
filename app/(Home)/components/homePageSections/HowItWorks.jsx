@@ -76,16 +76,16 @@ function HowItWorks() {
   ];
 
   return (
-    <section className="relative w-full py-20 md:py-24 overflow-hidden bg-white">
+    <section className="relative w-full py-20 md:py-24 overflow-hidden bg-white dark:bg-gray-950">
       {/* Subtle Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-40 right-0 w-[400px] h-[400px] bg-linear-to-bl from-blue-100/40 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-40 left-0 w-[500px] h-[500px] bg-linear-to-tr from-indigo-100/40 to-transparent rounded-full blur-3xl" />
+        <div className="absolute top-40 right-0 w-[400px] h-[400px] bg-gradient-to-bl from-blue-100/40 to-transparent dark:from-blue-900/10 dark:to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-40 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-indigo-100/40 to-transparent dark:from-indigo-900/10 dark:to-transparent rounded-full blur-3xl" />
       </div>
 
       {/* Subtle Dots Pattern */}
       <div
-        className="absolute inset-0 opacity-[0.015]"
+        className="absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
         style={{
           backgroundImage: `radial-gradient(circle, #4F46E5 1px, transparent 1px)`,
           backgroundSize: "30px 30px",
@@ -96,23 +96,23 @@ function HowItWorks() {
         {/* Header Section */}
         <div className="max-w-3xl mx-auto text-center mb-16">
           {/* Section Badge */}
-          <div className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-100 mb-6">
-            <div className="w-2 h-2 bg-linear-to-r from-blue-500 to-indigo-500 rounded-full animate-pulse-slow" />
-            <span className="text-sm font-bold tracking-wide bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent uppercase">
+          <div className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-100 dark:border-blue-800/50 mb-6">
+            <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 dark:from-blue-400 dark:to-indigo-400 rounded-full animate-pulse-slow" />
+            <span className="text-sm font-bold tracking-wide bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-400 dark:to-violet-400 bg-clip-text text-transparent uppercase">
               How It Works
             </span>
           </div>
 
           {/* Title */}
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-slate-100 mb-6 leading-tight">
             <span className="block">How It Works</span>
-            <span className="bg-linear-to-r from-blue-600 via-indigo-600 to-violet-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
               Step-by-Step Process Explained
             </span>
           </h2>
 
           {/* Description */}
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 leading-relaxed">
             Discover how StripCard empowers you with an easy step-by-step
             process to manage virtual cards, add funds, transfer money, and
             ensure secure transactions—all designed for convenience,
@@ -123,7 +123,7 @@ function HowItWorks() {
         {/* Steps Grid - 2 Columns with Process Flow Design */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10 relative">
           {/* Connecting Line (hidden on mobile) */}
-          <div className="hidden md:block absolute top-0 left-1/2 w-0.5 h-full bg-linear-to-b from-blue-200 via-indigo-200 to-violet-200 -translate-x-1/2 opacity-30" />
+          <div className="hidden md:block absolute top-0 left-1/2 w-0.5 h-full bg-gradient-to-b from-blue-200 via-indigo-200 to-violet-200 dark:from-blue-800 dark:via-indigo-800 dark:to-violet-800 -translate-x-1/2 opacity-30" />
 
           {steps.map((step, index) => {
             const isLeft = index % 2 === 0;
@@ -138,24 +138,24 @@ function HowItWorks() {
               >
                 {/* Step Number Badge - Positioned at center line on desktop */}
                 <div
-                  className={`absolute top-8 ${isLeft ? "md:right-0 md:-mr-6" : "md:left-0 md:-ml-6"} hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-linear-to-br ${step.gradient} text-white font-bold text-lg shadow-lg z-10`}
+                  className={`absolute top-8 ${isLeft ? "md:right-0 md:-mr-6" : "md:left-0 md:-ml-6"} hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br ${step.gradient} text-white font-bold text-lg shadow-lg z-10`}
                 >
                   {step.number}
                 </div>
 
                 {/* Card */}
-                <div className="relative bg-white rounded-2xl border-2 border-slate-100 shadow-md hover:shadow-xl transition-all duration-500 overflow-hidden group-hover:-translate-y-1">
+                <div className="relative bg-white dark:bg-gray-800 rounded-2xl border-2 border-slate-100 dark:border-gray-700 shadow-md hover:shadow-xl transition-all duration-500 overflow-hidden group-hover:-translate-y-1">
                   {/* Gradient Border Effect on Hover */}
                   <div
-                    className={`absolute inset-0 bg-linear-to-br ${step.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10`}
+                    className={`absolute inset-0 bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-100 dark:group-hover:opacity-70 transition-opacity duration-500 -z-10`}
                     style={{ padding: "2px", borderRadius: "1rem" }}
                   >
-                    <div className="w-full h-full bg-white rounded-2xl" />
+                    <div className="w-full h-full bg-white dark:bg-gray-800 rounded-2xl" />
                   </div>
 
                   {/* Subtle Gradient Overlay */}
                   <div
-                    className={`absolute inset-0 bg-linear-to-br ${step.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
+                    className={`absolute inset-0 bg-gradient-to-br ${step.gradient} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-15 transition-opacity duration-500`}
                   />
 
                   <div className="relative p-6 flex items-start gap-5">
@@ -164,12 +164,12 @@ function HowItWorks() {
                       <div className="relative">
                         {/* Glow Effect */}
                         <div
-                          className={`absolute inset-0 bg-linear-to-br ${step.gradient} rounded-xl opacity-20 blur-lg group-hover:opacity-40 group-hover:blur-xl transition-all duration-500`}
+                          className={`absolute inset-0 bg-gradient-to-br ${step.gradient} rounded-xl opacity-20 blur-lg group-hover:opacity-40 group-hover:blur-xl dark:group-hover:opacity-50 transition-all duration-500`}
                         />
 
                         {/* Icon Background */}
                         <div
-                          className={`relative w-16 h-16 bg-linear-to-br ${step.gradient} bg-opacity-10 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}
+                          className={`relative w-16 h-16 bg-gradient-to-br ${step.gradient} bg-opacity-10 dark:bg-opacity-20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}
                         >
                           <img
                             src={step.image}
@@ -179,7 +179,7 @@ function HowItWorks() {
                         </div>
 
                         {/* Mobile Step Number (inside icon on mobile) */}
-                        <div className="md:hidden absolute -top-2 -right-2 w-7 h-7 rounded-full bg-linear-to-br from-slate-700 to-slate-900 text-white text-xs font-bold flex items-center justify-center shadow-lg">
+                        <div className="md:hidden absolute -top-2 -right-2 w-7 h-7 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 dark:from-slate-600 dark:to-slate-800 text-white text-xs font-bold flex items-center justify-center shadow-lg">
                           {step.number}
                         </div>
                       </div>
@@ -187,10 +187,10 @@ function HowItWorks() {
 
                     {/* Content */}
                     <div className="flex-1 pt-1">
-                      <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:bg-linear-to-r group-hover:from-blue-600 group-hover:to-indigo-600 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-3 group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-indigo-600 dark:group-hover:from-blue-400 dark:group-hover:to-indigo-400 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
                         {step.title}
                       </h3>
-                      <p className="text-sm text-slate-600 leading-relaxed">
+                      <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                         {step.description}
                       </p>
                     </div>
@@ -198,7 +198,7 @@ function HowItWorks() {
 
                   {/* Bottom Accent Line */}
                   <div
-                    className={`h-1 bg-linear-to-r ${step.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}
+                    className={`h-1 bg-gradient-to-r ${step.gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left`}
                   />
                 </div>
 
@@ -206,9 +206,9 @@ function HowItWorks() {
                 <div className="md:hidden flex justify-center my-4">
                   {index < steps.length - 1 && (
                     <div className="flex flex-col items-center gap-1">
-                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full" />
-                      <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full" />
-                      <div className="w-1.5 h-1.5 bg-violet-400 rounded-full" />
+                      <div className="w-1.5 h-1.5 bg-blue-400 dark:bg-blue-500 rounded-full" />
+                      <div className="w-1.5 h-1.5 bg-indigo-400 dark:bg-indigo-500 rounded-full" />
+                      <div className="w-1.5 h-1.5 bg-violet-400 dark:bg-violet-500 rounded-full" />
                     </div>
                   )}
                 </div>
