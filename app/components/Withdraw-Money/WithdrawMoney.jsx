@@ -70,7 +70,7 @@ export default function WithdrawMoney({
         }
       } catch (err) {
         toast.error("Failed to load withdrawal information");
-        console.error(err);
+        // console.error(err);
       } finally {
         setLoading(false);
       }
@@ -144,7 +144,7 @@ export default function WithdrawMoney({
       }
     } catch (err) {
       toast.error("Something went wrong. Please try again.");
-      console.error("Withdraw insert error:", err);
+      // console.error("Withdraw insert error:", err);
     } finally {
       setSubmitLoading(false);
     }

@@ -138,8 +138,7 @@ export default function CardyFieCardDetails() {
           const updated = await getCardyFieCardDetails(cardId);
           setCardDetails(updated);
         } catch (refreshErr) {
-          console.log("Refresh after close failed", refreshErr);
-          toast("Card closed, but details refresh failed");
+          toast("Card closed. Details will update shortly.");
         }
       } else {
         // Fallback when response shape is unexpected
@@ -194,7 +193,7 @@ export default function CardyFieCardDetails() {
         const updated = await getCardyFieCardDetails(cardId);
         setCardDetails(updated);
       } catch (refreshErr) {
-        console.log("Refresh after default action failed", refreshErr);
+        toast("Action completed. Details will refresh shortly.");
       }
     } catch (err) {
       toast.error("Default action failed:", err);
@@ -247,7 +246,7 @@ export default function CardyFieCardDetails() {
         const updated = await getCardyFieCardDetails(cardId);
         setCardDetails(updated);
       } catch (refreshErr) {
-        console.log("Refresh after freeze/unfreeze failed", refreshErr);
+        toast("Card updated! Details will refresh shortly.");
       }
     } catch (err) {
       toast.error("Freeze/Unfreeze failed:", err);

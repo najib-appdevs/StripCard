@@ -79,8 +79,8 @@ export default function CreateCardCustomer() {
         toast.error("Something went wrong.");
       }
     } catch (err) {
-      console.error(err);
-      toast.error("Network or server error.");
+      // console.error(err);
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }

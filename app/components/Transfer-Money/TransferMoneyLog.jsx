@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getTransferMoneyInfo } from "../../utils/api";
 import TransferLogSkeleton from "./TransferLogSkeleton";
+import toast from "react-hot-toast";
 
 const TransferMoneyLog = () => {
   const [logs, setLogs] = useState([]);
@@ -19,7 +20,8 @@ const TransferMoneyLog = () => {
           setLogs(response.data.transactions);
         }
       } catch (error) {
-        console.error("Failed to fetch transfer logs:", error);
+        // console.error("Failed to fetch transfer logs:", error);
+        toast.error("Failed to fetch transfer logs");
       } finally {
         setLoading(false);
       }

@@ -89,7 +89,8 @@ export default function ManualWithdraw() {
       const fallback = "An unexpected error occurred. Please try again later.";
       toast.error(fallback);
       setPageError(fallback);
-      console.error("Final withdrawal submission error:", err);
+      // console.error("Final withdrawal submission error:", err);
+      toast.error("Failed to withdrawal submission");
     } finally {
       setSubmitting(false);
     }

@@ -51,7 +51,7 @@ const AddMoneyLog = () => {
         setLogs(formattedLogs);
       } catch (err) {
         toast.error("Failed to load add money logs");
-        console.error(err);
+        // console.error(err);
       } finally {
         setLoading(false);
       }

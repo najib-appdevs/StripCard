@@ -107,7 +107,8 @@ export default function CreateCardPage() {
           setSelectedWallet(wallets[0]); // auto-select first/default
         }
       } catch (err) {
-        console.error(err);
+        // console.error(err);
+        toast.error("Something went wrong");
         setError("Failed to load required data");
       } finally {
         if (mounted) setLoading(false);
@@ -175,7 +176,8 @@ export default function CreateCardPage() {
         toast.error("Unexpected response from server");
       }
     } catch (err) {
-      console.error("Card creation error:", err);
+      // console.error("Card creation error:", err);
+      toast.error("Failed to create virtual card");
       const errMsg =
         err?.response?.data?.message?.error?.[0] ||
         err?.message ||

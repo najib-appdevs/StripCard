@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import {
@@ -65,14 +64,13 @@ export default function RegisterPage() {
 
       if (!isSuccess) {
         toast.error("Registration was not successful");
-        console.log("Registration was not successful");
       }
 
       const token = response?.data?.token;
       const user = response?.data?.user;
 
       if (!token) {
-        console.log("No authentication token received from server");
+        toast.error("Couldn’t complete your registration. Please try again");
         return;
       }
 
@@ -89,7 +87,7 @@ export default function RegisterPage() {
         router.push("/email-verify");
       }
     } catch (error) {
-      console.error("Registration error:", error);
+      // console.error("Registration error:", error);
 
       let errorMessage = "Registration failed. Please try again.";
 

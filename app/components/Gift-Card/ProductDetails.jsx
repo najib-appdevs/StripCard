@@ -59,7 +59,7 @@ const ProductDetails = () => {
         const response = await getGiftCardDetails(productId);
 
         if (response?.message?.error) {
-          throw new Error(
+          toast.error(
             response.message.error[0] || "Failed to load gift card details",
           );
         }
@@ -67,7 +67,7 @@ const ProductDetails = () => {
         const apiProduct = response?.data?.product;
 
         if (!apiProduct || !apiProduct.productId) {
-          throw new Error("Gift card product data not found in response");
+          toast.error("Gift card product data not found in response");
         }
 
         const normalizedCard = {

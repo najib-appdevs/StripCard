@@ -63,7 +63,7 @@ export default function UpdateCustomer() {
           });
         }
       } catch (err) {
-        console.error("Failed to load customer data", err);
+        // console.error("Failed to load customer data", err);
         toast.error("Failed to load existing customer data");
       }
     };
@@ -108,8 +108,8 @@ export default function UpdateCustomer() {
         toast.error("Something went wrong. Please try again.");
       }
     } catch (error) {
-      toast.error("Network error. Please check your connection.");
-      console.error("Update customer error:", error);
+      toast.error("Failed to update customer");
+      // console.error("Update customer error:", error);
     } finally {
       setLoading(false);
     }

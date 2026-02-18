@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getUserTransactions } from "../../utils/api";
 import TransactionLogSkeleton from "./TransactionLogSkeleton";
+import toast from "react-hot-toast";
 
 // ============================================================================
 // MAIN COMPONENT
@@ -37,10 +38,8 @@ const AllTransactionLog = () => {
         // Fetch many at once (adjust number if backend has strict limit)
         const data = await getUserTransactions(1, 500);
 
-        console.log("API Response:", data);
-
         if (!data?.data?.transactions) {
-          throw new Error("Invalid response format");
+          toast.error("Invalid response format");
         }
 
         const categories = data.data.transactions || {};
@@ -118,7 +117,7 @@ const AllTransactionLog = () => {
         setAllTransactions(allTx);
         setFilteredTransactions(allTx);
       } catch (err) {
-        console.error("Fetch error:", err);
+        // console.error("Fetch error:", err);
         setError(err.message || "Could not load transactions");
       } finally {
         setLoading(false);
@@ -333,13 +332,19 @@ const AllTransactionLog = () => {
   // --------------------------------------------------------------------------
   if (loading) return <TransactionLogSkeleton />;
   if (error)
-    return <div className="py-12 text-center text-red-600 dark:text-red-400">{error}</div>;
+    return (
+      <div className="py-12 text-center text-red-600 dark:text-red-400">
+        {error}
+      </div>
+    );
 
   return (
     <>
       {/* Header + Search */}
       <div className="flex items-center justify-between mb-5">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Transaction Log</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          Transaction Log
+        </h1>
         <input
           type="text"
           value={search}
@@ -404,8 +409,8 @@ const AllTransactionLog = () => {
                           log.status === "Success"
                             ? "bg-green-500"
                             : log.status === "Pending"
-                            ? "bg-yellow-500"
-                            : "bg-red-500"
+                              ? "bg-yellow-500"
+                              : "bg-red-500"
                         }`}
                       />
                       <span
@@ -413,17 +418,25 @@ const AllTransactionLog = () => {
                           log.status === "Success"
                             ? "text-green-700 dark:text-green-400"
                             : log.status === "Pending"
-                            ? "text-yellow-700 dark:text-yellow-400"
-                            : "text-red-700 dark:text-red-400"
+                              ? "text-yellow-700 dark:text-yellow-400"
+                              : "text-red-700 dark:text-red-400"
                         }
                       >
                         {log.status}
                       </span>
                     </div>
-                    <div className="text-gray-600 dark:text-gray-300 font-mono">{log.trx}</div>
-                    <div className="text-gray-600 dark:text-gray-300">{log.displayAmount}</div>
-                    <div className="text-gray-600 dark:text-gray-300">{log.displayFees}</div>
-                    <div className="text-gray-600 dark:text-gray-300">{log.displayBalance}</div>
+                    <div className="text-gray-600 dark:text-gray-300 font-mono">
+                      {log.trx}
+                    </div>
+                    <div className="text-gray-600 dark:text-gray-300">
+                      {log.displayAmount}
+                    </div>
+                    <div className="text-gray-600 dark:text-gray-300">
+                      {log.displayFees}
+                    </div>
+                    <div className="text-gray-600 dark:text-gray-300">
+                      {log.displayBalance}
+                    </div>
                     <div className="text-gray-600 dark:text-gray-300">
                       {formatDate(log.date_time)}
                     </div>
@@ -520,17 +533,19 @@ const AllTransactionLog = () => {
 
 const DetailRow = ({ label, value, isStatus = false, isMono = false }) => (
   <div>
-    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1">{label}</dt>
+    <dt className="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1">
+      {label}
+    </dt>
     <dd
       className={`text-base ${isMono ? "font-mono" : ""} ${
         isStatus
           ? value === "Success"
             ? "text-green-700 dark:text-green-400 font-medium"
             : value === "Pending"
-            ? "text-yellow-700 dark:text-yellow-400 font-medium"
-            : value === "Rejected" || value === "rejected"
-            ? "text-red-700 dark:text-red-400 font-medium"
-            : "text-gray-900 dark:text-gray-100"
+              ? "text-yellow-700 dark:text-yellow-400 font-medium"
+              : value === "Rejected" || value === "rejected"
+                ? "text-red-700 dark:text-red-400 font-medium"
+                : "text-gray-900 dark:text-gray-100"
           : "text-gray-900 dark:text-gray-100"
       }`}
     >

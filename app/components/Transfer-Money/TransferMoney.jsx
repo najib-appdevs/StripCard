@@ -85,7 +85,7 @@ export default function TransferMoney({
           }
         }
       } catch (error) {
-        console.error("Failed to load transfer info:", error);
+        // console.error("Failed to load transfer info:", error);
         toast.error("Failed to load transfer information");
       } finally {
         setInfoLoading(false);

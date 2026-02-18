@@ -1,9 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Mail, MapPin, MessageSquare, Phone, Send } from "lucide-react";
 import { useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
+import toast from "react-hot-toast";
 
 export default function ContactSection() {
   const [formData, setFormData] = useState({
@@ -24,30 +24,27 @@ export default function ContactSection() {
 
   const onCaptchaChange = (token) => {
     setRecaptchaToken(token);
-    console.log("reCAPTCHA token:", token);
   };
 
   const onCaptchaExpired = () => {
     setRecaptchaToken(null);
-    console.log("reCAPTCHA expired");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!recaptchaToken) {
-      alert("Please complete the reCAPTCHA verification.");
+      toast.error("Please complete the reCAPTCHA verification.");
       return;
     }
 
     const payload = { ...formData, recaptchaToken };
-    console.log("Form submitted with reCAPTCHA:", payload);
 
     setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
     setRecaptchaToken(null);
     if (recaptchaRef.current) recaptchaRef.current.reset();
 
-    alert("Thank you! Your message has been sent.");
+    toast.success("Thank you! Your message has been sent.");
   };
 
   return (
@@ -80,11 +77,16 @@ export default function ContactSection() {
 
             {/* Title */}
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 leading-tight">
-              <span className="text-slate-900 dark:text-slate-100">Feel Free To </span>
+              <span className="text-slate-900 dark:text-slate-100">
+                Feel Free To{" "}
+              </span>
               <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 dark:from-blue-400 dark:via-indigo-400 dark:to-violet-400 bg-clip-text text-transparent">
                 Get In Touch
               </span>
-              <span className="text-slate-900 dark:text-slate-100"> With Us</span>
+              <span className="text-slate-900 dark:text-slate-100">
+                {" "}
+                With Us
+              </span>
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">

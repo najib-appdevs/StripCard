@@ -94,9 +94,9 @@ export default function AddMoneyForm({ onFormUpdate }) {
         (data.gateways || []).forEach((gw) => {
           (gw.currencies || []).forEach((curr) => {
             options.push({
-              id: curr.alias,
+              id: curr.id, 
               name: curr.name,
-              alias: curr.alias,
+              alias: curr.alias, 
               fixed_charge: Number(curr.fixed_charge) || 0,
               percent_charge: Number(curr.percent_charge) || 0,
               min_limit: Number(curr.min_limit) || 0,

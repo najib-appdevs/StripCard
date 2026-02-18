@@ -1,3 +1,5 @@
+import toast from "react-hot-toast";
+
 export default function PaymentInformation({
   paymentInformations,
   gatewayCurrencyName = "Manual Gateway",
@@ -47,7 +49,7 @@ export default function PaymentInformation({
 
   try {
     const requestValue = parseFloat(
-      String(request_amount).replace(/[^0-9.]/g, "")
+      String(request_amount).replace(/[^0-9.]/g, ""),
     );
 
     let rate = 1;
@@ -67,7 +69,7 @@ export default function PaymentInformation({
       conversionAmount = (requestValue * rate).toFixed(4);
     }
   } catch (error) {
-    console.warn("Conversion calculation failed", error);
+    toast.error("Conversion calculation failed");
   }
 
   // ────────────────────────────────────────────────
@@ -82,46 +84,46 @@ export default function PaymentInformation({
       </h3>
 
       <div className="space-y-4 text-sm">
-        {/* <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-300">Transaction ID</span>
-          <span className="font-medium text-gray-900 dark:text-gray-100">{trx}</span>
-        </div>
-
         <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-300">Gateway</span>
-          <span className="font-medium text-gray-900 dark:text-gray-100">
-            {gatewayCurrencyName}
+          <span className="text-gray-600 dark:text-gray-300">
+            Entered Amount
           </span>
-        </div> */}
-
-        <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-300">Entered Amount</span>
           <span className="font-medium text-gray-900 dark:text-gray-100">
             {formatAmount(request_amount)} {extractCurrency(request_amount)}
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-300">Exchange Rate</span>
-          <span className="font-medium text-gray-900 dark:text-gray-100">{exchange_rate}</span>
+          <span className="text-gray-600 dark:text-gray-300">
+            Exchange Rate
+          </span>
+          <span className="font-medium text-gray-900 dark:text-gray-100">
+            {exchange_rate}
+          </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-600 dark:text-gray-300">Fees & Charges</span>
+          <span className="text-gray-600 dark:text-gray-300">
+            Fees & Charges
+          </span>
           <span className="font-medium text-red-600 dark:text-red-400">
             {formatAmount(total_charge)} {extractCurrency(total_charge)}
           </span>
         </div>
 
         <div className="flex justify-between pt-2">
-          <span className="text-gray-700 dark:text-gray-200 font-medium">Conversion Amount</span>
+          <span className="text-gray-700 dark:text-gray-200 font-medium">
+            Conversion Amount
+          </span>
           <span className="font-bold text-emerald-700 dark:text-emerald-400 text-base">
             {conversionAmount} {conversionCurrency}
           </span>
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-700 dark:text-gray-200 font-medium">You Will Get</span>
+          <span className="text-gray-700 dark:text-gray-200 font-medium">
+            You Will Get
+          </span>
           <span className="font-bold text-emerald-600 dark:text-emerald-400 text-lg">
             {formatAmount(will_get)} {extractCurrency(will_get)}
           </span>

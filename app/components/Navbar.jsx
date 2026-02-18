@@ -7,6 +7,7 @@ import { getUserProfile } from "../utils/api";
 import UserMenu from "./UserMenu";
 import GlobeIcon from "./icons/Globe";
 import NotificationBell from "./icons/NotificationBell";
+import toast from "react-hot-toast";
 
 export default function Navbar({ onMenuClick }) {
   const [userName, setUserName] = useState("User");
@@ -38,7 +39,8 @@ export default function Navbar({ onMenuClick }) {
           setUserName(name);
         }
       } catch (error) {
-        console.error("Failed to load user name:", error);
+        // console.error("Failed to load user name:", error);
+        toast.error("Failed to load user name");
       }
     };
 

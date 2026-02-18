@@ -52,7 +52,7 @@ function CreateCardPage() {
         // 1. Dashboard – get base_curr + wallets
         const dashRes = await getUserDashboard();
         if (!dashRes?.data) {
-          throw new Error(
+          toast.error(
             dashRes?.message?.error?.[0] || "Failed to load dashboard",
           );
         }
@@ -113,7 +113,8 @@ function CreateCardPage() {
         }
       } catch (err) {
         setError(err.message || "Error loading data");
-        console.error(err);
+        // console.error(err);
+        toast.error(err.message);
       } finally {
         setLoading(false);
       }

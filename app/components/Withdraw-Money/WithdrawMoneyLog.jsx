@@ -49,7 +49,6 @@ const WithdrawMoneyLog = () => {
         }
       } catch (err) {
         setError("Failed to load withdrawal history");
-        console.log("Withdraw log fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -147,22 +146,34 @@ const WithdrawMoneyLog = () => {
                   </span>
 
                   {/* 3. Transaction ID */}
-                  <span className="text-gray-600 dark:text-gray-300">{log.trxId}</span>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {log.trxId}
+                  </span>
 
                   {/* 4. Exchange Rate */}
-                  <span className="text-gray-600 dark:text-gray-300">{log.exchangeRate}</span>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {log.exchangeRate}
+                  </span>
 
                   {/* 5. Fees & Charges */}
-                  <span className="text-gray-600 dark:text-gray-300">{log.fees}</span>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {log.fees}
+                  </span>
 
                   {/* 6. Will Get */}
-                  <span className="text-gray-600 dark:text-gray-300">{log.willGet}</span>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {log.willGet}
+                  </span>
 
                   {/* 7. Current Balance */}
-                  <span className="text-gray-600 dark:text-gray-300">{log.currentBalance}</span>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {log.currentBalance}
+                  </span>
 
                   {/* 8. Time & Date */}
-                  <span className="text-gray-600 dark:text-gray-300">{log.date}</span>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    {log.date}
+                  </span>
                 </div>
               ))
             )}

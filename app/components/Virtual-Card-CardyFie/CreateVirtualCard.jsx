@@ -7,6 +7,7 @@ import CreateCardCustomer from "./CreateCardCustomer";
 // import CreateCardPage from "./CreateCardPage";
 import CreateCardPage from "../../components/Virtual-Card-CardyFie/CreateCardPage";
 import CreateVirtualCardSkeleton from "./CreateVirtualCardSkeleton";
+import toast from "react-hot-toast";
 
 export default function CreateVirtualCard() {
   const [loading, setLoading] = useState(true);
@@ -40,7 +41,8 @@ export default function CreateVirtualCard() {
         }
       })
       .catch((err) => {
-        console.error("Error fetching cardyfie create info:", err);
+        // console.error("Error fetching cardyfie create info:", err);
+        toast.error("Failed to load customer information");
         setError("Failed to load customer information");
       })
       .finally(() => {

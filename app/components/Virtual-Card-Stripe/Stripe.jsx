@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import { getStripeCards } from "../../utils/api";
+import toast from "react-hot-toast";
 
 export default function Stripe() {
   const router = useRouter();
@@ -28,7 +29,8 @@ export default function Stripe() {
         }
       } catch (err) {
         setError("Something went wrong. Please try again later.");
-        console.error("Stripe fetch error:", err);
+        // console.error("Stripe fetch error:", err);
+        toast.error("Something went wrong. Please try again later");
       } finally {
         setLoading(false);
       }

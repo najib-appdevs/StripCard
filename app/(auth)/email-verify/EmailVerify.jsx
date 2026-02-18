@@ -45,7 +45,7 @@ export default function EmailVerify() {
 
       setIsAuthenticated(true);
     } catch (error) {
-      console.error("Error parsing user data:", error);
+      // console.error("Error parsing user data:", error);
       toast.error("Sorry, You are unauthorized user");
       router.push("/login");
       return;

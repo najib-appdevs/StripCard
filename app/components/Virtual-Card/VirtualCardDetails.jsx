@@ -47,7 +47,7 @@ export default function VirtualCardDetails() {
         const res = await getStrowalletCardDetails(cardId);
 
         if (res?.message?.error) {
-          throw new Error(
+          toast.error(
             res.message.error[0] || "Failed to load card details",
           );
         }
@@ -55,7 +55,8 @@ export default function VirtualCardDetails() {
         setCardDetails(res);
       } catch (err) {
         setError(err.message || "Failed to load card details");
-        console.error(err);
+        // console.error(err);
+        toast.error("Failed to load card details");
       } finally {
         setLoading(false);
       }
@@ -103,7 +104,7 @@ export default function VirtualCardDetails() {
       const res = await setStrowalletCardAsDefault(cardId);
 
       if (res?.message?.error) {
-        throw new Error(
+        toast.error(
           res.message.error[0] || "Failed to update default status",
         );
       }
@@ -122,13 +123,10 @@ export default function VirtualCardDetails() {
         const updated = await getStrowalletCardDetails(cardId);
         setCardDetails(updated);
       } catch (refreshErr) {
-        console.warn(
-          "Failed to refresh card details after default action",
-          refreshErr,
-        );
+        toast.error("Failed to refresh card details after default action");
       }
     } catch (err) {
-      console.error("Default action failed:", err);
+      // console.error("Default action failed:", err);
       toast.error(err.message || "Failed to update default status", {
         id: loadingToast,
         duration: 5000,
@@ -147,13 +145,14 @@ export default function VirtualCardDetails() {
       const res = await getStrowalletCardTransactions(cardId);
 
       if (res?.message?.error) {
-        throw new Error(res.message.error[0] || "Failed to load transactions");
+        toast.error(res.message.error[0] || "Failed to load transactions");
       }
 
       setTransactions(res?.data?.card_transactions || []);
     } catch (err) {
       setTransactionsError(err.message || "Failed to load transactions");
-      console.error(err);
+      // console.error(err);
+      toast.error("Failed to load transactions");
     } finally {
       setLoadingTransactions(false);
     }
